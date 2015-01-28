@@ -1,0 +1,2 @@
+include ':app', ':osctweet4j'
+project(':osctweet4j').projectDir = new File('../osctweet4j')
