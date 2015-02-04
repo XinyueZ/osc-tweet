@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">osc-tweet</string>
-
-    <string name="hello_world">Hello world!</string>
+    <string name="application_name">OSC Tweet</string>
     <string name="action_settings">Settings</string>
 </resources>

@@ -1,3 +1,5 @@
+def buildNumber = 'bld' + (System.env.BUILD_NUMBER ?: 'SNAPSHOT')
+
 apply plugin: 'com.android.application'
 
 android {
@@ -22,5 +24,20 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:cardview-v7:21.0.3'
+    compile 'com.android.support:recyclerview-v7:21.0.3'
+    compile project(':volley_cz')
+    compile project(':ChoppingBootstrap')
     compile project(':osctweet4j')
+    compile 'com.android.support:recyclerview-v7:21.0.3'
+}
+
+
+// Rename final apks
+android.applicationVariants.all {  variant ->
+    variant.outputs.each  { output ->
+        output.outputFile = new File(
+                output.outputFile.parent, output.outputFile.name.replace("_Android", "")
+                .replace(".apk", "-${android.defaultConfig.versionName}${buildNumber}.apk"))
+    }
 }

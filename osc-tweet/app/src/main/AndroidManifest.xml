@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.osc.tweet" >
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.osc.tweet">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:name=".app.App"
+        android:label="@string/application_name"
+        android:theme="@style/AppTheme"
+        tools:replace="android:label">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:name=".app.activities.MainActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/application_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--Event handler for changing system packages, for external links-->
+        <receiver
+            android:name="com.chopping.application.InstalledAppReceiver"
+            android:exported="false"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

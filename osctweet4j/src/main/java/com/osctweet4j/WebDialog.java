@@ -26,7 +26,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 
-import com.squareup.okhttp.MediaType;
+import com.osctweet4j.bus.AuthDoneEvent;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -35,6 +35,8 @@ import com.squareup.okhttp.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.greenrobot.event.EventBus;
+
 /**
  * A AuthO2 WebView dialog to get client code.
  *
@@ -42,10 +44,6 @@ import org.json.JSONObject;
  */
 public final class WebDialog extends DialogFragment {
 	private static final String TAG = WebDialog.class.getName();
-	/**
-	 * Body type when http.
-	 */
-	private static final MediaType CONTENT_TYPE = MediaType.parse("application/x-www-form-urlencoded");
 	/**
 	 * WebView.
 	 */
@@ -135,6 +133,7 @@ public final class WebDialog extends DialogFragment {
 					String code = uri.getQueryParameter("code");//The authorization code.
 					authToken(code);
 					dismiss();
+					EventBus.getDefault().post(new AuthDoneEvent());
 				}
 				return false;
 			}
@@ -197,7 +196,7 @@ public final class WebDialog extends DialogFragment {
 			@Override
 			public void run() {
 				String tokenBody = String.format(Consts.GET_TOKEN_BODY, code);
-				RequestBody body = RequestBody.create(CONTENT_TYPE, tokenBody);
+				RequestBody body = RequestBody.create(Consts.CONTENT_TYPE, tokenBody);
 				Request request = new Request.Builder().url(Consts.TOKEN_URL).post(body).build();
 				try {
 					Response response = mHttpClient.newCall(request).execute();

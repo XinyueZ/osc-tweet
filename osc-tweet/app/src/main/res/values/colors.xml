@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <color name="common_black">#000000</color>
+    <color name="common_white">#FFFFFF</color>
+    <color name="common_transparent">@android:color/transparent</color>
+    <color name="common_green">#43ab54</color>
+    <color name="common_green_mid">#40a851</color>
+    <color name="common_green_deep">#147822</color>
+    <color name="common_grey">#f5f5f5</color>
+    <color name="common_blue">#2196F3</color>
+
+    <color name="text_common_black">@color/common_black</color>
+    <color name="text_common_white">@color/common_white</color>
+
+    <color name="primary_color">@color/common_green</color>
+    <color name="primary_dark_color">@color/common_green_deep</color>
+    <color name="primary_accent">@color/common_green_mid</color>
+
+
+</resources>
