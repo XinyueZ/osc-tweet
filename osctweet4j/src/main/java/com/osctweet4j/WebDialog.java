@@ -47,38 +47,6 @@ public final class WebDialog extends DialogFragment {
 	 */
 	private static final MediaType CONTENT_TYPE = MediaType.parse("application/x-www-form-urlencoded");
 	/**
-	 * Application keys.
-	 */
-	private static final String CLIENT_ID = "EOW46fNRtr7FgSlHAVz4";
-	private static final String CLIENT_SECRET = "eXc7xJv1uliOm3WRmo7r9IwzuqrvxYYu";
-	/**
-	 * Host of osc.
-	 */
-	private static final String OSC_HOST = "https://www.oschina.net/";
-	/**
-	 * A redirect to a web-app.
-	 */
-	private static final String REDIRECT_URL = "http://wanlingzhao.eu.pn/index.html";
-	/**
-	 * Location to do authorization.
-	 */
-	private static final String AUTHORIZE_URL = OSC_HOST +
-			"action/oauth2/authorize?response_type=code&client_id=" + CLIENT_ID + "&redirect_uri=" + REDIRECT_URL;
-	/**
-	 * Location to get access token.
-	 */
-	private static final String TOKEN_URL = OSC_HOST + "action/openapi/token";
-	/**
-	 * Http-body-format when asking token.
-	 */
-	private static final String GET_TOKEN_BODY = "client_id=" + CLIENT_ID + "&client_secret=" + CLIENT_SECRET +
-			"&grant_type=authorization_code&redirect_uri=" + REDIRECT_URL + "&code=%s&dataType=json";
-	/**
-	 * Http-body-format when wanna a refreshed token.
-	 */
-	private static final String REFRESH_TOKEN_BODY = "client_id=" + CLIENT_ID + "&client_secret=" + CLIENT_SECRET +
-			"&grant_type=refresh_token&redirect_uri=" + REDIRECT_URL + "&code=%s&dataType=json&refresh_token=%s";
-	/**
 	 * WebView.
 	 */
 	private WebView mWebView;
@@ -98,30 +66,6 @@ public final class WebDialog extends DialogFragment {
 	 * Storage.
 	 */
 	private SharedPreferences mPrefs;
-	/**
-	 * Key for storage "uid" of json of access-token.
-	 */
-	private static final String KEY_UID = "uid";
-	/**
-	 * Key for storage "expires_in" of json of access-token in seconds.
-	 */
-	private static final String KEY_EXPIRES_IN_SECONDS = "expires_in";
-	/**
-	 * Calculated session expires timestamps by "expires_in".
-	 */
-	private static final String KEY_EXPIRES_TIME_IN_MILLIS = "expires_time";
-	/**
-	 * Key for storage "token_type" of json of access-token.
-	 */
-	private static final String KEY_TOKEN_TYPE = "token_type";
-	/**
-	 * Key for storage "refresh_token" of json of access-token.
-	 */
-	private static final String KEY_REFRESH_TOKEN = "refresh_token";
-	/**
-	 * Key for storage "access_token" of json of access-token.
-	 */
-	private static final String KEY_ACCESS_TOKEN = "access_token";
 
 	/**
 	 * Initialize an {@link  WebDialog}.
@@ -162,7 +106,7 @@ public final class WebDialog extends DialogFragment {
 		super.onViewCreated(view, savedInstanceState);
 		mHttpClient = new OkHttpClient();
 		mWebView = new WebView(getActivity());
-		mWebView.loadUrl(AUTHORIZE_URL);
+		mWebView.loadUrl(Consts.AUTHORIZE_URL);
 		mWebView.getSettings().setJavaScriptEnabled(true);
 		mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 		mWebView.setWebViewClient(new WebViewClient() {
@@ -186,7 +130,7 @@ public final class WebDialog extends DialogFragment {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				view.loadUrl(url);
-				if (url.contains(REDIRECT_URL + "?code=")) {
+				if (url.contains(Consts.REDIRECT_URL + "?code=")) {
 					Uri uri = Uri.parse(url);
 					String code = uri.getQueryParameter("code");//The authorization code.
 					authToken(code);
@@ -252,9 +196,9 @@ public final class WebDialog extends DialogFragment {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				String tokenBody = String.format(GET_TOKEN_BODY, code);
+				String tokenBody = String.format(Consts.GET_TOKEN_BODY, code);
 				RequestBody body = RequestBody.create(CONTENT_TYPE, tokenBody);
-				Request request = new Request.Builder().url(TOKEN_URL).post(body).build();
+				Request request = new Request.Builder().url(Consts.TOKEN_URL).post(body).build();
 				try {
 					Response response = mHttpClient.newCall(request).execute();
 					int responseCode = response.code();
@@ -266,15 +210,15 @@ public final class WebDialog extends DialogFragment {
 					} else {
 						String json = response.body().string();
 						JSONObject object = new JSONObject(json);
-						mPrefs.edit().putInt(KEY_UID, object.getInt(KEY_UID)).commit();
-						mPrefs.edit().putLong(KEY_EXPIRES_IN_SECONDS, object.getInt(KEY_EXPIRES_IN_SECONDS)).commit();
-						long exp = TimeUnit.SECONDS.toMillis(object.getInt(KEY_EXPIRES_IN_SECONDS));
+						mPrefs.edit().putInt(Consts.KEY_UID, object.getInt(Consts.KEY_UID)).commit();
+						mPrefs.edit().putLong(Consts.KEY_EXPIRES_IN_SECONDS, object.getInt(Consts.KEY_EXPIRES_IN_SECONDS)).commit();
+						long exp = TimeUnit.SECONDS.toMillis(object.getInt(Consts.KEY_EXPIRES_IN_SECONDS));
 						long expiresTime = System.currentTimeMillis() + exp;
 						Log.i(TAG, "Expires time: " + expiresTime);
-						mPrefs.edit().putLong(KEY_EXPIRES_TIME_IN_MILLIS, expiresTime).commit();
-						mPrefs.edit().putString(KEY_TOKEN_TYPE, object.getString(KEY_TOKEN_TYPE)).commit();
-						mPrefs.edit().putString(KEY_REFRESH_TOKEN, object.getString(KEY_REFRESH_TOKEN)).commit();
-						mPrefs.edit().putString(KEY_ACCESS_TOKEN, object.getString(KEY_ACCESS_TOKEN)).commit();
+						mPrefs.edit().putLong(Consts.KEY_EXPIRES_TIME_IN_MILLIS, expiresTime).commit();
+						mPrefs.edit().putString(Consts.KEY_TOKEN_TYPE, object.getString(Consts.KEY_TOKEN_TYPE)).commit();
+						mPrefs.edit().putString(Consts.KEY_REFRESH_TOKEN, object.getString(Consts.KEY_REFRESH_TOKEN)).commit();
+						mPrefs.edit().putString(Consts.KEY_ACCESS_TOKEN, object.getString(Consts.KEY_ACCESS_TOKEN)).commit();
 					}
 				} catch (IOException e) {
 					Log.e(TAG, "Can't execute request to get access-token, client-code: " + code);
