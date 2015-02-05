@@ -1,8 +1,10 @@
 package com.osctweet4j.ds;
 
+import java.io.Serializable;
+
 import com.google.gson.annotations.SerializedName;
 
-public final class Notice {
+public final class Notice implements Serializable {
 	@SerializedName("replyCount")
 	private int mReplyCount;
 	@SerializedName("msgCount")

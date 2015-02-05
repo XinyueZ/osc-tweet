@@ -1,9 +1,11 @@
 package com.osctweet4j.ds;
 
 
+import java.io.Serializable;
+
 import com.google.gson.annotations.SerializedName;
 
-public final class TweetListItem {
+public final class TweetListItem implements Serializable  {
 	@SerializedName("id")
 	private int mId;
 	@SerializedName("pubDate")

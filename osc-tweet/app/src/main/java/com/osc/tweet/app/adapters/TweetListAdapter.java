@@ -13,14 +13,18 @@ import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
+import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.utils.URLImageParser;
 import com.osctweet4j.ds.TweetListItem;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * The adapter for tweet-list.
@@ -78,6 +82,12 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
 		holder.mSmallImgIv.setImageUrl(item.getImgSmall(), TaskHelper.getImageLoader());
+		holder.mSmallImgIv.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				EventBus.getDefault().post(new ShowBigImageEvent(item));
+			}
+		});
 		holder.mAuthorTv.setText(item.getAuthor());
 		holder.mComments.setText(item.getCommentCount() + "");
 

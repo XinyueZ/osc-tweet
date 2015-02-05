@@ -2,6 +2,7 @@
     <string name="app_name">开源动弹</string>
     <string name="application_name">开源动弹</string>
     <string name="action_top">顶部</string>
+    <string name="action_share">分享</string>
     <string name="action_settings">设置</string>
     <string name="msg_move_to_top">回到顶部</string>
 </resources>

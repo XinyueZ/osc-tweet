@@ -1,11 +1,12 @@
 package com.osctweet4j.ds;
 
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class TweetList {
+public final class TweetList implements Serializable  {
 	@SerializedName("notice")
 	private Notice mNotice;
 	@SerializedName("tweetlist")

@@ -20,6 +20,7 @@ import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.fragments.AppListImpFragment;
+import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.OnViewAnimatedClickedListener;
 import com.osc.tweet.utils.Prefs;
@@ -69,6 +70,16 @@ public class MainActivity extends BaseActivity {
 	 */
 	public void onEvent(CloseDrawerEvent e) {
 		mDrawerLayout.closeDrawers();
+	}
+
+	/**
+	 * Handler for {@link com.osc.tweet.events.ShowBigImageEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.ShowBigImageEvent}.
+	 */
+	public void onEvent(ShowBigImageEvent e) {
+		PhotoViewActivity.showInstance(this, e.getTweetListItem() );
 	}
 
 	//------------------------------------------------

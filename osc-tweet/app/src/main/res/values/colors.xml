@@ -9,6 +9,7 @@
     <color name="common_green_mid">#40a851</color>
     <color name="common_green_deep">#147822</color>
     <color name="common_grey">#f5f5f5</color>
+    <color name="common_half_grey">#809E9E9E</color>
     <color name="common_blue">#2196F3</color>
 
     <color name="text_common_black">@color/common_black</color>
