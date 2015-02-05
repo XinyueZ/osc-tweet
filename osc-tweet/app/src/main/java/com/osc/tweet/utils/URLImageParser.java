@@ -27,7 +27,7 @@ public final class URLImageParser implements ImageGetter {
 	 * @param t
 	 * @param c
 	 */
-	public URLImageParser(Context c, View t ) {
+	public URLImageParser(Context c, View t) {
 		this.c = c;
 		this.container = t;
 	}
@@ -61,7 +61,7 @@ public final class URLImageParser implements ImageGetter {
 		@Override
 		protected void onPostExecute(Drawable result) {
 			// set the correct bound according to the result from HTTP call
-			urlDrawable.setBounds(0, 0, 0 + result.getIntrinsicWidth(), 0 + result.getIntrinsicHeight());
+			urlDrawable.setBounds(0, 0, 50, 50);
 
 			// change the reference of the current drawable to the result
 			// from the HTTP call
@@ -82,7 +82,7 @@ public final class URLImageParser implements ImageGetter {
 			try {
 				InputStream is = fetch(urlString);
 				Drawable drawable = Drawable.createFromStream(is, "src");
-				drawable.setBounds(0, 0, 0 + drawable.getIntrinsicWidth(), 0 + drawable.getIntrinsicHeight());
+				drawable.setBounds(0, 0, 50, 50);
 				return drawable;
 			} catch (Exception e) {
 				return null;

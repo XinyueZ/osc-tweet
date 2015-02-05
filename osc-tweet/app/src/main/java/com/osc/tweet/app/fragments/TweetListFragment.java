@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.os.AsyncTaskCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -72,6 +74,10 @@ public final class TweetListFragment extends BaseFragment {
 	 * The page of tweets to load.
 	 */
 	private int mPage = 1;
+	/**
+	 * Pull to load.
+	 */
+	private SwipeRefreshLayout mSwipeRefreshLayout;
 	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
 	 *
@@ -147,6 +153,17 @@ public final class TweetListFragment extends BaseFragment {
 						getMoreTweetList();
 					}
 				}
+			}
+		});
+
+		mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.content_srl);
+		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_1, R.color.color_2,
+				R.color.color_3, R.color.color_4);
+		mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				mPage = 1;
+				getTweetList();
 			}
 		});
 	}
@@ -234,6 +251,7 @@ public final class TweetListFragment extends BaseFragment {
 		mPage++;
 		mLoading = true;
 		dismissLoadingIndicator();
+		mSwipeRefreshLayout.setRefreshing(false);
 	}
 
 
