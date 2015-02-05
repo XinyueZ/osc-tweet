@@ -40,6 +40,10 @@
                 android:layout_marginRight="@dimen/common_padding"
                 android:layout_marginBottom="@dimen/common_padding" />
 
+            <com.android.volley.toolbox.NetworkImageView
+                android:id="@+id/small_img_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -63,10 +67,6 @@
 
             </LinearLayout>
 
-            <com.android.volley.toolbox.NetworkImageView
-                android:id="@+id/small_img_iv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
         </LinearLayout>
 
 
