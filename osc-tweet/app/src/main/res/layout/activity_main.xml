@@ -43,7 +43,7 @@
         <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
             android:id="@+id/loading_pb"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="@dimen/pb_height"
             style="@style/GradientProgressBar"
             android:layout_marginTop="?attr/actionBarSize"
             android:indeterminate="true"

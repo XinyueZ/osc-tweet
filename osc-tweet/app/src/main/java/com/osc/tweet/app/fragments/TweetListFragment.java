@@ -15,13 +15,15 @@ import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.chopping.application.BasicPrefs;
-import com.chopping.application.LL;
 import com.chopping.fragments.BaseFragment;
+import com.chopping.utils.Utils;
 import com.osc.tweet.R;
+import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.TweetListAdapter;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
@@ -100,15 +102,31 @@ public final class TweetListFragment extends BaseFragment {
 		return inflater.inflate(LAYOUT, container, false);
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_top:
+			if(mAdp != null && mAdp.getItemCount() > 0 ) {
+				mLayoutManager.scrollToPositionWithOffset(0, 0);
+				Utils.showShortToast(App.Instance, R.string.msg_move_to_top);
+			}
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
 	private int mVisibleItemCount;
 	private int mPastVisibleItems;
 	private int mTotalItemCount;
 	private boolean mLoading = true;
 	LinearLayoutManager mLayoutManager;
 
+
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		setHasOptionsMenu(true);
 		mRv = (RecyclerView) view.findViewById(R.id.tweet_list_rv);
 		mRv.setLayoutManager(mLayoutManager = new LinearLayoutManager(getActivity()));
 		mRv.setHasFixedSize(false);
@@ -125,11 +143,8 @@ public final class TweetListFragment extends BaseFragment {
 				if (mLoading) {
 					if ( (mVisibleItemCount+mPastVisibleItems) >= mTotalItemCount) {
 						mLoading = false;
-						LL.d("Last");
 						showLoadingIndicator();
 						getMoreTweetList();
-					} else {
-						LL.d("Not Last");
 					}
 				}
 			}

@@ -6,4 +6,5 @@
     <dimen name="float_button_margin">25dp</dimen>
     <dimen name="float_button_anim_qua">90dp</dimen>
     <dimen name="common_padding">5dp</dimen>
+    <dimen name="pb_height">3dp</dimen>
 </resources>
