@@ -1,10 +1,20 @@
 package com.osc.tweet.app.activities;
 
+import android.app.AlertDialog.Builder;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,12 +24,18 @@ import com.chopping.application.BasicPrefs;
 import com.chopping.bus.CloseDrawerEvent;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.Utils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
+import com.osc.tweet.app.fragments.AboutDialogFragment;
+import com.osc.tweet.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.osc.tweet.app.fragments.AppListImpFragment;
+import com.osc.tweet.events.EULAConfirmedEvent;
+import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.OnViewAnimatedClickedListener;
@@ -54,14 +70,35 @@ public class MainActivity extends BaseActivity {
 	//------------------------------------------------
 
 	/**
+	 * Handler for {@link  EULARejectEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link  EULARejectEvent}.
+	 */
+	public void onEvent(EULARejectEvent e) {
+		finish();
+	}
+
+	/**
+	 * Handler for {@link EULAConfirmedEvent}
+	 *
+	 * @param e
+	 * 		Event {@link  EULAConfirmedEvent}.
+	 */
+	public void onEvent(EULAConfirmedEvent e) {
+
+	}
+
+	/**
 	 * Handler for {@link com.osc.tweet.events.ShowingLoadingEvent}.
 	 *
 	 * @param e
 	 * 		Event {@link com.osc.tweet.events.ShowingLoadingEvent}.
 	 */
 	public void onEvent(ShowingLoadingEvent e) {
-		mSmoothProgressBar.setVisibility(e.isShow()?View.VISIBLE:View.GONE);
+		mSmoothProgressBar.setVisibility(e.isShow() ? View.VISIBLE : View.GONE);
 	}
+
 	/**
 	 * Handler for {@link com.chopping.bus.CloseDrawerEvent}.
 	 *
@@ -79,7 +116,7 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.ShowBigImageEvent}.
 	 */
 	public void onEvent(ShowBigImageEvent e) {
-		PhotoViewActivity.showInstance(this, e.getTweetListItem() );
+		PhotoViewActivity.showInstance(this, e.getTweetListItem());
 	}
 
 	//------------------------------------------------
@@ -110,7 +147,75 @@ public class MainActivity extends BaseActivity {
 		if (mDrawerToggle != null) {
 			mDrawerToggle.syncState();
 		}
+		checkPlayService();
 	}
+
+	/**
+	 * To confirm whether the validation of the Play-service of Google Inc.
+	 */
+	private void checkPlayService() {
+		final int isFound = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (isFound == ConnectionResult.SUCCESS) {//Ignore update.
+			//The "End User License Agreement" must be confirmed before you use this application.
+			if (!Prefs.getInstance().isEULAOnceConfirmed()) {
+				showDialogFragment(new EulaConfirmationDialog(), null);
+			}
+		} else {
+			new Builder(this).setTitle(R.string.application_name).setMessage(R.string.lbl_play_service).setCancelable(
+					false).setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					dialog.dismiss();
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+					intent.setData(Uri.parse(getString(R.string.play_service_url)));
+					try {
+						startActivity(intent);
+					} catch (ActivityNotFoundException e0) {
+						intent.setData(Uri.parse(getString(R.string.play_service_web)));
+						try {
+							startActivity(intent);
+						} catch (Exception e1) {
+							//Ignore now.
+						}
+					} finally {
+						finish();
+					}
+				}
+			}).create().show();
+		}
+	}
+
+	/**
+	 * Show  {@link android.support.v4.app.DialogFragment}.
+	 *
+	 * @param dlgFrg
+	 * 		An instance of {@link android.support.v4.app.DialogFragment}.
+	 * @param tagName
+	 * 		Tag name for dialog, default is "dlg". To grantee that only one instance of {@link
+	 * 		android.support.v4.app.DialogFragment} can been seen.
+	 */
+	protected void showDialogFragment(DialogFragment dlgFrg, String tagName) {
+		try {
+			if (dlgFrg != null) {
+				DialogFragment dialogFragment = dlgFrg;
+				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				// Ensure that there's only one dialog to the user.
+				Fragment prev = getSupportFragmentManager().findFragmentByTag("dlg");
+				if (prev != null) {
+					ft.remove(prev);
+				}
+				try {
+					if (TextUtils.isEmpty(tagName)) {
+						dialogFragment.show(ft, "dlg");
+					} else {
+						dialogFragment.show(ft, tagName);
+					}
+				} catch (Exception _e) {
+				}
+			}
+		} catch (Exception _e) {
+		}
+	}
+
 
 	@Override
 	protected BasicPrefs getPrefs() {
@@ -129,17 +234,28 @@ public class MainActivity extends BaseActivity {
 		if (mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)) {
 			return true;
 		}
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-
-		//noinspection SimplifiableIfStatement
-		if (id == R.id.action_settings) {
-			return true;
+		switch (item.getItemId()) {
+		case R.id.action_about:
+			showDialogFragment(AboutDialogFragment.newInstance(this), null);
+			break;
 		}
-
 		return super.onOptionsItemSelected(item);
+	}
+
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+
+		MenuItem menuShare = menu.findItem(R.id.action_share_app);
+		//Getting the actionprovider associated with the menu item whose id is share.
+		android.support.v7.widget.ShareActionProvider provider =
+				(android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
+		//Setting a share intent.
+		String subject = getString(R.string.lbl_share_app_title, getString(R.string.application_name));
+		String text = getString(R.string.lbl_share_app_content);
+		provider.setShareIntent(com.osc.tweet.utils.Utils.getDefaultShareIntent(provider, subject, text));
+
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 	/**
@@ -183,8 +299,7 @@ public class MainActivity extends BaseActivity {
 		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
 		ViewHelper.setRotation(view, 360f * 4);
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(view);
-		animator.x(-screenWidth).rotation(0)
-				.setDuration(1000).setListener(new AnimatorListenerAdapter() {
+		animator.x(-screenWidth).rotation(0).setDuration(1000).setListener(new AnimatorListenerAdapter() {
 			@Override
 			public void onAnimationStart(Animator animation) {
 				super.onAnimationStart(animation);
@@ -207,5 +322,7 @@ public class MainActivity extends BaseActivity {
 		}).start();
 
 	}
+
+
 
 }

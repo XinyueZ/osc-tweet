@@ -16,6 +16,13 @@ public final class Prefs extends BasicPrefs {
 	 */
 	private static Prefs sInstance;
 
+	/**
+	 * Storage. Whether the "End User License Agreement" has been shown and agreed at application's first start.
+	 * <p/>
+	 * {@code true} if EULA has been shown and agreed.
+	 */
+	private static final String KEY_EULA_SHOWN = "key_eula_shown";
+
 	private Prefs() {
 		super(null);
 	}
@@ -59,4 +66,24 @@ public final class Prefs extends BasicPrefs {
 	}
 
 
+	/**
+	 * Whether the "End User License Agreement" has been shown and agreed at application's first start.
+	 * <p/>
+	 *
+	 * @return {@code true} if EULA has been shown and agreed.
+	 */
+	public boolean isEULAOnceConfirmed() {
+		return getBoolean(KEY_EULA_SHOWN, false);
+	}
+
+	/**
+	 * Set whether the "End User License Agreement" has been shown and agreed at application's first start.
+	 * <p/>
+	 *
+	 * @param isConfirmed
+	 * 		{@code true} if EULA has been shown and agreed.
+	 */
+	public void setEULAOnceConfirmed(boolean isConfirmed) {
+		setBoolean(KEY_EULA_SHOWN, isConfirmed);
+	}
 }

@@ -9,4 +9,5 @@
     <dimen name="pb_height">3dp</dimen>
     <dimen name="portrait_size">40dp</dimen>
     <dimen name="msg_net_icon_size">20dp</dimen>
+    <dimen name="padding_eula">16dp</dimen>
 </resources>
