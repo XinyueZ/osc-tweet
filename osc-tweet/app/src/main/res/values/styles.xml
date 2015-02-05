@@ -45,4 +45,14 @@
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:background">@color/common_transparent</item>
     </style>
+
+    <style name="GradientProgressBar" parent="SmoothProgressBar">
+        <item name="spb_stroke_separator_length">0dp</item>
+        <item name="spb_sections_count">3</item>
+        <item name="spb_speed">1.7</item>
+        <item name="spb_stroke_width">2dp</item>
+        <item name="android:interpolator">@android:anim/decelerate_interpolator</item>
+        <item name="spb_colors">@array/loading_colors</item>
+        <item name="spb_gradients">true</item>
+    </style>
 </resources>

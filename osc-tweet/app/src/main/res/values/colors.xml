@@ -19,4 +19,11 @@
     <color name="primary_accent">@color/common_green_mid</color>
 
 
+
+    <integer-array name="loading_colors">
+        <item>@color/common_blue</item>
+        <item>@color/common_green_deep</item>
+        <item>@color/common_black</item>
+        <item>@color/common_grey</item>
+    </integer-array>
 </resources>

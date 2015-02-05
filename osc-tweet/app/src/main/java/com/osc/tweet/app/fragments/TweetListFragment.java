@@ -22,11 +22,14 @@ import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
 import com.osc.tweet.R;
 import com.osc.tweet.app.adapters.TweetListAdapter;
+import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osctweet4j.Consts;
 import com.osctweet4j.OscApi;
 import com.osctweet4j.OscTweetException;
 import com.osctweet4j.ds.TweetList;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * A list shows all tweets.
@@ -43,6 +46,7 @@ public final class TweetListFragment extends BaseFragment {
 	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			EventBus.getDefault().post(new ShowingLoadingEvent(true));
 			getTweetList();
 		}
 	};
@@ -89,6 +93,7 @@ public final class TweetListFragment extends BaseFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		EventBus.getDefault().post(new ShowingLoadingEvent(true));
 		getTweetList();
 	}
 
@@ -112,6 +117,7 @@ public final class TweetListFragment extends BaseFragment {
 				if (tweetList != null) {
 					mAdp.setData(tweetList.getTweetListItems());
 					mAdp.notifyDataSetChanged();
+					EventBus.getDefault().post(new ShowingLoadingEvent(false));
 				}
 			}
 		});

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <FrameLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -15,10 +15,12 @@
             android:id="@+id/toolbar"
             style="@style/ActionBar_ToolBar" />
 
+
         <FrameLayout
             android:id="@id/error_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="?attr/actionBarSize"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
@@ -35,9 +37,20 @@
                 android:background="@drawable/circle_green"
                 android:src="@drawable/ic_edit"
                 style="@style/FloatButton" />
+
         </FrameLayout>
 
-    </LinearLayout>
+        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+            android:id="@+id/loading_pb"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            style="@style/GradientProgressBar"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:indeterminate="true"
+            android:layout_gravity="top"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
 
     <com.chopping.utils.views.OneDirectionScrollView

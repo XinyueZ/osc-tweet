@@ -20,11 +20,18 @@ import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.fragments.AppListImpFragment;
+import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.OnViewAnimatedClickedListener;
 import com.osc.tweet.utils.Prefs;
 
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+
 
 public class MainActivity extends BaseActivity {
+	/**
+	 * Main layout for this component.
+	 */
+	private static final int LAYOUT = R.layout.activity_main;
 	/**
 	 * Navigation drawer.
 	 */
@@ -37,11 +44,23 @@ public class MainActivity extends BaseActivity {
 	 * Support actionbar.
 	 */
 	private Toolbar mToolbar;
-
+	/**
+	 * Progress indicator.
+	 */
+	private SmoothProgressBar mSmoothProgressBar;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
 
+	/**
+	 * Handler for {@link com.osc.tweet.events.ShowingLoadingEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.ShowingLoadingEvent}.
+	 */
+	public void onEvent(ShowingLoadingEvent e) {
+		mSmoothProgressBar.setVisibility(e.isShow()?View.VISIBLE:View.GONE);
+	}
 	/**
 	 * Handler for {@link com.chopping.bus.CloseDrawerEvent}.
 	 *
@@ -57,7 +76,9 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(LAYOUT);
+		mSmoothProgressBar = (SmoothProgressBar) findViewById(R.id.loading_pb);
+
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
 		initDrawer();
