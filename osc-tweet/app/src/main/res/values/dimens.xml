@@ -3,8 +3,10 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="float_button_size">65dp</dimen>
-    <dimen name="float_button_margin">25dp</dimen>
+    <dimen name="float_button_margin">15dp</dimen>
     <dimen name="float_button_anim_qua">90dp</dimen>
     <dimen name="common_padding">5dp</dimen>
     <dimen name="pb_height">3dp</dimen>
+    <dimen name="portrait_size">35dp</dimen>
+    <dimen name="msg_net_icon_size">20dp</dimen>
 </resources>

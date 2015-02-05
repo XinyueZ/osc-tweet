@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import android.text.Html.ImageGetter;
 import android.view.View;
 
+import com.osc.tweet.R;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -20,6 +22,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 public final class URLImageParser implements ImageGetter {
 	Context c;
 	View container;
+	int size;
 
 	/**
 	 * Construct the URLImageParser which will execute AsyncTask and refresh the container
@@ -30,6 +33,7 @@ public final class URLImageParser implements ImageGetter {
 	public URLImageParser(Context c, View t) {
 		this.c = c;
 		this.container = t;
+		size = c.getResources().getDimensionPixelSize(R.dimen.msg_net_icon_size);
 	}
 
 	public Drawable getDrawable(String source) {
@@ -61,7 +65,7 @@ public final class URLImageParser implements ImageGetter {
 		@Override
 		protected void onPostExecute(Drawable result) {
 			// set the correct bound according to the result from HTTP call
-			urlDrawable.setBounds(0, 0, 50, 50);
+			urlDrawable.setBounds(0, 0, size, size);
 
 			// change the reference of the current drawable to the result
 			// from the HTTP call
@@ -82,7 +86,7 @@ public final class URLImageParser implements ImageGetter {
 			try {
 				InputStream is = fetch(urlString);
 				Drawable drawable = Drawable.createFromStream(is, "src");
-				drawable.setBounds(0, 0, 50, 50);
+				drawable.setBounds(0, 0, size, size);
 				return drawable;
 			} catch (Exception e) {
 				return null;

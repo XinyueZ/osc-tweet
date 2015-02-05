@@ -9,10 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.android.volley.toolbox.NetworkImageView
+        <com.osc.tweet.utils.RoundedNetworkImageView
             android:id="@+id/portrait_iv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="@dimen/portrait_size"
+            android:layout_height="@dimen/portrait_size" />
 
         <LinearLayout
             android:orientation="vertical"

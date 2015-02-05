@@ -74,6 +74,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		final TweetListItem item = mData.get(position);
+		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
 		holder.mAuthorTv.setText(item.getAuthor());
 		holder.mComments.setText(item.getCommentCount() + "");
