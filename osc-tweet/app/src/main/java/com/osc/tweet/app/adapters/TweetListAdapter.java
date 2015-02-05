@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,6 +85,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 				new URLImageParser(holder.mBodyTv.getContext(), holder.mBodyTv),
 				null);
 		holder.mBodyTv.setText(htmlSpan);
+		holder.mBodyTv.setMovementMethod(LinkMovementMethod.getInstance());
 
 		Calendar editTime = Calendar.getInstance();
 		try {

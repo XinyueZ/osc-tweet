@@ -166,14 +166,10 @@ public final class TweetListFragment extends BaseFragment {
 				getTweetList();
 			}
 		});
-	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		showLoadingIndicator();
 		getTweetList();
 	}
+
 
 	/**
 	 * Show progress when loading.

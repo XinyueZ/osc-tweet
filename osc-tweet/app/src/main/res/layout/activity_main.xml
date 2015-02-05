@@ -52,8 +52,7 @@
             style="@style/GradientProgressBar"
             android:layout_gravity="top"
             android:layout_marginTop="?attr/actionBarSize"
-            android:indeterminate="true"
-            android:visibility="gone" />
+            android:indeterminate="true" />
     </FrameLayout>
 
 
