@@ -51,6 +51,14 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		mData = data;
 	}
 
+	/**
+	 * Get current used data-source.
+	 * @return The data-source.
+	 */
+	public List<TweetListItem> getData() {
+		return mData;
+	}
+
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		Context cxt = parent.getContext();

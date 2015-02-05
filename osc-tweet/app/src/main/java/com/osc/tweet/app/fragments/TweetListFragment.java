@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chopping.application.BasicPrefs;
+import com.chopping.application.LL;
 import com.chopping.fragments.BaseFragment;
 import com.osc.tweet.R;
 import com.osc.tweet.app.adapters.TweetListAdapter;
@@ -39,18 +40,36 @@ public final class TweetListFragment extends BaseFragment {
 	 * Main layout for this component.
 	 */
 	private static final int LAYOUT = R.layout.fragment_tweet_list;
-
+	/**
+	 * Adapter for {@link #mRv} to show all tweets.
+	 */
 	private TweetListAdapter mAdp;
+	/**
+	 * List container for showing all tweets.
+	 */
 	private RecyclerView mRv;
+	/**
+	 * Broadcast-manager.
+	 */
 	private LocalBroadcastManager mLocalBroadcastManager;
+	/**
+	 * Broadcast-receiver for event after authentication is done.
+	 */
 	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			EventBus.getDefault().post(new ShowingLoadingEvent(true));
+			showLoadingIndicator();
 			getTweetList();
 		}
 	};
+	/**
+	 * Filter for {@link #mBroadcastReceiver}.
+	 */
 	private IntentFilter mIntentFilter = new IntentFilter(Consts.ACTION_AUTH_DONE);
+	/**
+	 * The page of tweets to load.
+	 */
+	private int mPage = 1;
 	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
 	 *
@@ -81,29 +100,72 @@ public final class TweetListFragment extends BaseFragment {
 		return inflater.inflate(LAYOUT, container, false);
 	}
 
+	private int mVisibleItemCount;
+	private int mPastVisibleItems;
+	private int mTotalItemCount;
+	private boolean mLoading = true;
+	LinearLayoutManager mLayoutManager;
+
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		mRv = (RecyclerView) view.findViewById(R.id.tweet_list_rv);
-		mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
+		mRv.setLayoutManager(mLayoutManager = new LinearLayoutManager(getActivity()));
 		mRv.setHasFixedSize(false);
 		mRv.setAdapter(mAdp = new TweetListAdapter(null));
+
+		mRv.setOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+				mVisibleItemCount = mLayoutManager.getChildCount();
+				mTotalItemCount = mLayoutManager.getItemCount();
+				mPastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
+
+				if (mLoading) {
+					if ( (mVisibleItemCount+mPastVisibleItems) >= mTotalItemCount) {
+						mLoading = false;
+						LL.d("Last");
+						showLoadingIndicator();
+						getMoreTweetList();
+					} else {
+						LL.d("Not Last");
+					}
+				}
+			}
+		});
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		EventBus.getDefault().post(new ShowingLoadingEvent(true));
+		showLoadingIndicator();
 		getTweetList();
 	}
 
+	/**
+	 * Show progress when loading.
+	 */
+	private void showLoadingIndicator() {
+		EventBus.getDefault().post(new ShowingLoadingEvent(true));
+	}
+
+	/**
+	 * Dismiss progress when load.
+	 */
+	private void dismissLoadingIndicator() {
+		EventBus.getDefault().post(new ShowingLoadingEvent(false));
+	}
+
+	/**
+	 * Get tweets data and showing on list.
+	 */
 	private void getTweetList() {
 		AsyncTaskCompat.executeParallel(new AsyncTask<Object, TweetList, TweetList>() {
 			@Override
 			protected TweetList doInBackground(Object... params) {
 				try {
-					TweetList tweetList = OscApi.tweetList(getActivity(), 1);
-					return tweetList;
+					return OscApi.tweetList(getActivity(), mPage);
 				} catch (IOException e) {
 					return null;
 				} catch (OscTweetException e) {
@@ -116,11 +178,47 @@ public final class TweetListFragment extends BaseFragment {
 				super.onPostExecute(tweetList);
 				if (tweetList != null) {
 					mAdp.setData(tweetList.getTweetListItems());
-					mAdp.notifyDataSetChanged();
-					EventBus.getDefault().post(new ShowingLoadingEvent(false));
+					finishLoading();
 				}
 			}
 		});
+	}
+
+	/**
+	 * Load more and more tweets on to list.
+	 */
+	private void getMoreTweetList() {
+		AsyncTaskCompat.executeParallel(new AsyncTask<Object, TweetList, TweetList>() {
+			@Override
+			protected TweetList doInBackground(Object... params) {
+				try {
+					return OscApi.tweetList(getActivity(), mPage);
+				} catch (IOException e) {
+					return null;
+				} catch (OscTweetException e) {
+					return null;
+				}
+			}
+
+			@Override
+			protected void onPostExecute(TweetList tweetList) {
+				super.onPostExecute(tweetList);
+				if (tweetList != null) {
+					mAdp.getData().addAll(tweetList.getTweetListItems());
+					finishLoading();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Calls when loading data has been done.
+	 */
+	private void finishLoading() {
+		mAdp.notifyDataSetChanged();
+		mPage++;
+		mLoading = true;
+		dismissLoadingIndicator();
 	}
 
 
