@@ -7,6 +7,8 @@ import java.util.List;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
+import com.osc.tweet.utils.URLImageParser;
 import com.osctweet4j.ds.TweetListItem;
 
 /**
@@ -73,8 +76,13 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		final TweetListItem item = mData.get(position);
 		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
 		holder.mAuthorTv.setText(item.getAuthor());
-		holder.mBodyTv.setText(item.getBody());
 		holder.mComments.setText(item.getCommentCount() + "");
+
+		Spanned htmlSpan = Html.fromHtml(
+				item.getBody(),
+				new URLImageParser(holder.mBodyTv.getContext(), holder.mBodyTv),
+				null);
+		holder.mBodyTv.setText(htmlSpan);
 
 		Calendar editTime = Calendar.getInstance();
 		try {
