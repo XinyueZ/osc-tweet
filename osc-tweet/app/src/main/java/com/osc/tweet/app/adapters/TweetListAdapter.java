@@ -1,9 +1,13 @@
 package com.osc.tweet.app.adapters;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +66,17 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
 		holder.mAuthorTv.setText(item.getAuthor());
 		holder.mBodyTv.setText(item.getBody());
+		holder.mComments.setText(item.getCommentCount() + "");
+
+		Calendar editTime = Calendar.getInstance();
+		try {
+			editTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item.getPubDate()));
+			CharSequence elapsedSeconds = DateUtils.getRelativeTimeSpanString(editTime.getTimeInMillis(),
+					System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
+			holder.mTime.setText(elapsedSeconds);
+		} catch (ParseException e) {
+			holder.mTime.setText("?");
+		}
 	}
 
 	@Override
@@ -73,12 +88,16 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		private NetworkImageView mPortraitIv;
 		private TextView mAuthorTv;
 		private TextView mBodyTv;
+		private TextView mTime;
+		private TextView mComments;
 
 		private ViewHolder(View convertView) {
 			super(convertView);
 			mPortraitIv = (NetworkImageView) convertView.findViewById(R.id.portrait_iv);
 			mAuthorTv = (TextView) convertView.findViewById(R.id.author_tv);
 			mBodyTv = (TextView) convertView.findViewById(R.id.body_tv);
+			mTime = (TextView) convertView.findViewById(R.id.time_tv);
+			mComments = (TextView) convertView.findViewById(R.id.comments_tv);
 		}
 	}
 }

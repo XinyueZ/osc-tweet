@@ -31,4 +31,18 @@
         <item name="android:layout_margin">@dimen/float_button_margin</item>
         <item name="android:gravity">center</item>
     </style>
+
+    <style name="Line_Date_Comments">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <style name="Line_Date_Comments_ImageView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:background">@color/common_transparent</item>
+    </style>
 </resources>

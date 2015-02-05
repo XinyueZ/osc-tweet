@@ -27,7 +27,7 @@
                 android:textColor="@color/common_blue"
                 android:layout_marginLeft="@dimen/common_padding"
                 android:layout_marginRight="@dimen/common_padding"
-                android:layout_marginBottom="@dimen/common_padding"/>
+                android:layout_marginBottom="@dimen/common_padding" />
 
             <TextView
                 android:id="@+id/body_tv"
@@ -38,9 +38,32 @@
                 android:layout_marginTop="@dimen/common_padding"
                 android:layout_marginLeft="@dimen/common_padding"
                 android:layout_marginRight="@dimen/common_padding"
-                android:layout_marginBottom="@dimen/common_padding"/>
+                android:layout_marginBottom="@dimen/common_padding" />
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
+                <ImageView
+                    android:src="@drawable/ic_time"
+                    style="@style/Line_Date_Comments_ImageView" />
+
+                <TextView
+                    android:id="@+id/time_tv"
+                    style="@style/Line_Date_Comments" />
+
+                <ImageView
+                    android:src="@drawable/ic_comments"
+                    style="@style/Line_Date_Comments_ImageView" />
+
+                <TextView
+                    android:id="@+id/comments_tv"
+                    style="@style/Line_Date_Comments" />
+
+            </LinearLayout>
         </LinearLayout>
+
+
     </LinearLayout>
 </android.support.v7.widget.CardView>
