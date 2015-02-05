@@ -77,6 +77,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		final TweetListItem item = mData.get(position);
 		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
+		holder.mSmallImgIv.setImageUrl(item.getImgSmall(), TaskHelper.getImageLoader());
 		holder.mAuthorTv.setText(item.getAuthor());
 		holder.mComments.setText(item.getCommentCount() + "");
 
@@ -109,6 +110,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		private TextView mBodyTv;
 		private TextView mTime;
 		private TextView mComments;
+		private NetworkImageView mSmallImgIv;
 
 		private ViewHolder(View convertView) {
 			super(convertView);
@@ -117,6 +119,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 			mBodyTv = (TextView) convertView.findViewById(R.id.body_tv);
 			mTime = (TextView) convertView.findViewById(R.id.time_tv);
 			mComments = (TextView) convertView.findViewById(R.id.comments_tv);
+			mSmallImgIv = (NetworkImageView) convertView.findViewById(R.id.small_img_iv);
 		}
 	}
 }

@@ -62,6 +62,11 @@
                     style="@style/Line_Date_Comments" />
 
             </LinearLayout>
+
+            <com.android.volley.toolbox.NetworkImageView
+                android:id="@+id/small_img_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
 
