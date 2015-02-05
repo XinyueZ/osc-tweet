@@ -7,8 +7,10 @@ import java.util.List;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -43,7 +45,9 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 
 	/**
 	 * Constructor of {@link com.osc.tweet.app.adapters.TweetListAdapter}.
-	 * @param data Data-source.
+	 *
+	 * @param data
+	 * 		Data-source.
 	 */
 	public TweetListAdapter(List<TweetListItem> data) {
 		setData(data);
@@ -61,6 +65,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 
 	/**
 	 * Get current used data-source.
+	 *
 	 * @return The data-source.
 	 */
 	public List<TweetListItem> getData() {
@@ -81,7 +86,15 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		final TweetListItem item = mData.get(position);
 		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
-		holder.mSmallImgIv.setImageUrl(item.getImgSmall(), TaskHelper.getImageLoader());
+
+		if (!TextUtils.isEmpty(item.getImgSmall())) {
+			holder.mSmallImgIv.setVisibility(View.VISIBLE);
+			holder.mSmallImgIv.setDefaultImageResId(R.drawable.ic_not_loaded);
+			holder.mSmallImgIv.setImageUrl(item.getImgSmall(), TaskHelper.getImageLoader());
+		} else {
+			holder.mSmallImgIv.setVisibility(View.GONE);
+		}
+
 		holder.mSmallImgIv.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -91,12 +104,14 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		holder.mAuthorTv.setText(item.getAuthor());
 		holder.mComments.setText(item.getCommentCount() + "");
 
-		Spanned htmlSpan = Html.fromHtml(
-				item.getBody(),
-				new URLImageParser(holder.mBodyTv.getContext(), holder.mBodyTv),
-				null);
-		holder.mBodyTv.setText(htmlSpan);
-		holder.mBodyTv.setMovementMethod(LinkMovementMethod.getInstance());
+		if (!TextUtils.isEmpty(item.getBody())) {
+			Spanned htmlSpan = Html.fromHtml(item.getBody(), new URLImageParser(holder.mBodyTv.getContext(), holder.mBodyTv), null);
+			holder.mBodyTv.setText(htmlSpan);
+			holder.mBodyTv.setMovementMethod(LinkMovementMethod.getInstance());
+			holder.mBodyTv.setVisibility(View.VISIBLE);
+		} else {
+			holder.mBodyTv.setVisibility(View.GONE);
+		}
 
 		Calendar editTime = Calendar.getInstance();
 		try {
@@ -107,6 +122,9 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		} catch (ParseException e) {
 			holder.mTime.setText("?");
 		}
+
+		holder.mToolbar.getMenu().findItem(R.id.action_at_him).setTitle(String.format(
+				holder.itemView.getContext().getString(R.string.action_at_him), item.getAuthor()));
 	}
 
 	@Override
@@ -121,6 +139,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		private TextView mTime;
 		private TextView mComments;
 		private NetworkImageView mSmallImgIv;
+		private Toolbar mToolbar;
 
 		private ViewHolder(View convertView) {
 			super(convertView);
@@ -130,6 +149,8 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 			mTime = (TextView) convertView.findViewById(R.id.time_tv);
 			mComments = (TextView) convertView.findViewById(R.id.comments_tv);
 			mSmallImgIv = (NetworkImageView) convertView.findViewById(R.id.small_img_iv);
+			mToolbar = (Toolbar) convertView.findViewById(R.id.toolbar);
+			mToolbar.inflateMenu(R.menu.menu_list_item);
 		}
 	}
 }

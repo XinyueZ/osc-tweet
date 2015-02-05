@@ -19,4 +19,29 @@
 
 
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/not_loaded_ll"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/common_transparent"
+            android:src="@drawable/ic_portrait_preview" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" android:gravity="center_vertical"
+            android:text="----->" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_marginBottom="4dp"
+            android:background="@color/common_transparent"
+            android:src="@drawable/ic_not_loaded" />
+    </LinearLayout>
 </FrameLayout>

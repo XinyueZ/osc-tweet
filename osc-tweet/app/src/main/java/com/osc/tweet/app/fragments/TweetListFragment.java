@@ -79,6 +79,10 @@ public final class TweetListFragment extends BaseFragment {
 	 */
 	private SwipeRefreshLayout mSwipeRefreshLayout;
 	/**
+	 * Some fun indicator when data not loaded.
+	 */
+	private View mNotLoadedIndicatorV;
+	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
 	 *
 	 * @param context
@@ -133,6 +137,7 @@ public final class TweetListFragment extends BaseFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		setHasOptionsMenu(true);
+		mNotLoadedIndicatorV = view.findViewById(R.id.not_loaded_ll);
 		mRv = (RecyclerView) view.findViewById(R.id.tweet_list_rv);
 		mRv.setLayoutManager(mLayoutManager = new LinearLayoutManager(getActivity()));
 		mRv.setHasFixedSize(false);
@@ -248,6 +253,7 @@ public final class TweetListFragment extends BaseFragment {
 		mLoading = true;
 		dismissLoadingIndicator();
 		mSwipeRefreshLayout.setRefreshing(false);
+		mNotLoadedIndicatorV.setVisibility(View.GONE);
 	}
 
 

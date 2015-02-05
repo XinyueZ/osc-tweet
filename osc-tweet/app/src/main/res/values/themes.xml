@@ -47,4 +47,16 @@
 
     <style name="AppTheme" parent="AppTheme.Base" />
 
+
+
+    <style name="AppThemeToolBar" parent="AppTheme.Base">
+        <item name="android:actionOverflowButtonStyle">@style/ThisActionButton_Overflow_Style</item>
+        <item name="actionOverflowButtonStyle">@style/ThisActionButton_Overflow_Style</item>
+    </style>
+
+    <style name="ThisActionButton_Overflow_Style" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_overflow_toolbar</item>
+    </style>
+
+
 </resources>
