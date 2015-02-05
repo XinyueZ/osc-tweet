@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/submodules/ChoppingBootstrap/ChoppingBootstrap.iml" filepath="$PROJECT_DIR$/submodules/ChoppingBootstrap/ChoppingBootstrap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/com.osctweet4j/com.osctweet4j.iml" filepath="$PROJECT_DIR$/com.osctweet4j/com.osctweet4j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/osc-tweet.iml" filepath="$PROJECT_DIR$/osc-tweet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../osctweet4j/osctweet4j.iml" filepath="$PROJECT_DIR$/../osctweet4j/osctweet4j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/submodules/ChoppingBootstrap/submodules/volley_cz/volley_cz.iml" filepath="$PROJECT_DIR$/submodules/ChoppingBootstrap/submodules/volley_cz/volley_cz.iml" />
+    </modules>
+  </component>
+</project>
+

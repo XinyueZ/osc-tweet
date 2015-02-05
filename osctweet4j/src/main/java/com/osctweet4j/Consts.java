@@ -9,6 +9,10 @@ import com.squareup.okhttp.MediaType;
  */
 public final class Consts {
 	/**
+	 * Broadcast Action: The authentication is done.
+	 */
+	public static final String ACTION_AUTH_DONE = "com.osctweet4j.action.AUTH_DONE";
+	/**
 	 * Body type when http.
 	 */
 	static final MediaType CONTENT_TYPE = MediaType.parse("application/x-www-form-urlencoded");

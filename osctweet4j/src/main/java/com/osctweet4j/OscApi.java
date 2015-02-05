@@ -2,8 +2,8 @@ package com.osctweet4j;
 
 import java.io.IOException;
 
-import android.content.Context;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -19,20 +19,21 @@ import com.squareup.okhttp.Response;
  * @author Xinyue Zhao
  */
 public final class OscApi {
+
 	private static final Gson sGson = new Gson();
+
 
 	/**
 	 * See. <a href="http://www.oschina.net/openapi/docs/tweet_pub">tweet_pub</a>
 	 *
-	 * @param cxt
-	 * 		{@link android.content.Context}.
+	 * @param activity
+	 * 		{@link android.support.v4.app.FragmentActivity}.
 	 * @param msg
 	 * 		Message to share.
 	 */
-	public static void tweetPub(Context cxt, String msg) throws IOException, OscTweetUnauthorizationException,
-			OscTweetException {
-		final String token = PreferenceManager.getDefaultSharedPreferences(cxt).getString(Consts.KEY_ACCESS_TOKEN,
-				null);
+	public static void tweetPub(FragmentActivity activity, String msg) throws IOException, OscTweetException {
+		final String token = PreferenceManager.getDefaultSharedPreferences(activity.getApplication()).getString(
+				Consts.KEY_ACCESS_TOKEN, null);
 		if (!TextUtils.isEmpty(token)) {
 			String pubBody = String.format(Consts.TWEET_PUB_BODY, token, msg);
 			RequestBody body = RequestBody.create(Consts.CONTENT_TYPE, pubBody);
@@ -44,7 +45,7 @@ public final class OscApi {
 				throw new OscTweetException();
 			}
 		} else {
-			throw new OscTweetUnauthorizationException();
+			WebDialog.newInstance(activity.getApplication()).show(activity.getSupportFragmentManager(), null);
 		}
 	}
 
@@ -52,18 +53,17 @@ public final class OscApi {
 	/**
 	 * See. <a href="http://www.oschina.net/openapi/docs/tweet_list">tweet_list</a>
 	 *
-	 * @param cxt
-	 * 		{@link android.content.Context}.
+	 * @param activity
+	 * 		{@link android.support.v4.app.FragmentActivity}.
 	 * @param page
 	 * 		Page index.
 	 *
 	 * @return List of all tweets.
 	 */
-	public static TweetList tweetList(Context cxt, final int page) throws IOException, OscTweetUnauthorizationException,
-			OscTweetException {
+	public static TweetList tweetList(FragmentActivity activity, final int page) throws IOException, OscTweetException {
 		TweetList ret = null;
-		final String token = PreferenceManager.getDefaultSharedPreferences(cxt).getString(Consts.KEY_ACCESS_TOKEN,
-				null);
+		final String token = PreferenceManager.getDefaultSharedPreferences(activity.getApplication()).getString(
+				Consts.KEY_ACCESS_TOKEN, null);
 		if (!TextUtils.isEmpty(token)) {
 			String listBody = String.format(Consts.TWEET_LIST_BODY, token, page);
 			RequestBody body = RequestBody.create(Consts.CONTENT_TYPE, listBody);
@@ -77,7 +77,7 @@ public final class OscApi {
 				ret = sGson.fromJson(response.body().string(), TweetList.class);
 			}
 		} else {
-			throw new OscTweetUnauthorizationException();
+			WebDialog.newInstance(activity.getApplication()).show(activity.getSupportFragmentManager(), null);
 		}
 		return ret;
 	}

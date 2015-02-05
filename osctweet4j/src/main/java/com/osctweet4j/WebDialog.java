@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.hardware.display.DisplayManagerCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -26,7 +28,6 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 
-import com.osctweet4j.bus.AuthDoneEvent;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -34,8 +35,6 @@ import com.squareup.okhttp.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import de.greenrobot.event.EventBus;
 
 /**
  * A AuthO2 WebView dialog to get client code.
@@ -64,6 +63,10 @@ public final class WebDialog extends DialogFragment {
 	 * Storage.
 	 */
 	private SharedPreferences mPrefs;
+	/**
+	 * Send message when auth is done.
+	 */
+	private LocalBroadcastManager mLocalBroadcastManager;
 
 	/**
 	 * Initialize an {@link  WebDialog}.
@@ -87,6 +90,7 @@ public final class WebDialog extends DialogFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(activity.getApplication());
 		mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
 	}
 
@@ -133,7 +137,7 @@ public final class WebDialog extends DialogFragment {
 					String code = uri.getQueryParameter("code");//The authorization code.
 					authToken(code);
 					dismiss();
-					EventBus.getDefault().post(new AuthDoneEvent());
+					mLocalBroadcastManager.sendBroadcast(new Intent(Consts.ACTION_AUTH_DONE));
 				}
 				return false;
 			}

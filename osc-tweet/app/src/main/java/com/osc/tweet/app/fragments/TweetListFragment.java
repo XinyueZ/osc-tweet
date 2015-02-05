@@ -2,10 +2,15 @@ package com.osc.tweet.app.fragments;
 
 import java.io.IOException;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,14 +21,11 @@ import android.view.ViewGroup;
 import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
 import com.osc.tweet.R;
-import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.TweetListAdapter;
 import com.osc.tweet.utils.Prefs;
+import com.osctweet4j.Consts;
 import com.osctweet4j.OscApi;
 import com.osctweet4j.OscTweetException;
-import com.osctweet4j.OscTweetUnauthorizationException;
-import com.osctweet4j.WebDialog;
-import com.osctweet4j.bus.AuthDoneEvent;
 import com.osctweet4j.ds.TweetList;
 
 /**
@@ -37,29 +39,37 @@ public final class TweetListFragment extends BaseFragment {
 
 	private TweetListAdapter mAdp;
 	private RecyclerView mRv;
-
-	//------------------------------------------------
-	//Subscribes, event-handlers
-	//------------------------------------------------
-
-	/**
-	 * Handler for {@link com.osctweet4j.bus.AuthDoneEvent}.
-	 *
-	 * @param e
-	 * 		Event {@link com.osctweet4j.bus.AuthDoneEvent}.
-	 */
-	public void onEvent(AuthDoneEvent e) {
-getTweetList();
-	}
-
-	//------------------------------------------------
+	private LocalBroadcastManager mLocalBroadcastManager;
+	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			getTweetList();
+		}
+	};
+	private IntentFilter mIntentFilter = new IntentFilter(Consts.ACTION_AUTH_DONE);
 	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
-	 * @param context {@link android.content.Context}.
+	 *
+	 * @param context
+	 * 		{@link android.content.Context}.
+	 *
 	 * @return An instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
 	 */
 	public static Fragment newInstance(Context context) {
 		return TweetListFragment.instantiate(context, TweetListFragment.class.getName());
+	}
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(activity.getApplication());
+		mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, mIntentFilter);
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
 	}
 
 	@Override
@@ -82,18 +92,16 @@ getTweetList();
 		getTweetList();
 	}
 
-	private void getTweetList( ) {
+	private void getTweetList() {
 		AsyncTaskCompat.executeParallel(new AsyncTask<Object, TweetList, TweetList>() {
 			@Override
 			protected TweetList doInBackground(Object... params) {
 				try {
-					TweetList tweetList = OscApi.tweetList(App.Instance, 1);
+					TweetList tweetList = OscApi.tweetList(getActivity(), 1);
 					return tweetList;
 				} catch (IOException e) {
 					return null;
 				} catch (OscTweetException e) {
-					return  null;
-				} catch (OscTweetUnauthorizationException e) {
 					return null;
 				}
 			}
@@ -101,9 +109,7 @@ getTweetList();
 			@Override
 			protected void onPostExecute(TweetList tweetList) {
 				super.onPostExecute(tweetList);
-				if(tweetList == null) {
-					WebDialog.newInstance(getActivity()).show(getChildFragmentManager(), null);
-				} else {
+				if (tweetList != null) {
 					mAdp.setData(tweetList.getTweetListItems());
 					mAdp.notifyDataSetChanged();
 				}
