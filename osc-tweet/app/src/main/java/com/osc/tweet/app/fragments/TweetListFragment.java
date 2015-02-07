@@ -210,7 +210,7 @@ public final class TweetListFragment extends BaseFragment {
 			protected void onPostExecute(TweetList tweetList) {
 				super.onPostExecute(tweetList);
 				if (tweetList != null) {
-					mAdp.setData(tweetList.getTweetListItems());
+					mAdp.setData(tweetList.getTweets());
 					finishLoading();
 				}
 			}
@@ -237,7 +237,7 @@ public final class TweetListFragment extends BaseFragment {
 			protected void onPostExecute(TweetList tweetList) {
 				super.onPostExecute(tweetList);
 				if (tweetList != null) {
-					mAdp.getData().addAll(tweetList.getTweetListItems());
+					mAdp.getData().addAll(tweetList.getTweets());
 					finishLoading();
 				}
 			}
