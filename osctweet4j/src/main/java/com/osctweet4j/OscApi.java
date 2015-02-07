@@ -53,6 +53,7 @@ public final class OscApi {
 
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(cxt);
 			prefs.edit().putInt(Consts.KEY_UID, login.getUser().getUid()).commit();
+			prefs.edit().putString(Consts.KEY_NAME, login.getUser().getName()).commit();
 			prefs.edit().putString(Consts.KEY_EXPIRES, login.getUser().getExpired()).commit();
 			prefs.edit().putString(Consts.KEY_SESSION, session).commit();
 			return login;

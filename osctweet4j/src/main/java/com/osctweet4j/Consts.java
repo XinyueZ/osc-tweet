@@ -23,6 +23,10 @@ public final class Consts {
 	 */
 	static final String KEY_UID = "uid";
 	/**
+	 * Your name.
+	 */
+	static final String KEY_NAME = "name";
+	/**
 	 * Key for storage session
 	 */
 	static final String KEY_SESSION = "session";
