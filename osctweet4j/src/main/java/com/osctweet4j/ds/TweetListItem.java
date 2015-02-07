@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class TweetListItem implements Serializable  {
+public final class TweetListItem implements Serializable {
 	@SerializedName("id")
 	private int mId;
 	@SerializedName("pubDate")

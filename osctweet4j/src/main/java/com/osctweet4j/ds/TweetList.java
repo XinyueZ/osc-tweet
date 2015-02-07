@@ -6,30 +6,30 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class TweetList implements Serializable  {
-	@SerializedName("notice")
-	private Notice mNotice;
-	@SerializedName("tweetlist")
-	private List<TweetListItem> mTweetListItems;
+public final class TweetList implements Serializable {
+	@SerializedName("status")
+	private int mStatus;
+	@SerializedName("tweets")
+	private List<TweetListItem> mTweets;
 
-	public TweetList(Notice notice, List<TweetListItem> tweetListItems) {
-		mNotice = notice;
-		mTweetListItems = tweetListItems;
+	public TweetList(int status, List<TweetListItem> tweets) {
+		mStatus = status;
+		mTweets = tweets;
 	}
 
-	public Notice getNotice() {
-		return mNotice;
+	public int getStatus() {
+		return mStatus;
 	}
 
-	public void setNotice(Notice notice) {
-		mNotice = notice;
+	public void setStatus(int status) {
+		mStatus = status;
 	}
 
-	public List<TweetListItem> getTweetListItems() {
-		return mTweetListItems;
+	public List<TweetListItem> getTweets() {
+		return mTweets;
 	}
 
-	public void setTweetListItems(List<TweetListItem> tweetListItems) {
-		mTweetListItems = tweetListItems;
+	public void setTweets(List<TweetListItem> tweets) {
+		mTweets = tweets;
 	}
 }
