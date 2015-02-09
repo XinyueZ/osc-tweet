@@ -1,4 +1,4 @@
-package com.osc.tweet.utils;
+package com.osc.tweet.views;
 
 import android.view.View;
 import android.view.View.OnClickListener;

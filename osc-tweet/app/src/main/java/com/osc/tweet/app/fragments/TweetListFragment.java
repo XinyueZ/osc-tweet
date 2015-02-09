@@ -73,7 +73,9 @@ public final class TweetListFragment extends BaseFragment {
 	/**
 	 * The page of tweets to load.
 	 */
-	private int mPage = 1;
+	private int mPage = DEFAULT_PAGE;
+
+	private static final int DEFAULT_PAGE= 0;
 	/**
 	 * Pull to load.
 	 */
@@ -167,7 +169,7 @@ public final class TweetListFragment extends BaseFragment {
 		mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				mPage = 1;
+				mPage = DEFAULT_PAGE;
 				getTweetList();
 			}
 		});

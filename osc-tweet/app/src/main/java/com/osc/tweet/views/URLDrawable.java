@@ -1,4 +1,4 @@
-package com.osc.tweet.utils;
+package com.osc.tweet.views;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;

@@ -38,8 +38,8 @@ import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
-import com.osc.tweet.utils.OnViewAnimatedClickedListener;
 import com.osc.tweet.utils.Prefs;
+import com.osc.tweet.views.OnViewAnimatedClickedListener;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 

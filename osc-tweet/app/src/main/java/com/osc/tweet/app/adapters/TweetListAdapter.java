@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -23,8 +24,9 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.events.ShowBigImageEvent;
-import com.osc.tweet.utils.URLImageParser;
+import com.osc.tweet.views.URLImageParser;
 import com.osctweet4j.ds.TweetListItem;
+import com.osctweet4j.utils.Utils;
 
 import de.greenrobot.event.EventBus;
 
@@ -116,6 +118,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		Calendar editTime = Calendar.getInstance();
 		try {
 			editTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item.getPubDate()));
+			editTime = Utils.transformTime(editTime, TimeZone.getTimeZone("GMT+08"), TimeZone.getDefault());
 			CharSequence elapsedSeconds = DateUtils.getRelativeTimeSpanString(editTime.getTimeInMillis(),
 					System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
 			holder.mTime.setText(elapsedSeconds);

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.osc.tweet.utils.RoundedNetworkImageView
+        <com.osc.tweet.views.RoundedNetworkImageView
             android:id="@+id/portrait_iv"
             android:layout_marginRight="@dimen/common_padding"
             android:layout_marginLeft="@dimen/common_padding"
