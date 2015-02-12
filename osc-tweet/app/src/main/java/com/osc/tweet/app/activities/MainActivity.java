@@ -10,6 +10,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
 import com.chopping.bus.CloseDrawerEvent;
@@ -31,6 +34,7 @@ import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
+import com.osc.tweet.app.adapters.MainViewPagerAdapter;
 import com.osc.tweet.app.fragments.AboutDialogFragment;
 import com.osc.tweet.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.osc.tweet.app.fragments.AppListImpFragment;
@@ -65,6 +69,20 @@ public class MainActivity extends BaseActivity {
 	 * Progress indicator.
 	 */
 	private SmoothProgressBar mSmoothProgressBar;
+
+	/**
+	 * Tabs.
+	 */
+	private PagerSlidingTabStrip mTabs;
+
+	/**
+	 * The pagers
+	 */
+	private ViewPager mViewPager;
+	/**
+	 * Adapter for {@link #mViewPager}.
+	 */
+	private MainViewPagerAdapter mPagerAdapter;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -86,8 +104,10 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link  EULAConfirmedEvent}.
 	 */
 	public void onEvent(EULAConfirmedEvent e) {
-
+		initViewPager();
 	}
+
+
 
 	/**
 	 * Handler for {@link com.osc.tweet.events.ShowingLoadingEvent}.
@@ -138,6 +158,11 @@ public class MainActivity extends BaseActivity {
 				Utils.showLongToast(getApplicationContext(), "edit");
 			}
 		});
+
+		if(Prefs.getInstance().isEULAOnceConfirmed()) {
+			initViewPager();
+			mSmoothProgressBar.setVisibility(View.VISIBLE);
+		}
 	}
 
 
@@ -323,6 +348,28 @@ public class MainActivity extends BaseActivity {
 
 	}
 
+	private void initViewPager() {
+		mViewPager = (ViewPager) findViewById(R.id.vp);
+		mPagerAdapter = new MainViewPagerAdapter(this, getSupportFragmentManager());
+		mViewPager.setAdapter(mPagerAdapter);
+		// Bind the tabs to the ViewPager
+		mTabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+		mTabs.setViewPager(mViewPager);
+		mTabs.setVisibility(View.VISIBLE);
+		mTabs.setIndicatorColorResource(R.color.common_white);
+		mTabs.setOnPageChangeListener(new OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+			}
 
+			@Override
+			public void onPageSelected(int position) {
+			}
 
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+			}
+		});
+	}
 }

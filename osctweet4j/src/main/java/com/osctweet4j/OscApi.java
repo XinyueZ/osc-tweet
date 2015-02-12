@@ -77,7 +77,7 @@ public final class OscApi {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(cxt);
 			prefs.edit().putInt(Consts.KEY_UID, login.getUser().getUid()).commit();
 			prefs.edit().putString(Consts.KEY_NAME, login.getUser().getName()).commit();
-			prefs.edit().putString(Consts.KEY_EXPIRES, login.getUser().getExpired()).commit();
+			prefs.edit().putInt(Consts.KEY_EXPIRES, login.getUser().getExpired()).commit();
 			prefs.edit().putString(Consts.KEY_SESSION, session).commit();
 			prefs.edit().putString(Consts.KEY_ACCESS_TOKEN, token).commit();
 			return login;
@@ -95,17 +95,21 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static TweetList tweetList(FragmentActivity activity, final int page) throws IOException, OscTweetException {
+	public static TweetList tweetList(FragmentActivity activity, int page, boolean myTweets) throws IOException,
+			OscTweetException {
 		TweetList ret = null;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getApplication());
 		String session = prefs.getString(Consts.KEY_SESSION, null);
 		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+		int uid = prefs.getInt(Consts.KEY_UID, 0);
 		if (!TextUtils.isEmpty(session) && !TextUtils.isEmpty(token)) {
 			//Get session and set to cookie returning to server.
 			String sessionInCookie = Consts.KEY_SESSION + "=" + session;
-			String tokenInCookie =  Consts.KEY_ACCESS_TOKEN + "=" + token;
-			String url = String.format(Consts.TWEET_LIST_URL, page);
-			Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie).build();
+			String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+			String url = myTweets ? String.format(Consts.TWEET_MY_LIST_URL, uid, page) : String.format(
+					Consts.TWEET_LIST_URL, page);
+			Request request = new Request.Builder().url(url).get().header("Cookie",
+					sessionInCookie + ";" + tokenInCookie).build();
 			Response response = new OkHttpClient().newCall(request).execute();
 			int responseCode = response.code();
 			if (responseCode >= 300) {
@@ -115,7 +119,7 @@ public final class OscApi {
 				ret = sGson.fromJson(response.body().string(), TweetList.class);
 			}
 		} else {
-			LoginDialog.newInstance(activity.getApplication()).show(activity.getSupportFragmentManager(), null);
+			LoginDialog.newInstance(activity).show(activity.getSupportFragmentManager(), null);
 		}
 		return ret;
 	}

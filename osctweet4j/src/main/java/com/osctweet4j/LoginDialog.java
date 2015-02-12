@@ -1,6 +1,9 @@
 package com.osctweet4j;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -9,6 +12,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,20 +23,28 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.hardware.display.DisplayManagerCompat;
 import android.support.v4.os.AsyncTaskCompat;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.FrameLayout.LayoutParams;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.Toast;
 
 import com.osctweet4j.ds.Login;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -43,7 +56,11 @@ import javax.crypto.NoSuchPaddingException;
  * @author Xinyue Zhao
  */
 public final class LoginDialog extends DialogFragment {
-	private static final String TAG = LoginDialog.class.getName();
+	private static final String LOGO_COLOR = "#f5f5f5";
+	private static final String LOGO_URL = "https://dl.dropboxusercontent.com/s/mzxis3wzbg14dn3/oschina.png";
+	private static final String LOGIN_BUTTON_URL = "https://dl.dropboxusercontent.com/s/wstg4ilxl0i9xb4/ic_login.png";
+	private static final String REGISTER_BUTTON_URL =
+			"https://dl.dropboxusercontent.com/s/r735v70lnrslq29/ic_register.png";
 	/**
 	 * Root layout.
 	 */
@@ -80,7 +97,6 @@ public final class LoginDialog extends DialogFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setCancelable(false);
 		setStyle(DialogFragment.STYLE_NO_TITLE, R.style.Theme_AppCompat_Light_Dialog);
 	}
 
@@ -95,6 +111,7 @@ public final class LoginDialog extends DialogFragment {
 			@Nullable Bundle savedInstanceState) {
 		container = new FrameLayout(getActivity());
 		mRootVg = container;
+		mRootVg.setBackgroundColor(Color.parseColor(LOGO_COLOR));
 		return container;
 	}
 
@@ -103,7 +120,38 @@ public final class LoginDialog extends DialogFragment {
 		super.onViewCreated(view, savedInstanceState);
 		LinearLayout container = new LinearLayout(getActivity());
 		container.setOrientation(LinearLayout.VERTICAL);
-		container.setBackgroundColor(Color.GREEN);
+
+		ImageView oscLogoIv = new ImageView(getActivity());
+		container.addView(oscLogoIv);
+		oscLogoIv.setContentDescription("OS China dot NET");
+		((LayoutParams) oscLogoIv.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
+
+		AsyncTaskCompat.executeParallel(new AsyncTask<ImageView, Bitmap, Bitmap>() {
+			private WeakReference<ImageView> mLogoIvRef;
+
+			@Override
+			protected Bitmap doInBackground(ImageView... params) {
+				mLogoIvRef = new WeakReference<>(params[0]);
+				Request request = new Request.Builder().url(LOGO_URL).get().build();
+				Bitmap bmp = null;
+				try {
+					Response response = new OkHttpClient().newCall(request).execute();
+					InputStream is = new BufferedInputStream(response.body().byteStream());
+					bmp = BitmapFactory.decodeStream(is);
+					is.close();
+				} catch (IOException e) {
+				}
+				return bmp;
+			}
+
+			@Override
+			protected void onPostExecute(Bitmap bmp) {
+				super.onPostExecute(bmp);
+				if (bmp != null && mLogoIvRef.get() != null) {
+					mLogoIvRef.get().setImageBitmap(bmp);
+				}
+			}
+		}, oscLogoIv);
 
 		mNameEt = new EditText(getActivity());
 		mNameEt.setHint("Account");
@@ -112,21 +160,68 @@ public final class LoginDialog extends DialogFragment {
 		mPasswordEt = new EditText(getActivity());
 		mPasswordEt.setHint("Password");
 		mPasswordEt.setText("474006");
-		mPasswordEt.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
+		mPasswordEt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+		mPasswordEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
 		mPasswordEt.setTextColor(Color.BLACK);
 
 		container.addView(mNameEt);
 		container.addView(mPasswordEt);
 
-		Button loginBtn = new Button(getActivity());
-		loginBtn.setText("Login");
-		Button regBtn = new Button(getActivity());
-		regBtn.setText("Register");
+		ImageButton loginBtn = new ImageButton(getActivity());
+		loginBtn.setContentDescription("Login");
+		loginBtn.setBackgroundColor(Color.TRANSPARENT);
+		ImageButton regBtn = new ImageButton(getActivity());
+		regBtn.setContentDescription("Register");
+		regBtn.setBackgroundColor(Color.TRANSPARENT);
 		LinearLayout buttons = new LinearLayout(getActivity());
 		buttons.setOrientation(LinearLayout.HORIZONTAL);
 		buttons.addView(loginBtn);
 		buttons.addView(regBtn);
-		container.addView(buttons);
+		container.addView(buttons, new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT));
+		((LinearLayout.LayoutParams) buttons.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
+
+		AsyncTaskCompat.executeParallel(new AsyncTask<ImageButton, Bitmap[], Bitmap[]>() {
+			private WeakReference<ImageButton> mLoginBtnRef;
+			private WeakReference<ImageButton> mRegBtnRef;
+
+			@Override
+			protected Bitmap[] doInBackground(ImageButton... params) {
+				mLoginBtnRef = new WeakReference<>(params[0]);
+				mRegBtnRef = new WeakReference<>(params[1]);
+				Request request = new Request.Builder().url(LOGIN_BUTTON_URL).get().build();
+				Bitmap[] bmp = new Bitmap[2];
+				try {
+					Response response = new OkHttpClient().newCall(request).execute();
+					InputStream is = new BufferedInputStream(response.body().byteStream());
+					bmp[0] = BitmapFactory.decodeStream(is);
+					is.close();
+				} catch (IOException e) {
+				}
+
+				request = new Request.Builder().url(REGISTER_BUTTON_URL).get().build();
+				try {
+					Response response = new OkHttpClient().newCall(request).execute();
+					InputStream is = new BufferedInputStream(response.body().byteStream());
+					bmp[1] = BitmapFactory.decodeStream(is);
+					is.close();
+				} catch (IOException e) {
+				}
+				return bmp;
+			}
+
+			@Override
+			protected void onPostExecute(Bitmap[] bmp) {
+				super.onPostExecute(bmp);
+				if (bmp != null && mLoginBtnRef.get() != null) {
+					mLoginBtnRef.get().setImageBitmap(bmp[0]);
+				}
+
+				if (bmp != null && mRegBtnRef.get() != null) {
+					mRegBtnRef.get().setImageBitmap(bmp[1]);
+				}
+			}
+		}, loginBtn, regBtn);
 
 		loginBtn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -169,7 +264,8 @@ public final class LoginDialog extends DialogFragment {
 						super.onPostExecute(login);
 						mPb.dismiss();
 						if (login != null) {
-							dismiss();
+							Toast.makeText(getActivity(), "Welcome!", Toast.LENGTH_SHORT).show();
+							LoginDialog.this.dismissAllowingStateLoss();
 							mLocalBroadcastManager.sendBroadcast(new Intent(Consts.ACTION_AUTH_DONE));
 						} else {
 							//TODO error-handling for login.
@@ -183,7 +279,7 @@ public final class LoginDialog extends DialogFragment {
 
 
 		ScreenSize screenSize = getScreenSize(getActivity());
-		mRootVg.addView(container, new LayoutParams(screenSize.Width, screenSize.Height));
+		mRootVg.addView(container, new LayoutParams(screenSize.Width, ViewGroup.LayoutParams.WRAP_CONTENT));
 	}
 
 	/**

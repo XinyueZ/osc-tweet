@@ -40,6 +40,7 @@ import de.greenrobot.event.EventBus;
  * A list shows all tweets.
  */
 public final class TweetListFragment extends BaseFragment {
+	private static final String EXTRAS_MY_TWEETS = "com.osc.tweet.app.fragments.MY_TWEETS";
 	/**
 	 * Main layout for this component.
 	 */
@@ -75,7 +76,7 @@ public final class TweetListFragment extends BaseFragment {
 	 */
 	private int mPage = DEFAULT_PAGE;
 
-	private static final int DEFAULT_PAGE= 1;
+	private static final int DEFAULT_PAGE = 1;
 	/**
 	 * Pull to load.
 	 */
@@ -84,16 +85,20 @@ public final class TweetListFragment extends BaseFragment {
 	 * Some fun indicator when data not loaded.
 	 */
 	private View mNotLoadedIndicatorV;
+
 	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
 	 *
 	 * @param context
 	 * 		{@link android.content.Context}.
+	 * @param myTweets
 	 *
 	 * @return An instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
 	 */
-	public static Fragment newInstance(Context context) {
-		return TweetListFragment.instantiate(context, TweetListFragment.class.getName());
+	public static Fragment newInstance(Context context, boolean myTweets) {
+		Bundle args = new Bundle();
+		args.putBoolean(EXTRAS_MY_TWEETS, myTweets);
+		return TweetListFragment.instantiate(context, TweetListFragment.class.getName(), args);
 	}
 
 	@Override
@@ -118,7 +123,7 @@ public final class TweetListFragment extends BaseFragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_top:
-			if(mAdp != null && mAdp.getItemCount() > 0 ) {
+			if (mAdp != null && mAdp.getItemCount() > 0) {
 				mLayoutManager.scrollToPositionWithOffset(0, 0);
 				Utils.showShortToast(App.Instance, R.string.msg_move_to_top);
 			}
@@ -132,7 +137,6 @@ public final class TweetListFragment extends BaseFragment {
 	private int mTotalItemCount;
 	private boolean mLoading = true;
 	LinearLayoutManager mLayoutManager;
-
 
 
 	@Override
@@ -154,7 +158,7 @@ public final class TweetListFragment extends BaseFragment {
 				mPastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
 				if (mLoading) {
-					if ( (mVisibleItemCount+mPastVisibleItems) >= mTotalItemCount) {
+					if ((mVisibleItemCount + mPastVisibleItems) >= mTotalItemCount) {
 						mLoading = false;
 						showLoadingIndicator();
 						getMoreTweetList();
@@ -164,8 +168,7 @@ public final class TweetListFragment extends BaseFragment {
 		});
 
 		mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.content_srl);
-		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_1, R.color.color_2,
-				R.color.color_3, R.color.color_4);
+		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_1, R.color.color_2, R.color.color_3, R.color.color_4);
 		mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
@@ -200,7 +203,7 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			protected TweetList doInBackground(Object... params) {
 				try {
-					return OscApi.tweetList(getActivity(), mPage);
+					return OscApi.tweetList(getActivity(), mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false));
 				} catch (IOException e) {
 					return null;
 				} catch (OscTweetException e) {
@@ -227,7 +230,7 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			protected TweetList doInBackground(Object... params) {
 				try {
-					return OscApi.tweetList(getActivity(), mPage);
+					return OscApi.tweetList(getActivity(), mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false));
 				} catch (IOException e) {
 					return null;
 				} catch (OscTweetException e) {

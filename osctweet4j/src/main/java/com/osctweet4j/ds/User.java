@@ -11,10 +11,10 @@ public final class User implements Serializable{
 	@SerializedName("uid")
 	private int mUid;
 	@SerializedName("expired")
-	private String mExpired;
+	private int mExpired;
 
 
-	public User(String name, int uid, String expired) {
+	public User(String name, int uid, int expired) {
 		mName = name;
 		mUid = uid;
 		mExpired = expired;
@@ -36,11 +36,11 @@ public final class User implements Serializable{
 		mUid = uid;
 	}
 
-	public String getExpired() {
+	public int getExpired() {
 		return mExpired;
 	}
 
-	public void setExpired(String expired) {
+	public void setExpired(int expired) {
 		mExpired = expired;
 	}
 }
