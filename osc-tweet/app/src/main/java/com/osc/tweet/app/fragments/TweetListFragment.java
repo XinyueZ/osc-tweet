@@ -75,7 +75,7 @@ public final class TweetListFragment extends BaseFragment {
 	 */
 	private int mPage = DEFAULT_PAGE;
 
-	private static final int DEFAULT_PAGE= 0;
+	private static final int DEFAULT_PAGE= 1;
 	/**
 	 * Pull to load.
 	 */

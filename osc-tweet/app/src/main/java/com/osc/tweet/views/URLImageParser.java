@@ -2,7 +2,6 @@ package com.osc.tweet.views;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -11,10 +10,9 @@ import android.text.Html.ImageGetter;
 import android.view.View;
 
 import com.osc.tweet.R;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 /**
  * See. <a href="http://stackoverflow.com/questions/15617210/android-html-fromhtml-with-imagesF">Stackoverflow</a>
@@ -93,11 +91,13 @@ public final class URLImageParser implements ImageGetter {
 			}
 		}
 
-		private InputStream fetch(String urlString) throws MalformedURLException, IOException {
-			DefaultHttpClient httpClient = new DefaultHttpClient();
-			HttpGet request = new HttpGet(urlString);
-			HttpResponse response = httpClient.execute(request);
-			return response.getEntity().getContent();
+		private InputStream fetch(String urlString) throws   IOException {
+
+
+			Request request = new Request.Builder().url(urlString).get().build();
+			Response response = new OkHttpClient().newCall(request).execute();
+
+			return response.body().byteStream();
 		}
 	}
 }
