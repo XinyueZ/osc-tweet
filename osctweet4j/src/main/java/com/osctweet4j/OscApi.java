@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.osctweet4j.ds.Login;
 import com.osctweet4j.ds.TweetList;
 import com.osctweet4j.utils.AuthUtil;
+import com.osctweet4j.utils.Utils;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -119,8 +120,11 @@ public final class OscApi {
 				ret = sGson.fromJson(response.body().string(), TweetList.class);
 			}
 		} else {
-			LoginDialog.newInstance(activity).show(activity.getSupportFragmentManager(), null);
+			Utils.showDialogFragment(activity, LoginDialog.newInstance(activity.getApplicationContext()), null);
 		}
 		return ret;
 	}
+
+
+
 }

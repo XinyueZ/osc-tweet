@@ -33,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -42,6 +43,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
 
 import com.osctweet4j.ds.Login;
+import com.osctweet4j.utils.Utils;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -118,11 +120,11 @@ public final class LoginDialog extends DialogFragment {
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		LinearLayout container = new LinearLayout(getActivity());
-		container.setOrientation(LinearLayout.VERTICAL);
+		LinearLayout editors = new LinearLayout(getActivity());
+		editors.setOrientation(LinearLayout.VERTICAL);
 
 		ImageView oscLogoIv = new ImageView(getActivity());
-		container.addView(oscLogoIv);
+		editors.addView(oscLogoIv);
 		oscLogoIv.setContentDescription("OS China dot NET");
 		((LayoutParams) oscLogoIv.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
 
@@ -164,8 +166,8 @@ public final class LoginDialog extends DialogFragment {
 		mPasswordEt.setTransformationMethod(PasswordTransformationMethod.getInstance());
 		mPasswordEt.setTextColor(Color.BLACK);
 
-		container.addView(mNameEt);
-		container.addView(mPasswordEt);
+		editors.addView(mNameEt);
+		editors.addView(mPasswordEt);
 
 		ImageButton loginBtn = new ImageButton(getActivity());
 		loginBtn.setContentDescription("Login");
@@ -177,7 +179,7 @@ public final class LoginDialog extends DialogFragment {
 		buttons.setOrientation(LinearLayout.HORIZONTAL);
 		buttons.addView(loginBtn);
 		buttons.addView(regBtn);
-		container.addView(buttons, new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+		editors.addView(buttons, new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT));
 		((LinearLayout.LayoutParams) buttons.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
 
@@ -279,7 +281,12 @@ public final class LoginDialog extends DialogFragment {
 
 
 		ScreenSize screenSize = getScreenSize(getActivity());
-		mRootVg.addView(container, new LayoutParams(screenSize.Width, ViewGroup.LayoutParams.WRAP_CONTENT));
+		mRootVg.addView(editors, new LayoutParams(screenSize.Width, ViewGroup.LayoutParams.WRAP_CONTENT));
+		MarginLayoutParams ml = ((MarginLayoutParams)editors.getLayoutParams());
+		int margin = (int)Utils.convertPixelsToDp(getActivity(), 16f);
+		ml.rightMargin = margin;
+		ml.leftMargin = margin;
+		ml.topMargin = margin;
 	}
 
 	/**
