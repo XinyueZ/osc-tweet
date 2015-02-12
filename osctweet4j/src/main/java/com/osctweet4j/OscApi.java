@@ -1,6 +1,9 @@
 package com.osctweet4j;
 
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,9 +14,15 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.osctweet4j.ds.Login;
 import com.osctweet4j.ds.TweetList;
+import com.osctweet4j.utils.AuthUtil;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * API methods
@@ -28,16 +37,23 @@ public final class OscApi {
 
 	/**
 	 * Login.
+	 *
 	 * @param cxt
 	 * @param account
 	 * @param password
+	 *
 	 * @return
+	 *
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static Login login(Context cxt, String account, String password) throws IOException, OscTweetException {
-		String url = String.format(Consts.LOGIN_URL, account, password);
-		Request request = new Request.Builder().url(url).get().build();
+	public static Login login(Context cxt, String account, String password) throws NoSuchPaddingException,
+			InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException,
+			InvalidAlgorithmParameterException, IOException, OscTweetException {
+		String info = String.format(Consts.LOGIN_PARAMS, account, password);
+		String pubBody = AuthUtil.encrypt(info);
+		RequestBody body = RequestBody.create(Consts.CONTENT_TYPE, pubBody);
+		Request request = new Request.Builder().url(Consts.LOGIN_URL).post(body).build();
 		OkHttpClient client = new OkHttpClient();
 		Response response = client.newCall(request).execute();
 
@@ -47,8 +63,15 @@ public final class OscApi {
 			throw new OscTweetException();
 		} else {
 			String cookie = response.header("Set-Cookie");
-			String[] sp = cookie.split("=");
-			String session = sp[1];
+			if (TextUtils.isEmpty(cookie)) {
+				throw new OscTweetException();
+			}
+
+			String[] sessionAndToken = cookie.split(";");
+			String sessionPair = sessionAndToken[0];
+			String tokenPair = sessionAndToken[1];
+			String session = (sessionPair.split("="))[1];
+			String token = (tokenPair.split("="))[1];
 			Login login = sGson.fromJson(response.body().string(), Login.class);
 
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(cxt);
@@ -56,27 +79,33 @@ public final class OscApi {
 			prefs.edit().putString(Consts.KEY_NAME, login.getUser().getName()).commit();
 			prefs.edit().putString(Consts.KEY_EXPIRES, login.getUser().getExpired()).commit();
 			prefs.edit().putString(Consts.KEY_SESSION, session).commit();
+			prefs.edit().putString(Consts.KEY_ACCESS_TOKEN, token).commit();
 			return login;
 		}
 	}
 
 	/**
 	 * Get list of all tweets.
+	 *
 	 * @param activity
 	 * @param page
+	 *
 	 * @return
+	 *
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
 	public static TweetList tweetList(FragmentActivity activity, final int page) throws IOException, OscTweetException {
 		TweetList ret = null;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getApplication());
-		String token = prefs.getString(Consts.KEY_SESSION, null);
-		if (!TextUtils.isEmpty(token)) {
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+		if (!TextUtils.isEmpty(session) && !TextUtils.isEmpty(token)) {
 			//Get session and set to cookie returning to server.
-			String sessionInCookie = Consts.OSCID + "=" + prefs.getString(Consts.KEY_SESSION, null);
+			String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+			String tokenInCookie =  Consts.KEY_ACCESS_TOKEN + "=" + token;
 			String url = String.format(Consts.TWEET_LIST_URL, page);
-			Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie).build();
+			Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie).build();
 			Response response = new OkHttpClient().newCall(request).execute();
 			int responseCode = response.code();
 			if (responseCode >= 300) {

@@ -1,5 +1,7 @@
 package com.osctweet4j;
 
+import com.squareup.okhttp.MediaType;
+
 /**
  * Constrains.
  *
@@ -7,13 +9,14 @@ package com.osctweet4j;
  */
 public final class Consts {
 	/**
+	 * Body type when http.
+	 */
+	static final MediaType CONTENT_TYPE = MediaType.parse("application/x-www-form-urlencoded");
+
+	/**
 	 * Broadcast Action: The authentication is done.
 	 */
 	public static final String ACTION_AUTH_DONE = "com.osctweet4j.action.AUTH_DONE";
-	/**
-	 * Cookie key when session returns.
-	 */
-	static  final  String OSCID = "oscid";
 	/**
 	 * Host of osc.
 	 */
@@ -29,16 +32,24 @@ public final class Consts {
 	/**
 	 * Key for storage session
 	 */
-	static final String KEY_SESSION = "session";
+	static final String KEY_SESSION = "oscid";
+	/**
+	 * Key for storage access-token
+	 */
+	static final String KEY_ACCESS_TOKEN = "access_token";
 	/**
 	 * Key for storage for expires.
 	 */
 	static final String KEY_EXPIRES = "expires";
 
 	/**
+	 * Login data format.
+	 */
+	static final String LOGIN_PARAMS = "u=%s&pw=%s";
+	/**
 	 * Login
 	 */
-	static final String LOGIN_URL = OSC_HOST + "login?u=%s&pw=%s";
+	static final String LOGIN_URL = OSC_HOST + "login";
 	/**
 	 * Publish tweet.
 	 */

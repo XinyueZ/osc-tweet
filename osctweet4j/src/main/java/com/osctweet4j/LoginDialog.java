@@ -1,6 +1,9 @@
 package com.osctweet4j;
 
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -30,6 +33,10 @@ import android.widget.LinearLayout;
 
 import com.osctweet4j.ds.Login;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 /**
  * A login dialog.
  *
@@ -48,7 +55,7 @@ public final class LoginDialog extends DialogFragment {
 	/**
 	 * Password.
 	 */
-	private EditText mPassword;
+	private EditText mPasswordEt;
 	/**
 	 * Progress indicator.
 	 */
@@ -100,14 +107,16 @@ public final class LoginDialog extends DialogFragment {
 
 		mNameEt = new EditText(getActivity());
 		mNameEt.setHint("Account");
+		mNameEt.setText("shikeai20121015@gmail.com");
 		mNameEt.setTextColor(Color.BLACK);
-		mPassword = new EditText(getActivity());
-		mPassword.setHint("Password");
-		mPassword.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
-		mPassword.setTextColor(Color.BLACK);
+		mPasswordEt = new EditText(getActivity());
+		mPasswordEt.setHint("Password");
+		mPasswordEt.setText("474006");
+		mPasswordEt.setInputType(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
+		mPasswordEt.setTextColor(Color.BLACK);
 
 		container.addView(mNameEt);
-		container.addView(mPassword);
+		container.addView(mPasswordEt);
 
 		Button loginBtn = new Button(getActivity());
 		loginBtn.setText("Login");
@@ -131,25 +140,41 @@ public final class LoginDialog extends DialogFragment {
 
 					@Override
 					protected Login doInBackground(Object... params) {
+
 						try {
 							return OscApi.login(getActivity().getApplicationContext(), mNameEt.getText().toString(),
-									mPassword.getText().toString());
+									mPasswordEt.getText().toString());
+						} catch (BadPaddingException e) {
+							e.printStackTrace();
+						} catch (InvalidKeyException e) {
+							e.printStackTrace();
 						} catch (IOException e) {
-							return null;
+							e.printStackTrace();
+						} catch (IllegalBlockSizeException e) {
+							e.printStackTrace();
+						} catch (NoSuchAlgorithmException e) {
+							e.printStackTrace();
+						} catch (NoSuchPaddingException e) {
+							e.printStackTrace();
+						} catch (InvalidAlgorithmParameterException e) {
+							e.printStackTrace();
 						} catch (OscTweetException e) {
-							return null;
+							e.printStackTrace();
 						}
+						return null;
 					}
 
 					@Override
 					protected void onPostExecute(Login login) {
 						super.onPostExecute(login);
+						mPb.dismiss();
 						if (login != null) {
-							mPb.dismiss();
 							dismiss();
 							mLocalBroadcastManager.sendBroadcast(new Intent(Consts.ACTION_AUTH_DONE));
 						} else {
 							//TODO error-handling for login.
+							mNameEt.setText("");
+							mPasswordEt.setText("");
 						}
 					}
 				});
