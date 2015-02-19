@@ -2,13 +2,17 @@ package com.osc.tweet.app.activities;
 
 import android.app.AlertDialog.Builder;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -41,10 +45,13 @@ import com.osc.tweet.app.fragments.AppListImpFragment;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
+import com.osc.tweet.events.ShowTweetListEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
+import com.osc4j.Consts;
 
+import de.greenrobot.event.EventBus;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 
@@ -83,6 +90,26 @@ public class MainActivity extends BaseActivity {
 	 * Adapter for {@link #mViewPager}.
 	 */
 	private MainViewPagerAdapter mPagerAdapter;
+
+	/**
+	 * Broadcast-manager.
+	 */
+	private LocalBroadcastManager mLocalBroadcastManager;
+	/**
+	 * Broadcast-receiver for event after authentication is done.
+	 */
+	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			EventBus.getDefault().post(new ShowTweetListEvent());
+		}
+	};
+	/**
+	 * Filter for {@link #mBroadcastReceiver}.
+	 */
+	private IntentFilter mIntentFilter = new IntentFilter(Consts.ACTION_AUTH_DONE);
+
+
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -106,7 +133,6 @@ public class MainActivity extends BaseActivity {
 	public void onEvent(EULAConfirmedEvent e) {
 		initViewPager();
 	}
-
 
 
 	/**
@@ -159,12 +185,21 @@ public class MainActivity extends BaseActivity {
 			}
 		});
 
-		if(Prefs.getInstance().isEULAOnceConfirmed()) {
+		if (Prefs.getInstance().isEULAOnceConfirmed()) {
 			initViewPager();
 			mSmoothProgressBar.setVisibility(View.VISIBLE);
 		}
+
+
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(getApplication());
+		mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, mIntentFilter);
 	}
 
+	@Override
+	protected void onDestroy() {
+		mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
+		super.onDestroy();
+	}
 
 	@Override
 	public void onResume() {

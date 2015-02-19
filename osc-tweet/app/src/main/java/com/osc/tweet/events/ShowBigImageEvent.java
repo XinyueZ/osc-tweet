@@ -1,7 +1,7 @@
 package com.osc.tweet.events;
 
 
-import com.osc4j.ds.TweetListItem;
+import com.osc4j.ds.tweet.TweetListItem;
 
 public final class ShowBigImageEvent {
 	private TweetListItem mTweetListItem;

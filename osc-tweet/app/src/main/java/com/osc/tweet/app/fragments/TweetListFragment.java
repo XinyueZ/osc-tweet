@@ -2,15 +2,10 @@ package com.osc.tweet.app.fragments;
 
 import java.io.IOException;
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -27,12 +22,12 @@ import com.chopping.utils.Utils;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.TweetListAdapter;
+import com.osc.tweet.events.ShowTweetListEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
-import com.osc4j.Consts;
 import com.osc4j.OscApi;
 import com.osc4j.OscTweetException;
-import com.osc4j.ds.TweetList;
+import com.osc4j.ds.tweet.TweetList;
 
 import de.greenrobot.event.EventBus;
 
@@ -54,24 +49,7 @@ public final class TweetListFragment extends BaseFragment {
 	 * List container for showing all tweets.
 	 */
 	private RecyclerView mRv;
-	/**
-	 * Broadcast-manager.
-	 */
-	private LocalBroadcastManager mLocalBroadcastManager;
-	/**
-	 * Broadcast-receiver for event after authentication is done.
-	 */
-	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			showLoadingIndicator();
-			getTweetList();
-		}
-	};
-	/**
-	 * Filter for {@link #mBroadcastReceiver}.
-	 */
-	private IntentFilter mIntentFilter = new IntentFilter(Consts.ACTION_AUTH_DONE);
+
 	/**
 	 * The page of tweets to load.
 	 */
@@ -86,6 +64,24 @@ public final class TweetListFragment extends BaseFragment {
 	 * Some fun indicator when data not loaded.
 	 */
 	private View mNotLoadedIndicatorV;
+
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
+
+	/**
+	 * Handler for {@link com.osc.tweet.events.ShowTweetListEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.ShowTweetListEvent}.
+	 */
+	public void onEvent(ShowTweetListEvent e) {
+		showLoadingIndicator();
+		getTweetList();
+	}
+
+	//------------------------------------------------
+
 
 	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
@@ -107,18 +103,6 @@ public final class TweetListFragment extends BaseFragment {
 		return TweetListFragment.instantiate(context, TweetListFragment.class.getName(), args);
 	}
 
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		mLocalBroadcastManager = LocalBroadcastManager.getInstance(activity.getApplication());
-		mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, mIntentFilter);
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

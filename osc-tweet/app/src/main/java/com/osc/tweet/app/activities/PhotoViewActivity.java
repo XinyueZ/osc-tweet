@@ -23,7 +23,7 @@ import com.chopping.net.TaskHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.utils.Prefs;
-import com.osc4j.ds.TweetListItem;
+import com.osc4j.ds.tweet.TweetListItem;
 
 /**
  * Show big image as photo.
