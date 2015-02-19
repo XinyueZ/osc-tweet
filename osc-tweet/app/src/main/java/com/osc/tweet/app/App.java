@@ -1,3 +1,4 @@
+
 /*
                    _ooOoo_
                   o8888888o
@@ -18,7 +19,7 @@
 ======`-.____`-.___\_____/___.-`____.-'======
                    `=---='
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-         佛祖保佑       永无BUG
+         佛祖保佑       永无BUG, Never BUG.
 */
 //          佛曰:
 //                  写字楼里写字间，写字间里程序员；
@@ -28,12 +29,12 @@
 //                  但愿老死电脑间，不愿鞠躬老板前；
 //                  奔驰宝马贵者趣，公交自行程序员。
 //                  别人笑我忒疯癫，我笑自己命太贱。
-
 package com.osc.tweet.app;
 
 import android.app.Application;
 
 import com.chopping.net.TaskHelper;
+import com.facebook.stetho.Stetho;
 import com.osc.tweet.utils.Prefs;
 
 
@@ -57,11 +58,8 @@ public final class App extends Application {
 		Prefs.createInstance(this);
 		TaskHelper.init(getApplicationContext());
 
-//		Stetho.initialize(
-//				Stetho.newInitializerBuilder(this)
-//						.enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-//						.enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-//						.build());
+		Stetho.initialize(Stetho.newInitializerBuilder(this).enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+						.enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
 	}
 
 }
