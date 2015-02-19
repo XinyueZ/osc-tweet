@@ -17,7 +17,8 @@
     <string name="btn_retry">再尝试</string>
 
     <string name="lbl_all">最新</string>
-    <string name="lbl_my">我的动弹</string>
+    <string name="lbl_hotspot">热门</string>
+    <string name="lbl_my">我的</string>
     <string name="lbl_play_service">本应用需要谷歌服务，必须先安装然后使用。</string>
     <string name="lbl_share_app_title">一个不错的应用: %s</string>
     <string name="lbl_share_app_content">你好！\n\n\u00A0\u00A0\u00A0\u00A0使用 开源动弹 参与oschina.net社区。\n\n下载:\nhttps://play.google.com/store/apps/details?id=com.osc.tweet</string>

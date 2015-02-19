@@ -350,6 +350,7 @@ public class MainActivity extends BaseActivity {
 
 	private void initViewPager() {
 		mViewPager = (ViewPager) findViewById(R.id.vp);
+		mViewPager.setOffscreenPageLimit(2);
 		mPagerAdapter = new MainViewPagerAdapter(this, getSupportFragmentManager());
 		mViewPager.setAdapter(mPagerAdapter);
 		// Bind the tabs to the ViewPager

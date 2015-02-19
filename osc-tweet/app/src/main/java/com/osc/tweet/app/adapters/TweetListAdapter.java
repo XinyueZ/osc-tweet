@@ -25,8 +25,8 @@ import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.views.URLImageParser;
-import com.osctweet4j.ds.TweetListItem;
-import com.osctweet4j.utils.Utils;
+import com.osc4j.ds.TweetListItem;
+import com.osc4j.utils.Utils;
 
 import de.greenrobot.event.EventBus;
 

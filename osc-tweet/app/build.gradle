@@ -31,7 +31,7 @@ dependencies {
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile project(':volley_cz')
     compile project(':ChoppingBootstrap')
-    compile project(':osctweet4j')
+    compile project(':osc4j')
 }
 
 

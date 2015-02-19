@@ -1,4 +1,4 @@
-include ':app', ':osctweet4j', ':ChoppingBootstrap', ':volley_cz'
+include ':app', ':osc4j', ':ChoppingBootstrap', ':volley_cz'
 project(':ChoppingBootstrap').projectDir = new File('submodules/ChoppingBootstrap')
 project(':volley_cz').projectDir = new File('submodules/ChoppingBootstrap/submodules/volley_cz')
-project(':osctweet4j').projectDir = new File('../osctweet4j')
+project(':osc4j').projectDir = new File('../osc4j')

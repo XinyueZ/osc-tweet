@@ -18,7 +18,9 @@
     <string name="btn_retry">Retry</string>
 
     <string name="lbl_all">All</string>
-    <string name="lbl_my">My Tweets</string>
+    <string name="lbl_hotspot">HOT</string>
+    <string name="lbl_my">Mine</string>
+
     <string name="lbl_play_service">This application needs Google Play Service, you must install it first.</string>
     <string name="lbl_share_app_title">A good App you should have: %s</string>
     <string name="lbl_share_app_content">Hello!\n\n\u00A0\u00A0\u00A0\u00A0Use osc-Tweet and join oschina.net?\n\nDownload:\n

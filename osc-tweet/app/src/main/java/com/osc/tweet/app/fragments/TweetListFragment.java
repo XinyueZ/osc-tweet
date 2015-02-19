@@ -29,10 +29,10 @@ import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.TweetListAdapter;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
-import com.osctweet4j.Consts;
-import com.osctweet4j.OscApi;
-import com.osctweet4j.OscTweetException;
-import com.osctweet4j.ds.TweetList;
+import com.osc4j.Consts;
+import com.osc4j.OscApi;
+import com.osc4j.OscTweetException;
+import com.osc4j.ds.TweetList;
 
 import de.greenrobot.event.EventBus;
 
@@ -41,6 +41,7 @@ import de.greenrobot.event.EventBus;
  */
 public final class TweetListFragment extends BaseFragment {
 	private static final String EXTRAS_MY_TWEETS = "com.osc.tweet.app.fragments.MY_TWEETS";
+	private static final String EXTRAS_HOTSPOT = "com.osc.tweet.app.fragments.HOTSPOT";
 	/**
 	 * Main layout for this component.
 	 */
@@ -92,12 +93,17 @@ public final class TweetListFragment extends BaseFragment {
 	 * @param context
 	 * 		{@link android.content.Context}.
 	 * @param myTweets
+	 * 		If <code>true</code> then show all my tweets, it works only when <code>hotspot</code> is <code>false</code>.
+	 * @param hotspot
+	 * 		If <code>true</code> then show all hotspot and ignore value of <code>myTweets</code>.
+	 * @param myTweets
 	 *
 	 * @return An instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
 	 */
-	public static Fragment newInstance(Context context, boolean myTweets) {
+	public static Fragment newInstance(Context context, boolean myTweets, boolean hotspot) {
 		Bundle args = new Bundle();
 		args.putBoolean(EXTRAS_MY_TWEETS, myTweets);
+		args.putBoolean(EXTRAS_HOTSPOT, hotspot);
 		return TweetListFragment.instantiate(context, TweetListFragment.class.getName(), args);
 	}
 
@@ -203,7 +209,8 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			protected TweetList doInBackground(Object... params) {
 				try {
-					return OscApi.tweetList(getActivity(), mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false));
+					return OscApi.tweetList(getActivity(), mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
+							getArguments().getBoolean(EXTRAS_HOTSPOT, false));
 				} catch (IOException e) {
 					return null;
 				} catch (OscTweetException e) {
@@ -230,7 +237,8 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			protected TweetList doInBackground(Object... params) {
 				try {
-					return OscApi.tweetList(getActivity(), mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false));
+					return OscApi.tweetList(getActivity(), mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
+							getArguments().getBoolean(EXTRAS_HOTSPOT, false));
 				} catch (IOException e) {
 					return null;
 				} catch (OscTweetException e) {
