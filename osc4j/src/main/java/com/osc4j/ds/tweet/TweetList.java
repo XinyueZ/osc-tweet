@@ -1,4 +1,4 @@
-package com.osc4j.ds;
+package com.osc4j.ds.tweet;
 
 
 import java.io.Serializable;
@@ -21,15 +21,9 @@ public final class TweetList implements Serializable {
 		return mStatus;
 	}
 
-	public void setStatus(int status) {
-		mStatus = status;
-	}
 
 	public List<TweetListItem> getTweets() {
 		return mTweets;
 	}
 
-	public void setTweets(List<TweetListItem> tweets) {
-		mTweets = tweets;
-	}
 }

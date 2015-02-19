@@ -66,4 +66,8 @@ public final class Consts {
 	 * Get my tweet-lists
 	 */
 	static final String TWEET_HOTSPOT_LIST_URL = OSC_HOST + "hotspotTweetList?page=%d";
+	/**
+	 * Friends-list
+	 */
+	static final String FRIENDS_URL = OSC_HOST + "friendsList?rel=%d&page=%d";
 }

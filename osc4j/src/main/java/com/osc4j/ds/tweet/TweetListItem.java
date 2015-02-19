@@ -1,4 +1,4 @@
-package com.osc4j.ds;
+package com.osc4j.ds.tweet;
 
 
 import java.io.Serializable;
@@ -51,16 +51,8 @@ public final class TweetListItem implements Serializable {
 		return mPubDate;
 	}
 
-	public void setPubDate(String pubDate) {
-		mPubDate = pubDate;
-	}
-
 	public String getBody() {
 		return mBody;
-	}
-
-	public void setBody(String body) {
-		mBody = body;
 	}
 
 	public String getAuthor() {
@@ -75,39 +67,24 @@ public final class TweetListItem implements Serializable {
 		return mAuthorId;
 	}
 
-	public void setAuthorId(long authorId) {
-		mAuthorId = authorId;
-	}
 
 	public int getCommentCount() {
 		return mCommentCount;
 	}
 
-	public void setCommentCount(int commentCount) {
-		mCommentCount = commentCount;
-	}
 
 	public String getPortrait() {
 		return mPortrait;
 	}
 
-	public void setPortrait(String portrait) {
-		mPortrait = portrait;
-	}
 
 	public String getImgSmall() {
 		return mImgSmall;
 	}
 
-	public void setImgSmall(String imgSmall) {
-		mImgSmall = imgSmall;
-	}
 
 	public String getImgBig() {
 		return mImgBig;
 	}
 
-	public void setImgBig(String imgBig) {
-		mImgBig = imgBig;
-	}
 }

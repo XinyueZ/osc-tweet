@@ -14,7 +14,7 @@ import android.text.TextUtils;
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
 import com.osc4j.ds.Login;
-import com.osc4j.ds.TweetList;
+import com.osc4j.ds.tweet.TweetList;
 import com.osc4j.utils.AuthUtil;
 import com.osc4j.utils.Utils;
 import com.squareup.okhttp.OkHttpClient;
@@ -99,7 +99,7 @@ public final class OscApi {
 	 * @param hotspot
 	 * 		If <code>true</code> then show all hotspot and ignore value of <code>myTweets</code>.
 	 *
-	 * @return The {@link com.osc4j.ds.TweetList}.
+	 * @return The {@link com.osc4j.ds.tweet.TweetList}.
 	 *
 	 * @throws IOException
 	 * @throws OscTweetException
@@ -139,6 +139,7 @@ public final class OscApi {
 		}
 		return ret;
 	}
+
 
 
 }
