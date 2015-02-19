@@ -29,6 +29,15 @@
                 android:background="@color/primary_color"
                 android:textColor="@color/common_white" />
 
+
+            <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+                android:id="@+id/loading_pb"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/pb_height"
+                style="@style/GradientProgressBar"
+                android:layout_gravity="top" android:visibility="invisible"
+                android:indeterminate="true" />
+
             <android.support.v4.view.ViewPager
                 android:id="@+id/vp"
                 android:layout_width="match_parent"
@@ -37,14 +46,6 @@
 
         </LinearLayout>
 
-        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-            android:id="@+id/loading_pb"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/pb_height"
-            style="@style/GradientProgressBar"
-            android:layout_gravity="top" android:visibility="invisible"
-            android:layout_marginTop="?attr/actionBarSize"
-            android:indeterminate="true" />
 
         <ImageButton
             android:id="@+id/edit_btn"
