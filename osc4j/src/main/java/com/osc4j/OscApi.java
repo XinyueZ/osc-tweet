@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 
+import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
 import com.osc4j.ds.Login;
 import com.osc4j.ds.TweetList;
@@ -56,6 +57,7 @@ public final class OscApi {
 		RequestBody body = RequestBody.create(Consts.CONTENT_TYPE, pubBody);
 		Request request = new Request.Builder().url(Consts.LOGIN_URL).post(body).build();
 		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
 		Response response = client.newCall(request).execute();
 
 		int responseCode = response.code();
@@ -122,7 +124,9 @@ public final class OscApi {
 			}
 			Request request = new Request.Builder().url(url).get().header("Cookie",
 					sessionInCookie + ";" + tokenInCookie).build();
-			Response response = new OkHttpClient().newCall(request).execute();
+			OkHttpClient client = new OkHttpClient();
+			client.networkInterceptors().add(new StethoInterceptor());
+			Response response = client.newCall(request).execute();
 			int responseCode = response.code();
 			if (responseCode >= 300) {
 				response.body().close();

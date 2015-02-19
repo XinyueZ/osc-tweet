@@ -40,9 +40,9 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.osc4j.ds.Login;
@@ -117,6 +117,7 @@ public final class LoginDialog extends DialogFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Dialog);
+		setCancelable(false);
 	}
 
 	@Override
@@ -147,16 +148,16 @@ public final class LoginDialog extends DialogFragment {
 		LinearLayout editors = new LinearLayout(getActivity());
 		editors.setOrientation(LinearLayout.VERTICAL);
 
-		ImageView oscLogoIv = new ImageView(getActivity());
-		editors.addView(oscLogoIv);
-		oscLogoIv.setContentDescription("OS China dot NET");
-		((LayoutParams) oscLogoIv.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
+		TextView oscLogoV = new TextView(getActivity());
+		editors.addView(oscLogoV, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		oscLogoV.setText("Login on www.oschina.net");
+		((LayoutParams) oscLogoV.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
 
-		AsyncTaskCompat.executeParallel(new AsyncTask<ImageView, Bitmap, Bitmap>() {
-			private WeakReference<ImageView> mLogoIvRef;
+		AsyncTaskCompat.executeParallel(new AsyncTask<TextView, Bitmap, Bitmap>() {
+			private WeakReference<TextView> mLogoIvRef;
 
 			@Override
-			protected Bitmap doInBackground(ImageView... params) {
+			protected Bitmap doInBackground(TextView... params) {
 				mLogoIvRef = new WeakReference<>(params[0]);
 				Request request = new Request.Builder().url(LOGO_URL).get().build();
 				Bitmap bmp = null;
@@ -174,10 +175,11 @@ public final class LoginDialog extends DialogFragment {
 			protected void onPostExecute(Bitmap bmp) {
 				super.onPostExecute(bmp);
 				if (bmp != null && mLogoIvRef.get() != null) {
-					mLogoIvRef.get().setImageBitmap(bmp);
+					mLogoIvRef.get().setText("");
+					mLogoIvRef.get().setBackgroundDrawable(new BitmapDrawable(getResources(), bmp));
 				}
 			}
-		}, oscLogoIv);
+		}, oscLogoV);
 
 		mNameEt = new EditText(getActivity());
 		mNameEt.setHint("Account");
@@ -246,7 +248,7 @@ public final class LoginDialog extends DialogFragment {
 
 				if (bmp != null && mRegBtnRef.get() != null) {
 					mRegBtnRef.get().setText("");
-					mRegBtnRef.get().setBackgroundDrawable(new BitmapDrawable(getResources(), bmp[0]));
+					mRegBtnRef.get().setBackgroundDrawable(new BitmapDrawable(getResources(), bmp[1]));
 				}
 			}
 		}, loginBtn, regBtn);
