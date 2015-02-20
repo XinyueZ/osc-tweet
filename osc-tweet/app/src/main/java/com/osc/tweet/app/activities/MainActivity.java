@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
@@ -42,6 +43,7 @@ import com.osc.tweet.app.adapters.MainViewPagerAdapter;
 import com.osc.tweet.app.fragments.AboutDialogFragment;
 import com.osc.tweet.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.osc.tweet.app.fragments.AppListImpFragment;
+import com.osc.tweet.app.fragments.FriendsListFragment;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
@@ -55,7 +57,7 @@ import de.greenrobot.event.EventBus;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements OnBackStackChangedListener {
 	/**
 	 * Main layout for this component.
 	 */
@@ -108,8 +110,10 @@ public class MainActivity extends BaseActivity {
 	 * Filter for {@link #mBroadcastReceiver}.
 	 */
 	private IntentFilter mIntentFilter = new IntentFilter(Consts.ACTION_AUTH_DONE);
-
-
+	/**
+	 * View to open friends-list.
+	 */
+	private View mOpenFriendsListV;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -165,6 +169,10 @@ public class MainActivity extends BaseActivity {
 		PhotoViewActivity.showInstance(this, e.getTweetListItem());
 	}
 
+
+
+
+
 	//------------------------------------------------
 
 	@Override
@@ -193,6 +201,25 @@ public class MainActivity extends BaseActivity {
 
 		mLocalBroadcastManager = LocalBroadcastManager.getInstance(getApplication());
 		mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, mIntentFilter);
+
+		mOpenFriendsListV = findViewById(R.id.friends_btn);
+		mOpenFriendsListV.setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				getSupportFragmentManager().beginTransaction().replace(R.id.friends_list_container,
+						FriendsListFragment.newInstance(MainActivity.this), FriendsListFragment.class.getSimpleName()).addToBackStack(null)
+						.commit();
+
+			}
+		});
+		getSupportFragmentManager().addOnBackStackChangedListener(this);
+	}
+
+	@Override
+	public void onBackStackChanged() {
+		//Is friends-list still opened? true: closed, false: opened .
+		boolean friendsListClosed= getSupportFragmentManager().findFragmentByTag(FriendsListFragment.class.getSimpleName()) == null;
+		mOpenFriendsListV.setVisibility(friendsListClosed ? View.VISIBLE : View.GONE);
 	}
 
 	@Override
@@ -408,4 +435,6 @@ public class MainActivity extends BaseActivity {
 			}
 		});
 	}
+
+
 }

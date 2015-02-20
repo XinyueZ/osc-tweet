@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/friends_list_width" android:background="@drawable/gradient_green_center"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/friends_list_rv"
+        android:layout_above="@+id/close_friends_list_btn"
+        android:layout_width="@dimen/friends_list_width"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:id="@+id/close_friends_list_btn"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/common_padding"
+        android:src="@drawable/ic_return"
+        android:layout_marginBottom="@dimen/common_padding"
+        android:background="@color/common_transparent" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pb" android:visibility="visible"
+        android:layout_centerInParent="true" />
+</RelativeLayout>

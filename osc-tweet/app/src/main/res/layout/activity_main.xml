@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <FrameLayout
         android:id="@id/error_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
 
         <LinearLayout
             android:orientation="vertical"
@@ -35,26 +35,51 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/pb_height"
                 style="@style/GradientProgressBar"
-                android:layout_gravity="top" android:visibility="invisible"
+                android:layout_gravity="top"
+                android:visibility="invisible"
                 android:indeterminate="true" />
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/vp"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_toLeftOf="@+id/friends_list_container"
+                    android:layout_height="match_parent">
+
+                    <android.support.v4.view.ViewPager
+                        android:id="@+id/vp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
 
 
+                    <ImageButton
+                        android:id="@+id/edit_btn"
+                        android:layout_gravity="right|bottom"
+                        android:background="@drawable/circle_green"
+                        android:src="@drawable/ic_edit"
+                        style="@style/FloatButton"
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:layout_marginRight="@dimen/activity_horizontal_margin" />
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/friends_list_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
         </LinearLayout>
 
 
         <ImageButton
-            android:id="@+id/edit_btn"
-            android:layout_gravity="right|bottom"
-            android:background="@drawable/circle_green"
-            android:src="@drawable/ic_edit"
-            style="@style/FloatButton"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin" />
+            android:id="@+id/friends_btn"
+            android:background="@color/common_transparent"
+            android:src="@drawable/ic_open_list"
+            android:layout_width="wrap_content"
+            android:layout_gravity="right|center_vertical"
+            android:layout_height="wrap_content" />
     </FrameLayout>
 
 
