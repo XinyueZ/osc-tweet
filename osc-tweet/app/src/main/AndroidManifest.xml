@@ -10,6 +10,7 @@
         android:name=".app.App"
         android:label="@string/application_name"
         android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true"
         tools:replace="android:label">
         <activity
             android:name=".app.activities.MainActivity"

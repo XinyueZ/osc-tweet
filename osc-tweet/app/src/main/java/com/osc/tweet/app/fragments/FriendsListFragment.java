@@ -8,8 +8,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +19,7 @@ import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
 import com.osc.tweet.R;
 import com.osc.tweet.app.adapters.FriendsListAdapter;
+import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.OscApi;
@@ -29,10 +28,12 @@ import com.osc4j.ds.personal.Friend;
 import com.osc4j.ds.personal.Friends;
 import com.osc4j.ds.personal.FriendsList;
 
+import de.greenrobot.event.EventBus;
+
 /**
  * A list of all friends, inc. Fans, Focus etc.
  */
-public final class FriendsListFragment extends BaseFragment   {
+public final class FriendsListFragment extends BaseFragment {
 
 	/**
 	 * Main layout for this component.
@@ -51,7 +52,7 @@ public final class FriendsListFragment extends BaseFragment   {
 	 */
 	private View mPbV;
 
-	public static Fragment newInstance(Context context ) {
+	public static Fragment newInstance(Context context) {
 		return FriendsListFragment.instantiate(context, FriendsListFragment.class.getName());
 	}
 
@@ -71,11 +72,13 @@ public final class FriendsListFragment extends BaseFragment   {
 		view.findViewById(R.id.close_friends_list_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
-				FragmentManager manager = getActivity().getSupportFragmentManager();
-				FragmentTransaction trans = manager.beginTransaction();
-				trans.remove(FriendsListFragment.this);
-				trans.commit();
-				manager.popBackStack();
+//				getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(
+//						R.anim.slide_in_from_right, R.anim.slide_out_to_right, R.anim.slide_in_from_right,
+//						R.anim.slide_out_to_right).commit();
+//						.remove(FriendsListFragment.this).commit();
+
+				getActivity().getSupportFragmentManager().popBackStack();
+				EventBus.getDefault().post(new CloseFriendsListEvent());
 			}
 		});
 		mPbV = view.findViewById(R.id.pb);
@@ -106,12 +109,12 @@ public final class FriendsListFragment extends BaseFragment   {
 					Friends friends = friendsList.getFriends();
 					List<Friend> all = new ArrayList<>();
 					List<Friend> fansList = friends.getFansList();
-					if(fansList != null) {
+					if (fansList != null) {
 						all.addAll(fansList);
 					}
 
 					List<Friend> focusList = friends.getFocusList();
-					if(focusList != null) {
+					if (focusList != null) {
 						all.addAll(focusList);
 					}
 					mAdp.setData(all);

@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
@@ -42,6 +41,7 @@ import com.osc.tweet.app.fragments.AboutDialogFragment;
 import com.osc.tweet.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.osc.tweet.app.fragments.AppListImpFragment;
 import com.osc.tweet.app.fragments.FriendsListFragment;
+import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
@@ -55,7 +55,7 @@ import com.osc4j.utils.AuthUtil;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 
-public class MainActivity extends BaseActivity implements OnBackStackChangedListener {
+public class MainActivity extends BaseActivity  {
 	/**
 	 * Main layout for this component.
 	 */
@@ -102,7 +102,7 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			initViewPager();
-			mSmoothProgressBar.setVisibility( View.VISIBLE );
+			mSmoothProgressBar.setVisibility(View.VISIBLE);
 		}
 	};
 	/**
@@ -173,6 +173,16 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 	}
 
 
+	/**
+	 * Handler for {@link CloseFriendsListEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link CloseFriendsListEvent}.
+	 */
+	public void onEvent(CloseFriendsListEvent e) {
+		showFriendsListButton();
+	}
+
 	//------------------------------------------------
 
 	@Override
@@ -211,29 +221,22 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 		mOpenFriendsListV.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
-				getSupportFragmentManager().beginTransaction().replace(R.id.friends_list_container,
+				getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_from_right,
+						R.anim.slide_out_to_right, R.anim.slide_in_from_right, R.anim.slide_out_to_right).replace(R.id.friends_list_container,
 						FriendsListFragment.newInstance(MainActivity.this), FriendsListFragment.class.getSimpleName())
 						.addToBackStack(null).commit();
 
+				dismissFriendsListButton();
 			}
 		});
 		ViewHelper.setX(mOpenFriendsListV, 99999);
 		showFriendsListButton();
-
-
-		getSupportFragmentManager().addOnBackStackChangedListener(this);
 	}
 
 	@Override
-	public void onBackStackChanged() {
-		//Is friends-list still opened? true: closed, false: opened .
-		boolean friendsListClosed = getSupportFragmentManager().findFragmentByTag(
-				FriendsListFragment.class.getSimpleName()) == null;
-		if(friendsListClosed) {
-			showFriendsListButton();
-		} else {
-			dismissFriendsListButton();
-		}
+	public void onBackPressed() {
+		super.onBackPressed();
+		showFriendsListButton();
 	}
 
 	@Override
@@ -254,13 +257,13 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 	private void showFriendsListButton() {
 		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mOpenFriendsListV);
-		animator.x(screenWidth - screenWidth / 10).setDuration(1500).start();
+		animator.x(screenWidth - screenWidth / 10).setDuration(getResources().getInteger(R.integer.anim_slow_duration)).start();
 	}
 
 	private void dismissFriendsListButton() {
 		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mOpenFriendsListV);
-		animator.x(screenWidth).start();
+		animator.x(screenWidth).setDuration(getResources().getInteger(R.integer.anim_slow_duration)).start();
 	}
 
 	/**
@@ -410,7 +413,7 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
 		ViewHelper.setRotation(mEditBtn, 360f * 4);
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mEditBtn);
-		animator.x(-screenWidth).rotation(0).setDuration(1000).start();
+		animator.x(-screenWidth).rotation(0).setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
 	}
 
 	private void showInputEdit() {
@@ -419,7 +422,7 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 		ViewHelper.setRotation(mEditBtn, -360f * 4);
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mEditBtn);
 		animator.x(screenWidth - getResources().getDimensionPixelSize(R.dimen.float_button_anim_qua)).rotation(0)
-				.setDuration(1000).start();
+				.setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
 	}
 
 	/**
