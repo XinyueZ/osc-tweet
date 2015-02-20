@@ -32,15 +32,15 @@ public final class Consts {
 	/**
 	 * Key for storage session
 	 */
-	static final String KEY_SESSION = "oscid";
+	public static final String KEY_SESSION = "oscid";
 	/**
 	 * Key for storage access-token
 	 */
-	static final String KEY_ACCESS_TOKEN = "access_token";
+	public static final String KEY_ACCESS_TOKEN = "access_token";
 	/**
 	 * Key for storage for expires.
 	 */
-	static final String KEY_EXPIRES = "expires";
+	public static final String KEY_EXPIRES = "expires";
 
 	/**
 	 * Login data format.

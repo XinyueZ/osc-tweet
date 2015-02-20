@@ -5,12 +5,13 @@ import java.util.TimeZone;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
+
+import static android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
+import static android.text.format.DateUtils.FORMAT_SHOW_DATE;
+import static android.text.format.DateUtils.FORMAT_SHOW_TIME;
+import static android.text.format.DateUtils.FORMAT_SHOW_YEAR;
+import static android.text.format.DateUtils.formatDateTime;
 
 /**
  * Util-methods.
@@ -59,37 +60,19 @@ public final class Utils {
 		return dp;
 	}
 
+
 	/**
-	 * Show  {@link android.support.v4.app.DialogFragment}.
+	 * Convert a timestamps to a readable date in string.
 	 *
-	 * @param activity
-	 * 		Host activity.
-	 * @param dlgFrg
-	 * 		An instance of {@link android.support.v4.app.DialogFragment}.
-	 * @param tagName
-	 * 		Tag name for dialog, default is "dlg". To grantee that only one instance of {@link
-	 * 		android.support.v4.app.DialogFragment} can been seen.
+	 * @param cxt
+	 * 		{@link android.content.Context}.
+	 * @param timestamps
+	 * 		A long value for a timestamps.
+	 *
+	 * @return A date string format.
 	 */
-	public static void showDialogFragment(FragmentActivity activity, DialogFragment dlgFrg, String tagName) {
-		try {
-			if (dlgFrg != null) {
-				DialogFragment dialogFragment = dlgFrg;
-				FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-				// Ensure that there's only one dialog to the user.
-				Fragment prev = activity.getSupportFragmentManager().findFragmentByTag("dlg");
-				if (prev != null) {
-					ft.remove(prev);
-				}
-				try {
-					if (TextUtils.isEmpty(tagName)) {
-						dialogFragment.show(ft, "dlg");
-					} else {
-						dialogFragment.show(ft, tagName);
-					}
-				} catch (Exception _e) {
-				}
-			}
-		} catch (Exception _e) {
-		}
+	public static String convertTimestamps2DateString(Context cxt, long timestamps) {
+		return formatDateTime(cxt, timestamps, FORMAT_SHOW_YEAR | FORMAT_SHOW_DATE |
+				FORMAT_SHOW_TIME | FORMAT_ABBREV_MONTH);
 	}
 }

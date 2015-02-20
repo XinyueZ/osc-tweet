@@ -8,8 +8,8 @@ import java.security.NoSuchAlgorithmException;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
@@ -84,7 +84,11 @@ public final class OscApi {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(cxt);
 			prefs.edit().putInt(Consts.KEY_UID, login.getUser().getUid()).commit();
 			prefs.edit().putString(Consts.KEY_NAME, login.getUser().getName()).commit();
-			prefs.edit().putInt(Consts.KEY_EXPIRES, login.getUser().getExpired()).commit();
+			prefs.edit().putLong(Consts.KEY_EXPIRES, System.currentTimeMillis() + login.getUser().getExpired() * 1000).commit();
+
+			String expiresTime = Utils.convertTimestamps2DateString(cxt, prefs.getLong(Consts.KEY_EXPIRES, -1));
+			Log.d(OscApi.class.getSimpleName(), "Expire on: " + expiresTime);
+
 			prefs.edit().putString(Consts.KEY_SESSION, session).commit();
 			prefs.edit().putString(Consts.KEY_ACCESS_TOKEN, token).commit();
 			return login;
@@ -94,8 +98,8 @@ public final class OscApi {
 	/**
 	 * Get list of all tweets.
 	 *
-	 * @param activity
-	 * 		The host {@link android.support.v4.app.FragmentActivity}.
+	 * @param context
+	 * 		{@link android.content.Context}
 	 * @param page
 	 * 		Set the page index of list, start from <code>1</code>.
 	 * @param myTweets
@@ -108,67 +112,62 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static TweetList tweetList(FragmentActivity activity, int page, boolean myTweets, boolean hotspot) throws
-			IOException, OscTweetException {
-		TweetList ret = null;
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getApplication());
+	public static TweetList tweetList(Context context, int page, boolean myTweets, boolean hotspot) throws IOException,
+			OscTweetException {
+		TweetList ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
 		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
 		int uid = prefs.getInt(Consts.KEY_UID, 0);
-		if (!TextUtils.isEmpty(session) && !TextUtils.isEmpty(token)) {
-			//Get session and set to cookie returning to server.
-			String sessionInCookie = Consts.KEY_SESSION + "=" + session;
-			String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-			String url;
-			if (hotspot) {
-				url = String.format(Consts.TWEET_HOTSPOT_LIST_URL, page);
-			} else {
-				url = myTweets ? String.format(Consts.TWEET_MY_LIST_URL, uid, page) : String.format(
-						Consts.TWEET_LIST_URL, page);
-			}
-			Request request = new Request.Builder().url(url).get().header("Cookie",
-					sessionInCookie + ";" + tokenInCookie).build();
-			OkHttpClient client = new OkHttpClient();
-			client.networkInterceptors().add(new StethoInterceptor());
-			Response response = client.newCall(request).execute();
-			int responseCode = response.code();
-			if (responseCode >= 300) {
-				response.body().close();
-				throw new OscTweetException();
-			} else {
-				ret = sGson.fromJson(response.body().string(), TweetList.class);
-			}
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+		String url;
+		if (hotspot) {
+			url = String.format(Consts.TWEET_HOTSPOT_LIST_URL, page);
 		} else {
-			Utils.showDialogFragment(activity, LoginDialog.newInstance(activity.getApplicationContext()), "loginDlg");
+			url = myTweets ? String.format(Consts.TWEET_MY_LIST_URL, uid, page) : String.format(Consts.TWEET_LIST_URL,
+					page);
 		}
+		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+				.build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= 300) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), TweetList.class);
+		}
+
 		return ret;
 	}
 
 
-	public static FriendsList friendsList(FragmentActivity activity ) throws IOException,
-			OscTweetException {
-		FriendsList ret = null;
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getApplication());
+	public static FriendsList friendsList(Context context) throws IOException, OscTweetException {
+		FriendsList ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
 		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
-		if (!TextUtils.isEmpty(session) && !TextUtils.isEmpty(token)) {
-			//Get session and set to cookie returning to server.
-			String sessionInCookie = Consts.KEY_SESSION + "=" + session;
-			String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-			String url = Consts.FRIENDS_URL;
-			Request request = new Request.Builder().url(url).get().header("Cookie",
-					sessionInCookie + ";" + tokenInCookie).build();
-			OkHttpClient client = new OkHttpClient();
-			client.networkInterceptors().add(new StethoInterceptor());
-			Response response = client.newCall(request).execute();
-			int responseCode = response.code();
-			if (responseCode >= 300) {
-				response.body().close();
-				throw new OscTweetException();
-			} else {
-				ret = sGson.fromJson(response.body().string(), FriendsList.class);
-			}
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+		String url = Consts.FRIENDS_URL;
+		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+				.build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= 300) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), FriendsList.class);
 		}
+
 		return ret;
 	}
 }
