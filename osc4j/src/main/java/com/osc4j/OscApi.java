@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
 import com.osc4j.ds.Login;
+import com.osc4j.ds.personal.FriendsList;
 import com.osc4j.ds.tweet.TweetList;
 import com.osc4j.utils.AuthUtil;
 import com.osc4j.utils.Utils;
@@ -40,9 +41,12 @@ public final class OscApi {
 	/**
 	 * Login.
 	 *
-	 * @param cxt {@link android.content.Context}.
-	 * @param account Login-Account.
-	 * @param password Login password.
+	 * @param cxt
+	 * 		{@link android.content.Context}.
+	 * @param account
+	 * 		Login-Account.
+	 * @param password
+	 * 		Login password.
 	 *
 	 * @return {@link com.osc4j.ds.Login}, contains user info.
 	 *
@@ -141,5 +145,30 @@ public final class OscApi {
 	}
 
 
-
+	public static FriendsList friendsList(FragmentActivity activity ) throws IOException,
+			OscTweetException {
+		FriendsList ret = null;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity.getApplication());
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+		if (!TextUtils.isEmpty(session) && !TextUtils.isEmpty(token)) {
+			//Get session and set to cookie returning to server.
+			String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+			String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+			String url = Consts.FRIENDS_URL;
+			Request request = new Request.Builder().url(url).get().header("Cookie",
+					sessionInCookie + ";" + tokenInCookie).build();
+			OkHttpClient client = new OkHttpClient();
+			client.networkInterceptors().add(new StethoInterceptor());
+			Response response = client.newCall(request).execute();
+			int responseCode = response.code();
+			if (responseCode >= 300) {
+				response.body().close();
+				throw new OscTweetException();
+			} else {
+				ret = sGson.fromJson(response.body().string(), FriendsList.class);
+			}
+		}
+		return ret;
+	}
 }

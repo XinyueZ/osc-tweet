@@ -2,17 +2,16 @@ package com.osc4j.ds.personal;
 
 
 import java.io.Serializable;
-import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
 public final class FriendsList implements Serializable {
 	@SerializedName("status")
 	private int mStatus;
-	@SerializedName("userList")
-	private List<Friend> mFriends;
+	@SerializedName("friends")
+	private Friends mFriends;
 
-	public FriendsList(int status, List<Friend> friends) {
+	public FriendsList(int status, Friends friends) {
 		mStatus = status;
 		mFriends = friends;
 	}
@@ -21,9 +20,7 @@ public final class FriendsList implements Serializable {
 		return mStatus;
 	}
 
-
-	public List<Friend> getFriends() {
+	public Friends getFriends() {
 		return mFriends;
 	}
-
 }

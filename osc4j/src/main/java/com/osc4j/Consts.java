@@ -69,5 +69,5 @@ public final class Consts {
 	/**
 	 * Friends-list
 	 */
-	static final String FRIENDS_URL = OSC_HOST + "friendsList?rel=%d&page=%d";
+	static final String FRIENDS_URL = OSC_HOST + "friendsList";
 }
