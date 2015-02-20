@@ -50,6 +50,8 @@ import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.Consts;
+import com.osc4j.LoginDialog;
+import com.osc4j.utils.AuthUtil;
 
 import de.greenrobot.event.EventBus;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
@@ -445,5 +447,9 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 
 			}
 		});
+
+		if(!AuthUtil.isLegitimate(getApplicationContext())) {
+			showDialogFragment(LoginDialog.newInstance(getApplicationContext()), null);
+		}
 	}
 }
