@@ -45,7 +45,6 @@ import com.osc.tweet.app.fragments.FriendsListFragment;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
-import com.osc.tweet.events.ShowTweetListEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
@@ -53,7 +52,6 @@ import com.osc4j.Consts;
 import com.osc4j.LoginDialog;
 import com.osc4j.utils.AuthUtil;
 
-import de.greenrobot.event.EventBus;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 
@@ -103,7 +101,8 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			EventBus.getDefault().post(new ShowTweetListEvent());
+			initViewPager();
+			mSmoothProgressBar.setVisibility( View.VISIBLE );
 		}
 	};
 	/**
@@ -423,33 +422,36 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 				.setDuration(1000).start();
 	}
 
+	/**
+	 * Make the main screen, pages, friends-list etc.
+	 */
 	private void initViewPager() {
-		mViewPager = (ViewPager) findViewById(R.id.vp);
-		mViewPager.setOffscreenPageLimit(2);
-		mPagerAdapter = new MainViewPagerAdapter(this, getSupportFragmentManager());
-		mViewPager.setAdapter(mPagerAdapter);
-		// Bind the tabs to the ViewPager
-		mTabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-		mTabs.setViewPager(mViewPager);
-		mTabs.setVisibility(View.VISIBLE);
-		mTabs.setIndicatorColorResource(R.color.common_white);
-		mTabs.setOnPageChangeListener(new OnPageChangeListener() {
-			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-			}
-
-			@Override
-			public void onPageSelected(int position) {
-			}
-
-			@Override
-			public void onPageScrollStateChanged(int state) {
-
-			}
-		});
-
 		if(!AuthUtil.isLegitimate(getApplicationContext())) {
 			showDialogFragment(LoginDialog.newInstance(getApplicationContext()), null);
+		} else {
+			mViewPager = (ViewPager) findViewById(R.id.vp);
+			mViewPager.setOffscreenPageLimit(2);
+			mPagerAdapter = new MainViewPagerAdapter(this, getSupportFragmentManager());
+			mViewPager.setAdapter(mPagerAdapter);
+			// Bind the tabs to the ViewPager
+			mTabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+			mTabs.setViewPager(mViewPager);
+			mTabs.setVisibility(View.VISIBLE);
+			mTabs.setIndicatorColorResource(R.color.common_white);
+			mTabs.setOnPageChangeListener(new OnPageChangeListener() {
+				@Override
+				public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+				}
+
+				@Override
+				public void onPageSelected(int position) {
+				}
+
+				@Override
+				public void onPageScrollStateChanged(int state) {
+
+				}
+			});
 		}
 	}
 }
