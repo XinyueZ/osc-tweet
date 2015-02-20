@@ -112,7 +112,6 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 			iv.setImageBitmap(response.getBitmap());
 			animToolActionBar(-getActionBarHeight() * 4);
 		}
-		findViewById(R.id.loading_pb).setVisibility(View.GONE);
 	}
 
 	@Override

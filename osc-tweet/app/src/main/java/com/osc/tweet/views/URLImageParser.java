@@ -91,7 +91,7 @@ public final class URLImageParser implements ImageGetter {
 			}
 		}
 
-		private InputStream fetch(String urlString) throws   IOException {
+		private InputStream fetch(String urlString) throws IOException {
 
 
 			Request request = new Request.Builder().url(urlString).get().build();

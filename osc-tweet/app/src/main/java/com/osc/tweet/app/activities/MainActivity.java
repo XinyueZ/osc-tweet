@@ -34,8 +34,6 @@ import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.Utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
@@ -114,6 +112,10 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 	 * View to open friends-list.
 	 */
 	private View mOpenFriendsListV;
+	/**
+	 * The view clicked to open editing.
+	 */
+	private View mEditBtn;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -170,56 +172,67 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 	}
 
 
-
-
-
 	//------------------------------------------------
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(LAYOUT);
-		mSmoothProgressBar = (SmoothProgressBar) findViewById(R.id.loading_pb);
 
+		//Actionbar and navi-drawer.
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
 		initDrawer();
 
+		//Button to open editing message.
+		mEditBtn = findViewById(R.id.edit_btn);
 		showInputEdit();
-		findViewById(R.id.edit_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
+		mEditBtn.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
 				Utils.showLongToast(getApplicationContext(), "edit");
 			}
 		});
 
+		//No-pulling indicator  of loading feeds.
+		mSmoothProgressBar = (SmoothProgressBar) findViewById(R.id.loading_pb);
 		if (Prefs.getInstance().isEULAOnceConfirmed()) {
 			initViewPager();
 			mSmoothProgressBar.setVisibility(View.VISIBLE);
 		}
 
-
+		//Handler when login would have been done.
 		mLocalBroadcastManager = LocalBroadcastManager.getInstance(getApplication());
 		mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, mIntentFilter);
 
-		mOpenFriendsListV = findViewById(R.id.friends_btn);
+		//Friends-list button, it opens friends-list then disappeared.
+		mOpenFriendsListV =  findViewById(R.id.friends_btn);
 		mOpenFriendsListV.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
 				getSupportFragmentManager().beginTransaction().replace(R.id.friends_list_container,
-						FriendsListFragment.newInstance(MainActivity.this), FriendsListFragment.class.getSimpleName()).addToBackStack(null)
-						.commit();
+						FriendsListFragment.newInstance(MainActivity.this), FriendsListFragment.class.getSimpleName())
+						.addToBackStack(null).commit();
 
 			}
 		});
+		ViewHelper.setX(mOpenFriendsListV, 99999);
+		showFriendsListButton();
+
+
 		getSupportFragmentManager().addOnBackStackChangedListener(this);
 	}
 
 	@Override
 	public void onBackStackChanged() {
 		//Is friends-list still opened? true: closed, false: opened .
-		boolean friendsListClosed= getSupportFragmentManager().findFragmentByTag(FriendsListFragment.class.getSimpleName()) == null;
-		mOpenFriendsListV.setVisibility(friendsListClosed ? View.VISIBLE : View.GONE);
+		boolean friendsListClosed = getSupportFragmentManager().findFragmentByTag(
+				FriendsListFragment.class.getSimpleName()) == null;
+		if(friendsListClosed) {
+			showFriendsListButton();
+		} else {
+			dismissFriendsListButton();
+		}
 	}
 
 	@Override
@@ -235,6 +248,18 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 			mDrawerToggle.syncState();
 		}
 		checkPlayService();
+	}
+
+	private void showFriendsListButton() {
+		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
+		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mOpenFriendsListV);
+		animator.x(screenWidth - screenWidth / 10).setDuration(1500).start();
+	}
+
+	private void dismissFriendsListButton() {
+		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
+		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mOpenFriendsListV);
+		animator.x(screenWidth).start();
 	}
 
 	/**
@@ -332,7 +357,6 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-
 		MenuItem menuShare = menu.findItem(R.id.action_share_app);
 		//Getting the actionprovider associated with the menu item whose id is share.
 		android.support.v7.widget.ShareActionProvider provider =
@@ -382,32 +406,19 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 	}
 
 	private void dismissEdit() {
-		View view = findViewById(R.id.edit_btn);
 		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
-		ViewHelper.setRotation(view, 360f * 4);
-		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(view);
-		animator.x(-screenWidth).rotation(0).setDuration(1000).setListener(new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationStart(Animator animation) {
-				super.onAnimationStart(animation);
-			}
-		}).start();
+		ViewHelper.setRotation(mEditBtn, 360f * 4);
+		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mEditBtn);
+		animator.x(-screenWidth).rotation(0).setDuration(1000).start();
 	}
 
 	private void showInputEdit() {
-		View view = findViewById(R.id.edit_btn);
 		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
-		ViewHelper.setTranslationX(view, -screenWidth);
-		ViewHelper.setRotation(view, -360f * 4);
-		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(view);
+		ViewHelper.setTranslationX(mEditBtn, -screenWidth);
+		ViewHelper.setRotation(mEditBtn, -360f * 4);
+		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mEditBtn);
 		animator.x(screenWidth - getResources().getDimensionPixelSize(R.dimen.float_button_anim_qua)).rotation(0)
-				.setDuration(1000).setListener(new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationStart(Animator animation) {
-				super.onAnimationStart(animation);
-			}
-		}).start();
-
+				.setDuration(1000).start();
 	}
 
 	private void initViewPager() {
@@ -435,6 +446,4 @@ public class MainActivity extends BaseActivity implements OnBackStackChangedList
 			}
 		});
 	}
-
-
 }
