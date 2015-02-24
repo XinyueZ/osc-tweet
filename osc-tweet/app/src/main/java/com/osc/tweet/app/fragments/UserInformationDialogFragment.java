@@ -20,12 +20,13 @@ import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.osc.tweet.R;
+import com.osc.tweet.events.LoadFriendsListEvent;
 import com.osc.tweet.events.SnackMessageEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener2;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
 import com.osc4j.OscTweetException;
-import com.osc4j.ds.common.Result;
+import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.Gender;
 import com.osc4j.ds.personal.User;
 import com.osc4j.ds.personal.UserInformation;
@@ -55,9 +56,11 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	private TextView mUserSkillTv;
 	private TextView mUserLocationTv;
 	private Button mUserRelationBtn;
-	private View mPb;
+	private View mLoadUserInfoPb;
+	private View mChangeRelationPb;
 	private View mAllContainerV;
 	private User mUser;
+
 	/**
 	 * Initialize an {@link  UserInformationDialogFragment}.
 	 *
@@ -91,7 +94,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		if(savedInstanceState != null) {
+		if (savedInstanceState != null) {
 			mUser = (User) savedInstanceState.getSerializable(USER);
 		}
 		mUserPhotoIv = (RoundedNetworkImageView) view.findViewById(R.id.user_photo_iv);
@@ -103,11 +106,19 @@ public final class UserInformationDialogFragment extends DialogFragment {
 		mUserRelationBtn.setOnClickListener(new OnViewAnimatedClickedListener2() {
 			@Override
 			public void onClick() {
-				AsyncTaskCompat.executeParallel(new AsyncTask<Object, Result, Result>() {
+				AsyncTaskCompat.executeParallel(new AsyncTask<Object, StatusResult, StatusResult>() {
 					@Override
-					protected Result doInBackground(Object... params) {
+					protected void onPreExecute() {
+						super.onPreExecute();
+						mChangeRelationPb.setVisibility(View.VISIBLE);
+						mUserRelationBtn.setVisibility(View.INVISIBLE);
+					}
+
+					@Override
+					protected StatusResult doInBackground(Object... params) {
 						try {
-							return OscApi.updateRelation(getActivity().getApplicationContext(), mUser.getUid(), mUser.isRelated());
+							return OscApi.updateRelation(getActivity().getApplicationContext(), mUser.getUid(),
+									mUser.isRelated());
 						} catch (IOException e) {
 							return null;
 						} catch (OscTweetException e) {
@@ -116,10 +127,11 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					}
 
 					@Override
-					protected void onPostExecute(Result res) {
+					protected void onPostExecute(StatusResult res) {
 						super.onPostExecute(res);
-						if (res != null && Integer.valueOf(res.getCode()) == com.osc4j.ds.common.Status.STATUS_OK) {
-							if(mUser.isRelated()) {
+						if (res != null && res.getResult() != null && Integer.valueOf(res.getResult().getCode()) ==
+								com.osc4j.ds.common.Status.STATUS_OK) {
+							if (mUser.isRelated()) {
 								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
 										R.string.msg_focus_cancle), mUser.getName())));
 							} else {
@@ -127,7 +139,10 @@ public final class UserInformationDialogFragment extends DialogFragment {
 										R.string.msg_focus), mUser.getName())));
 							}
 							//New relation.
-							mUser.setRelation(res.getRelation());
+							mUser.setRelation(res.getResult().getRelation());
+							mChangeRelationPb.setVisibility(View.INVISIBLE);
+							mUserRelationBtn.setVisibility(View.VISIBLE);
+							EventBus.getDefault().post(new LoadFriendsListEvent());
 							updateFocusButton();
 						}
 					}
@@ -136,7 +151,8 @@ public final class UserInformationDialogFragment extends DialogFragment {
 		});
 		mUserSkillTv = (TextView) view.findViewById(R.id.user_skill_tv);
 		mUserLocationTv = (TextView) view.findViewById(R.id.user_location_tv);
-		mPb = view.findViewById(R.id.pb);
+		mLoadUserInfoPb = view.findViewById(R.id.load_user_info_pb);
+		mChangeRelationPb = view.findViewById(R.id.change_relation_pb);
 		mAllContainerV = view.findViewById(R.id.all_container);
 		getUserInformation();
 
@@ -179,7 +195,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 							R.string.lbl_user_gender_famle));
 					updateFocusButton();
 					mUserLocationTv.setText(String.format("%s, %s", mUser.getCity(), mUser.getProvince()));
-					mPb.setVisibility(View.INVISIBLE);
+					mLoadUserInfoPb.setVisibility(View.INVISIBLE);
 					mAllContainerV.setVisibility(View.VISIBLE);
 				}
 			}

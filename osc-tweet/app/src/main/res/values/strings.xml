@@ -44,8 +44,8 @@
         accordance with Google\'s Privacy Policy and Google Terms of Service.</string>
     <string name="play_service_url">market://details?id=com.google.android.gms</string>
     <string name="play_service_web">https://play.google.com/store/apps/details?id=com.google.android.gms</string>
-    <string name="lbl_user_cancle_focus">Unfocus:</string>
-    <string name="lbl_user_focus">Focus:</string>
+    <string name="lbl_user_cancle_focus">Unfocus</string>
+    <string name="lbl_user_focus">Focus</string>
     <string name="lbl_user_gender_famle">Famle</string>
     <string name="lbl_user_gender_male">Male</string>
     <string name="lbl_user_name">Name:</string>
@@ -54,4 +54,6 @@
     <string name="lbl_user_skill">Skill:</string>
     <string name="lbl_user_location">From:</string>
     <string name="lbl_user_gender">Gender:</string>
+    <string name="msg_focus">You have focused on %s</string>
+    <string name="msg_focus_cancle">You have cancled focused on %s</string>
 </resources>

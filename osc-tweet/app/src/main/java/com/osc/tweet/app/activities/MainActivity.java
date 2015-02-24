@@ -31,6 +31,7 @@ import com.chopping.application.BasicPrefs;
 import com.chopping.bus.CloseDrawerEvent;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.Utils;
+import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nineoldandroids.view.ViewHelper;
@@ -46,8 +47,9 @@ import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
-import com.osc.tweet.events.ShowUserInformation;
+import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
+import com.osc.tweet.events.SnackMessageEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.Consts;
@@ -57,7 +59,7 @@ import com.osc4j.utils.AuthUtil;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 
-public class MainActivity extends BaseActivity  {
+public class MainActivity extends BaseActivity {
 	/**
 	 * Main layout for this component.
 	 */
@@ -119,6 +121,10 @@ public class MainActivity extends BaseActivity  {
 	 * The view clicked to open editing.
 	 */
 	private View mEditBtn;
+	/**
+	 * A bar bottom.
+	 */
+	private SnackBar mSnackBar;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -186,21 +192,33 @@ public class MainActivity extends BaseActivity  {
 	}
 
 	/**
-	 * Handler for {@link ShowUserInformation}.
+	 * Handler for {@link com.osc.tweet.events.ShowUserInformationEvent}.
 	 *
 	 * @param e
-	 * 		Event {@link ShowUserInformation}.
+	 * 		Event {@link com.osc.tweet.events.ShowUserInformationEvent}.
 	 */
-	public void onEvent(ShowUserInformation e) {
-		showDialogFragment(UserInformationDialogFragment.newInstance(getApplicationContext(), e.getUserId(), true), null);
+	public void onEvent(ShowUserInformationEvent e) {
+		showDialogFragment(UserInformationDialogFragment.newInstance(getApplicationContext(), e.getUserId(), true),
+				null);
 	}
 
+
+	/**
+	 * Handler for {@link SnackMessageEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link SnackMessageEvent}.
+	 */
+	public void onEvent(SnackMessageEvent e) {
+		mSnackBar.show(e.getMessage());
+	}
 	//------------------------------------------------
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(LAYOUT);
+		mSnackBar = new SnackBar(this);
 
 		//Actionbar and navi-drawer.
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -229,14 +247,14 @@ public class MainActivity extends BaseActivity  {
 		mLocalBroadcastManager.registerReceiver(mBroadcastReceiver, mIntentFilter);
 
 		//Friends-list button, it opens friends-list then disappeared.
-		mOpenFriendsListV =  findViewById(R.id.friends_btn);
+		mOpenFriendsListV = findViewById(R.id.friends_btn);
 		mOpenFriendsListV.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
 				getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_from_right,
-						R.anim.slide_out_to_right, R.anim.slide_in_from_right, R.anim.slide_out_to_right).replace(R.id.friends_list_container,
-						FriendsListFragment.newInstance(MainActivity.this), FriendsListFragment.class.getSimpleName())
-						.addToBackStack(null).commit();
+						R.anim.slide_out_to_right, R.anim.slide_in_from_right, R.anim.slide_out_to_right).replace(
+						R.id.friends_list_container, FriendsListFragment.newInstance(MainActivity.this),
+						FriendsListFragment.class.getSimpleName()).addToBackStack(null).commit();
 
 				dismissFriendsListButton();
 			}
@@ -269,7 +287,8 @@ public class MainActivity extends BaseActivity  {
 	private void showFriendsListButton() {
 		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mOpenFriendsListV);
-		animator.x(screenWidth - screenWidth / 10).setDuration(getResources().getInteger(R.integer.anim_slow_duration)).start();
+		animator.x(screenWidth - screenWidth / 10).setDuration(getResources().getInteger(R.integer.anim_slow_duration))
+				.start();
 	}
 
 	private void dismissFriendsListButton() {
@@ -375,8 +394,7 @@ public class MainActivity extends BaseActivity  {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		MenuItem menuShare = menu.findItem(R.id.action_share_app);
 		//Getting the actionprovider associated with the menu item whose id is share.
-		android.support.v7.widget.ShareActionProvider provider =
-				(android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
+		android.support.v7.widget.ShareActionProvider provider = (android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
 		//Setting a share intent.
 		String subject = getString(R.string.lbl_share_app_title, getString(R.string.application_name));
 		String text = getString(R.string.lbl_share_app_content);
@@ -425,7 +443,8 @@ public class MainActivity extends BaseActivity  {
 		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
 		ViewHelper.setRotation(mEditBtn, 360f * 4);
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mEditBtn);
-		animator.x(-screenWidth).rotation(0).setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
+		animator.x(-screenWidth).rotation(0).setDuration(getResources().getInteger(R.integer.anim_fast_duration))
+				.start();
 	}
 
 	private void showInputEdit() {
@@ -441,7 +460,7 @@ public class MainActivity extends BaseActivity  {
 	 * Make the main screen, pages, friends-list etc.
 	 */
 	private void initViewPager() {
-		if(!AuthUtil.isLegitimate(getApplicationContext())) {
+		if (!AuthUtil.isLegitimate(getApplicationContext())) {
 			showDialogFragment(LoginDialog.newInstance(getApplicationContext()), null);
 		} else {
 			mViewPager = (ViewPager) findViewById(R.id.vp);

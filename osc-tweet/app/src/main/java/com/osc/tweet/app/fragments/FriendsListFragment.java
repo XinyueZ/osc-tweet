@@ -20,6 +20,7 @@ import com.chopping.fragments.BaseFragment;
 import com.osc.tweet.R;
 import com.osc.tweet.app.adapters.FriendsListAdapter;
 import com.osc.tweet.events.CloseFriendsListEvent;
+import com.osc.tweet.events.LoadFriendsListEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.OscApi;
@@ -52,9 +53,28 @@ public final class FriendsListFragment extends BaseFragment {
 	 */
 	private View mPbV;
 
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
+
+	/**
+	 * Handler for {@link LoadFriendsListEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link LoadFriendsListEvent}.
+	 */
+	public void onEvent(LoadFriendsListEvent e) {
+		getFriendsList();
+	}
+
+	//------------------------------------------------
+
 	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.FriendsListFragment}.
-	 * @param context {@link android.content.Context}.
+	 *
+	 * @param context
+	 * 		{@link android.content.Context}.
+	 *
 	 * @return {@link com.osc.tweet.app.fragments.FriendsListFragment}.
 	 */
 	public static Fragment newInstance(Context context) {
@@ -77,16 +97,16 @@ public final class FriendsListFragment extends BaseFragment {
 		view.findViewById(R.id.close_friends_list_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
-//				getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(
-//						R.anim.slide_in_from_right, R.anim.slide_out_to_right, R.anim.slide_in_from_right,
-//						R.anim.slide_out_to_right).commit();
-//						.remove(FriendsListFragment.this).commit();
+				//				getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(
+				//						R.anim.slide_in_from_right, R.anim.slide_out_to_right, R.anim.slide_in_from_right,
+				//						R.anim.slide_out_to_right).commit();
+				//						.remove(FriendsListFragment.this).commit();
 
 				getActivity().getSupportFragmentManager().popBackStack();
 				EventBus.getDefault().post(new CloseFriendsListEvent());
 			}
 		});
-		mPbV = view.findViewById(R.id.pb);
+		mPbV = view.findViewById(R.id.load_user_info_pb);
 		getFriendsList();
 	}
 
