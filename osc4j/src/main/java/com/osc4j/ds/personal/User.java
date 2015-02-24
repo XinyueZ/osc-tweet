@@ -1,9 +1,11 @@
 package com.osc4j.ds.personal;
 
 
+import java.io.Serializable;
+
 import com.google.gson.annotations.SerializedName;
 
-public final class User {
+public final class User implements Serializable{
 	@SerializedName("uid")
 	private int mUid;
 	@SerializedName("name")
@@ -77,5 +79,9 @@ public final class User {
 
 	public boolean isRelated() {
 		return mRelation == 1 || mRelation == 2 ;
+	}
+
+	public void setRelation(int relation) {
+		mRelation = relation;
 	}
 }

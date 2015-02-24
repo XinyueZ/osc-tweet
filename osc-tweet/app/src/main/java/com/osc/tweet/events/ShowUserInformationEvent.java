@@ -3,19 +3,19 @@ package com.osc.tweet.events;
 /**
  * Event to show user's information.
  */
-public final class ShowUserInformation {
+public final class ShowUserInformationEvent {
 	/**
 	 * The oschina.net user-id of the user who will be shown.
 	 */
 	private long mUserId;
 
 	/**
-	 * Constructor of {@link ShowUserInformation}
+	 * Constructor of {@link ShowUserInformationEvent}
 	 *
 	 * @param userId
 	 * 		The oschina.net user-id of the user who will be shown.
 	 */
-	public ShowUserInformation(long userId) {
+	public ShowUserInformationEvent(long userId) {
 		mUserId = userId;
 	}
 

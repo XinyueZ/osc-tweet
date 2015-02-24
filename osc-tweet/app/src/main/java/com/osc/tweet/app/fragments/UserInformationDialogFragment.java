@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -19,12 +20,17 @@ import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.osc.tweet.R;
+import com.osc.tweet.events.SnackMessageEvent;
+import com.osc.tweet.views.OnViewAnimatedClickedListener2;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
 import com.osc4j.OscTweetException;
+import com.osc4j.ds.common.Result;
 import com.osc4j.ds.personal.Gender;
 import com.osc4j.ds.personal.User;
 import com.osc4j.ds.personal.UserInformation;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Show user-information.
@@ -35,6 +41,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	private static final String EXTRAS_FRIEND = UserInformationDialogFragment.class.getName() + ".EXTRAS." + "friend";
 	private static final String EXTRAS_NEED_MESSAGES =
 			UserInformationDialogFragment.class.getName() + ".EXTRAS." + "need_message";
+	private static final String USER = "user";
 	/**
 	 * Main layout for this component.
 	 */
@@ -47,9 +54,10 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	private TextView mUserPlatformTv;
 	private TextView mUserSkillTv;
 	private TextView mUserLocationTv;
+	private Button mUserRelationBtn;
 	private View mPb;
 	private View mAllContainerV;
-
+	private User mUser;
 	/**
 	 * Initialize an {@link  UserInformationDialogFragment}.
 	 *
@@ -83,11 +91,49 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		if(savedInstanceState != null) {
+			mUser = (User) savedInstanceState.getSerializable(USER);
+		}
 		mUserPhotoIv = (RoundedNetworkImageView) view.findViewById(R.id.user_photo_iv);
 		mUserNameTv = (TextView) view.findViewById(R.id.user_name_tv);
 		mUserIdentTv = (TextView) view.findViewById(R.id.user_ident_tv);
 		mUserGenderTv = (TextView) view.findViewById(R.id.user_gender_tv);
 		mUserPlatformTv = (TextView) view.findViewById(R.id.user_platform_tv);
+		mUserRelationBtn = (Button) view.findViewById(R.id.relation_btn);
+		mUserRelationBtn.setOnClickListener(new OnViewAnimatedClickedListener2() {
+			@Override
+			public void onClick() {
+				AsyncTaskCompat.executeParallel(new AsyncTask<Object, Result, Result>() {
+					@Override
+					protected Result doInBackground(Object... params) {
+						try {
+							return OscApi.updateRelation(getActivity().getApplicationContext(), mUser.getUid(), mUser.isRelated());
+						} catch (IOException e) {
+							return null;
+						} catch (OscTweetException e) {
+							return null;
+						}
+					}
+
+					@Override
+					protected void onPostExecute(Result res) {
+						super.onPostExecute(res);
+						if (res != null && Integer.valueOf(res.getCode()) == com.osc4j.ds.common.Status.STATUS_OK) {
+							if(mUser.isRelated()) {
+								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
+										R.string.msg_focus_cancle), mUser.getName())));
+							} else {
+								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
+										R.string.msg_focus), mUser.getName())));
+							}
+							//New relation.
+							mUser.setRelation(res.getRelation());
+							updateFocusButton();
+						}
+					}
+				});
+			}
+		});
 		mUserSkillTv = (TextView) view.findViewById(R.id.user_skill_tv);
 		mUserLocationTv = (TextView) view.findViewById(R.id.user_location_tv);
 		mPb = view.findViewById(R.id.pb);
@@ -122,20 +168,35 @@ public final class UserInformationDialogFragment extends DialogFragment {
 			protected void onPostExecute(UserInformation userInformation) {
 				super.onPostExecute(userInformation);
 				if (userInformation != null && userInformation.getUser() != null) {
-					User user = userInformation.getUser();
+					mUser = userInformation.getUser();
 					mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
-					mUserPhotoIv.setImageUrl(user.getPortrait(), TaskHelper.getImageLoader());
-					mUserNameTv.setText(user.getName());
-					mUserIdentTv.setText(user.getIdent());
-					mUserSkillTv.setText(user.getExpertise());
-					mUserPlatformTv.setText(user.getPlatforms());
-					mUserGenderTv.setText(getString(user.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
+					mUserPhotoIv.setImageUrl(mUser.getPortrait(), TaskHelper.getImageLoader());
+					mUserNameTv.setText(mUser.getName());
+					mUserIdentTv.setText(mUser.getIdent());
+					mUserSkillTv.setText(mUser.getExpertise());
+					mUserPlatformTv.setText(mUser.getPlatforms());
+					mUserGenderTv.setText(getString(mUser.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
 							R.string.lbl_user_gender_famle));
-					mUserLocationTv.setText(String.format("%s, %s", user.getCity(), user.getProvince()));
+					updateFocusButton();
+					mUserLocationTv.setText(String.format("%s, %s", mUser.getCity(), mUser.getProvince()));
 					mPb.setVisibility(View.INVISIBLE);
 					mAllContainerV.setVisibility(View.VISIBLE);
 				}
 			}
 		});
+	}
+
+	/**
+	 * Update text on button of relation.
+	 */
+	private void updateFocusButton() {
+		mUserRelationBtn.setText(getString(
+				mUser.isRelated() ? R.string.lbl_user_cancle_focus : R.string.lbl_user_focus));
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putSerializable(USER, mUser);
 	}
 }
