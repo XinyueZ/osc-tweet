@@ -52,6 +52,11 @@ public final class FriendsListFragment extends BaseFragment {
 	 */
 	private View mPbV;
 
+	/**
+	 * Create an instance of {@link com.osc.tweet.app.fragments.FriendsListFragment}.
+	 * @param context {@link android.content.Context}.
+	 * @return {@link com.osc.tweet.app.fragments.FriendsListFragment}.
+	 */
 	public static Fragment newInstance(Context context) {
 		return FriendsListFragment.instantiate(context, FriendsListFragment.class.getName());
 	}

@@ -24,6 +24,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.events.ShowBigImageEvent;
+import com.osc.tweet.events.ShowUserInformation;
 import com.osc.tweet.views.URLImageParser;
 import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.utils.Utils;
@@ -88,7 +89,12 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		final TweetListItem item = mData.get(position);
 		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
-
+		holder.mPortraitIv.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				EventBus.getDefault().post(new ShowUserInformation(item.getAuthorId()));
+			}
+		});
 		if (!TextUtils.isEmpty(item.getImgSmall())) {
 			holder.mSmallImgIv.setVisibility(View.VISIBLE);
 			holder.mSmallImgIv.setDefaultImageResId(R.drawable.ic_not_loaded);

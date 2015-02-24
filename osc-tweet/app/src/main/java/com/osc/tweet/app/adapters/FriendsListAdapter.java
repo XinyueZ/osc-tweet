@@ -6,12 +6,16 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
+import com.osc.tweet.events.ShowUserInformation;
 import com.osc4j.ds.personal.Friend;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * The adapter for friends-list.
@@ -71,6 +75,12 @@ public final class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAd
 		final Friend item = mData.get(position);
 		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
+		holder.mPortraitIv.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				EventBus.getDefault().post(new ShowUserInformation(item.getUserId()));
+			}
+		});
 
 	}
 

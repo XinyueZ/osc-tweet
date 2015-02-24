@@ -41,10 +41,12 @@ import com.osc.tweet.app.fragments.AboutDialogFragment;
 import com.osc.tweet.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.osc.tweet.app.fragments.AppListImpFragment;
 import com.osc.tweet.app.fragments.FriendsListFragment;
+import com.osc.tweet.app.fragments.UserInformationDialogFragment;
 import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
+import com.osc.tweet.events.ShowUserInformation;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
@@ -181,6 +183,16 @@ public class MainActivity extends BaseActivity  {
 	 */
 	public void onEvent(CloseFriendsListEvent e) {
 		showFriendsListButton();
+	}
+
+	/**
+	 * Handler for {@link ShowUserInformation}.
+	 *
+	 * @param e
+	 * 		Event {@link ShowUserInformation}.
+	 */
+	public void onEvent(ShowUserInformation e) {
+		showDialogFragment(UserInformationDialogFragment.newInstance(getApplicationContext(), e.getUserId(), true), null);
 	}
 
 	//------------------------------------------------

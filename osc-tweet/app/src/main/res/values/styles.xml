@@ -26,7 +26,6 @@
     </style>
 
 
-
     <style name="ListItemCardView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -36,8 +35,7 @@
     </style>
 
 
-
-    <style name="CardView" parent="@style/ListItemCardView"/>
+    <style name="CardView" parent="@style/ListItemCardView" />
 
     <style name="FloatButton">
         <item name="android:layout_width">@dimen/float_button_size</item>
@@ -69,4 +67,27 @@
         <item name="spb_colors">@array/loading_colors</item>
         <item name="spb_gradients">true</item>
     </style>
+
+
+    <style name="Theme.Transparent.Dialog" parent="Theme.Transparent">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="Style_User_Information_Label">
+        <item name="android:textColor">@color/common_blue</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Style_User_Information_Value">
+        <item name="android:textColor">@color/common_black</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/common_padding</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+
 </resources>

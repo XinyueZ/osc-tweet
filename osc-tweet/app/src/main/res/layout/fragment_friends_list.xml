@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/friends_list_width"
     android:background="@drawable/gradient_green_center"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.osc.tweet.app.fragments.FriendsListFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/friends_list_rv"
