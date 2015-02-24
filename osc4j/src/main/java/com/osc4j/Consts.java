@@ -55,19 +55,23 @@ public final class Consts {
 	 */
 	static final String TWEET_PUB_URL = OSC_HOST + "tweetPub?uid=%d&msg=%s";
 	/**
-	 * Get tweet-lists
+	 * Get tweet-lists.
 	 */
 	static final String TWEET_LIST_URL = OSC_HOST + "tweetList?page=%d";
 	/**
-	 * Get my tweet-lists
+	 * Get my tweet-lists.
 	 */
 	static final String TWEET_MY_LIST_URL = OSC_HOST + "myTweetList?uid=%d&page=%d";
 	/**
-	 * Get my tweet-lists
+	 * Get my tweet-lists.
 	 */
 	static final String TWEET_HOTSPOT_LIST_URL = OSC_HOST + "hotspotTweetList?page=%d";
 	/**
-	 * Friends-list
+	 * Friends-list.
 	 */
 	static final String FRIENDS_URL = OSC_HOST + "friendsList";
+	/**
+	 * User-information.
+	 */
+	static final String USER_INFORMATION_URL = OSC_HOST + "userInformation?uid=%d&fri=%d&msg=%d";
 }

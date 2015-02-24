@@ -15,6 +15,7 @@ import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
 import com.osc4j.ds.Login;
 import com.osc4j.ds.personal.FriendsList;
+import com.osc4j.ds.personal.UserInformation;
 import com.osc4j.ds.tweet.TweetList;
 import com.osc4j.utils.AuthUtil;
 import com.osc4j.utils.Utils;
@@ -146,6 +147,13 @@ public final class OscApi {
 	}
 
 
+	/**
+	 * Get friend list.
+	 * @param context {@link android.content.Context}.
+	 * @return
+	 * @throws IOException
+	 * @throws OscTweetException
+	 */
 	public static FriendsList friendsList(Context context) throws IOException, OscTweetException {
 		FriendsList ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -166,6 +174,34 @@ public final class OscApi {
 			throw new OscTweetException();
 		} else {
 			ret = sGson.fromJson(response.body().string(), FriendsList.class);
+		}
+
+		return ret;
+	}
+
+
+	public static UserInformation userInformation(Context context, long friend, boolean needMessage) throws IOException, OscTweetException {
+		UserInformation ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+		//Get my user-id on oschina.net
+		int uid = prefs.getInt(Consts.KEY_UID, -1);
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+		String url = String.format(Consts.USER_INFORMATION_URL, uid, friend, needMessage ? 1 : 0 );
+		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+				.build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= 300) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), UserInformation.class);
 		}
 
 		return ret;
