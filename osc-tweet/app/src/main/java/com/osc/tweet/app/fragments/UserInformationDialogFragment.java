@@ -128,7 +128,8 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					protected void onPreExecute() {
 						super.onPreExecute();
 						mChangeRelationPb.setVisibility(View.VISIBLE);
-						mUserRelationBtn.setVisibility(View.INVISIBLE);
+						mUserRelationBtn.setEnabled(false);
+						mUserRelationBtn.setText("");
 					}
 
 					@Override
@@ -161,7 +162,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 							//New relation.
 							user.setRelation(res.getResult().getRelation());
 							mChangeRelationPb.setVisibility(View.INVISIBLE);
-							mUserRelationBtn.setVisibility(View.VISIBLE);
+							mUserRelationBtn.setEnabled(true);
 							EventBus.getDefault().post(new LoadFriendsListEvent());
 							updateFocusButton();
 						}
