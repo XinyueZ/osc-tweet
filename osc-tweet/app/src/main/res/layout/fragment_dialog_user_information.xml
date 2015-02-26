@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/user_info_list_margin"
-            android:paddingBottom="@dimen/user_info_list_margin"
+            android:layout_marginBottom="@dimen/user_info_list_margin"
             android:paddingRight="@dimen/common_padding"
             android:paddingLeft="@dimen/common_padding"
             android:layout_marginTop="@dimen/user_info_list_margin"
@@ -146,6 +146,22 @@
                         style="@style/Style_User_Information_Value" />
                 </LinearLayout>
             </LinearLayout>
+
+
+            <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+                android:id="@+id/loading_tweets_pb"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/pb_height"
+                style="@style/GradientProgressBar"
+                android:layout_gravity="bottom"
+                android:indeterminate="true" />
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/tweet_list_rv"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </LinearLayout>
 
         <com.osc.tweet.views.RoundedNetworkImageView
@@ -153,6 +169,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_width="@dimen/portrait_large_size"
             android:layout_height="@dimen/portrait_large_size" />
+
     </FrameLayout>
 
     <ProgressBar
@@ -161,4 +178,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/load_user_info_pb"
         android:layout_gravity="center" />
+
+
 </FrameLayout>

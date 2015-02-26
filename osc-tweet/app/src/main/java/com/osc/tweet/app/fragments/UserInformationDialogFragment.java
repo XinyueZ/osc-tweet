@@ -8,10 +8,11 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.osc.tweet.R;
+import com.osc.tweet.app.adapters.UserInfoTweetListAdapter;
 import com.osc.tweet.events.LoadFriendsListEvent;
 import com.osc.tweet.events.SnackMessageEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener2;
@@ -42,7 +44,10 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	private static final String EXTRAS_FRIEND = UserInformationDialogFragment.class.getName() + ".EXTRAS." + "friend";
 	private static final String EXTRAS_NEED_MESSAGES =
 			UserInformationDialogFragment.class.getName() + ".EXTRAS." + "need_message";
-	private static final String USER = "user";
+	/**
+	 * Save domain object for fallback when UI destroyed.
+	 */
+	private static final String USER_INFO = "user_info";
 	/**
 	 * Main layout for this component.
 	 */
@@ -58,9 +63,17 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	private Button mUserRelationBtn;
 	private View mLoadUserInfoPb;
 	private View mChangeRelationPb;
+	private View mLoadTweetsPb;
 	private View mAllContainerV;
-	private User mUser;
-
+	private UserInformation mUserInfo;
+	/**
+	 * Adapter for {@link #mRv} to show all tweets.
+	 */
+	private UserInfoTweetListAdapter mAdp;
+	/**
+	 * List container for showing all tweets.
+	 */
+	private RecyclerView mRv;
 	/**
 	 * Initialize an {@link  UserInformationDialogFragment}.
 	 *
@@ -94,8 +107,12 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		mRv = (RecyclerView) view.findViewById(R.id.tweet_list_rv);
+		mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
+		mRv.setHasFixedSize(false);
+		mRv.setAdapter(mAdp = new UserInfoTweetListAdapter(null));
 		if (savedInstanceState != null) {
-			mUser = (User) savedInstanceState.getSerializable(USER);
+			mUserInfo = (UserInformation) savedInstanceState.getSerializable(USER_INFO);
 		}
 		mUserPhotoIv = (RoundedNetworkImageView) view.findViewById(R.id.user_photo_iv);
 		mUserNameTv = (TextView) view.findViewById(R.id.user_name_tv);
@@ -117,8 +134,9 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					@Override
 					protected StatusResult doInBackground(Object... params) {
 						try {
-							return OscApi.updateRelation(getActivity().getApplicationContext(), mUser.getUid(),
-									mUser.isRelated());
+							User user = mUserInfo.getUser();
+							return OscApi.updateRelation(getActivity().getApplicationContext(), user.getUid(),
+									user.isRelated());
 						} catch (IOException e) {
 							return null;
 						} catch (OscTweetException e) {
@@ -129,17 +147,19 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					@Override
 					protected void onPostExecute(StatusResult res) {
 						super.onPostExecute(res);
+
 						if (res != null && res.getResult() != null && Integer.valueOf(res.getResult().getCode()) ==
 								com.osc4j.ds.common.Status.STATUS_OK) {
-							if (mUser.isRelated()) {
+							User user = mUserInfo.getUser();
+							if (user.isRelated()) {
 								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
-										R.string.msg_focus_cancle), mUser.getName())));
+										R.string.msg_focus_cancle), user.getName())));
 							} else {
 								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
-										R.string.msg_focus), mUser.getName())));
+										R.string.msg_focus), user.getName())));
 							}
 							//New relation.
-							mUser.setRelation(res.getResult().getRelation());
+							user.setRelation(res.getResult().getRelation());
 							mChangeRelationPb.setVisibility(View.INVISIBLE);
 							mUserRelationBtn.setVisibility(View.VISIBLE);
 							EventBus.getDefault().post(new LoadFriendsListEvent());
@@ -153,12 +173,13 @@ public final class UserInformationDialogFragment extends DialogFragment {
 		mUserLocationTv = (TextView) view.findViewById(R.id.user_location_tv);
 		mLoadUserInfoPb = view.findViewById(R.id.load_user_info_pb);
 		mChangeRelationPb = view.findViewById(R.id.change_relation_pb);
+		mLoadTweetsPb = view.findViewById(R.id.loading_tweets_pb);
 		mAllContainerV = view.findViewById(R.id.all_container);
 		getUserInformation();
 
 		ScreenSize sz = DeviceUtils.getScreenSize(getActivity().getApplication());
 		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width,
-				LayoutParams.WRAP_CONTENT));
+				sz.Height));
 	}
 
 
@@ -184,19 +205,23 @@ public final class UserInformationDialogFragment extends DialogFragment {
 			protected void onPostExecute(UserInformation userInformation) {
 				super.onPostExecute(userInformation);
 				if (userInformation != null && userInformation.getUser() != null) {
-					mUser = userInformation.getUser();
+					mUserInfo = userInformation;
+					User user = userInformation.getUser();
 					mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
-					mUserPhotoIv.setImageUrl(mUser.getPortrait(), TaskHelper.getImageLoader());
-					mUserNameTv.setText(mUser.getName());
-					mUserIdentTv.setText(mUser.getIdent());
-					mUserSkillTv.setText(mUser.getExpertise());
-					mUserPlatformTv.setText(mUser.getPlatforms());
-					mUserGenderTv.setText(getString(mUser.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
+					mUserPhotoIv.setImageUrl(user.getPortrait(), TaskHelper.getImageLoader());
+					mUserNameTv.setText(user.getName());
+					mUserIdentTv.setText(user.getIdent());
+					mUserSkillTv.setText(user.getExpertise());
+					mUserPlatformTv.setText(user.getPlatforms());
+					mUserGenderTv.setText(getString(user.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
 							R.string.lbl_user_gender_famle));
 					updateFocusButton();
-					mUserLocationTv.setText(String.format("%s, %s", mUser.getCity(), mUser.getProvince()));
+					mUserLocationTv.setText(String.format("%s, %s", user.getCity(), user.getProvince()));
 					mLoadUserInfoPb.setVisibility(View.INVISIBLE);
 					mAllContainerV.setVisibility(View.VISIBLE);
+					mAdp.setData(userInformation.getTweets());
+					mAdp.notifyDataSetChanged();
+					mLoadTweetsPb.setVisibility(View.INVISIBLE);
 				}
 			}
 		});
@@ -207,12 +232,12 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	 */
 	private void updateFocusButton() {
 		mUserRelationBtn.setText(getString(
-				mUser.isRelated() ? R.string.lbl_user_cancle_focus : R.string.lbl_user_focus));
+				mUserInfo.getUser().isRelated() ? R.string.lbl_user_cancle_focus : R.string.lbl_user_focus));
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putSerializable(USER, mUser);
+		outState.putSerializable(USER_INFO, mUserInfo);
 	}
 }

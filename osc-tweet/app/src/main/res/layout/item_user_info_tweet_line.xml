@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/CardView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/author_tv"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/common_blue"
+                android:layout_marginTop="@dimen/common_padding"
+                android:layout_marginLeft="@dimen/common_padding"
+                android:layout_marginRight="@dimen/common_padding" />
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                style="@style/ActionBar_ToolBar_On_Item" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/body_tv"
+            android:layout_width="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/common_black"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/common_padding"
+            android:layout_marginRight="@dimen/common_padding"
+            android:layout_marginBottom="@dimen/common_padding" />
+
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/small_img_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/common_padding"
+            android:layout_marginRight="@dimen/common_padding"
+            android:layout_marginBottom="@dimen/common_padding" />
+
+        <LinearLayout
+            android:layout_marginLeft="@dimen/common_padding"
+            android:layout_marginRight="@dimen/common_padding"
+            android:layout_marginBottom="@dimen/common_padding"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:src="@drawable/ic_time"
+                style="@style/Line_Date_Comments_ImageView" />
+
+            <TextView
+                android:id="@+id/time_tv"
+                style="@style/Line_Date_Comments" />
+
+            <ImageView
+                android:src="@drawable/ic_comments"
+                style="@style/Line_Date_Comments_ImageView" />
+
+            <TextView
+                android:id="@+id/comments_tv"
+                style="@style/Line_Date_Comments" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>
