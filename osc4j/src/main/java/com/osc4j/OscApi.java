@@ -149,6 +149,33 @@ public final class OscApi {
 	}
 
 
+
+	public static StatusResult tweetPub(Context context, String msg) throws IOException, OscTweetException {
+		StatusResult ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+		String url = String.format(Consts.TWEET_PUB_URL, msg);
+		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+				.build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= Status.STATUS_ERR) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), StatusResult.class);
+		}
+
+		return ret;
+	}
+
+
 	/**
 	 * Get friend list.
 	 * @param context {@link android.content.Context}.
@@ -181,7 +208,15 @@ public final class OscApi {
 		return ret;
 	}
 
-
+	/**
+	 * Get user information.
+	 * @param context
+	 * @param friend
+	 * @param needMessage
+	 * @return
+	 * @throws IOException
+	 * @throws OscTweetException
+	 */
 	public static UserInformation userInformation(Context context, long friend, boolean needMessage) throws IOException, OscTweetException {
 		UserInformation ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -209,7 +244,15 @@ public final class OscApi {
 		return ret;
 	}
 
-
+	/**
+	 * Update relation to other users.
+	 * @param context
+	 * @param friend
+	 * @param cancel
+	 * @return
+	 * @throws IOException
+	 * @throws OscTweetException
+	 */
 	public static StatusResult updateRelation(Context context, long friend, boolean cancel) throws IOException, OscTweetException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -218,7 +261,7 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		String url = String.format(Consts.UPDATE_RELEATION_URL,  friend, cancel ? 0 : 1 );
+		String url = String.format(Consts.UPDATE_RELATION_URL,  friend, cancel ? 0 : 1 );
 		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
 				.build();
 		OkHttpClient client = new OkHttpClient();

@@ -53,7 +53,7 @@ public final class Consts {
 	/**
 	 * Publish tweet.
 	 */
-	static final String TWEET_PUB_URL = OSC_HOST + "tweetPub?uid=%d&msg=%s";
+	static final String TWEET_PUB_URL = OSC_HOST + "tweetPub?msg=%s";
 	/**
 	 * Get tweet-lists.
 	 */
@@ -77,5 +77,5 @@ public final class Consts {
 	/**
 	 * Update relation between me and user.
 	 */
-	static final String UPDATE_RELEATION_URL = OSC_HOST + "updateRelation?fri=%d&rel=%d";
+	static final String UPDATE_RELATION_URL = OSC_HOST + "updateRelation?fri=%d&rel=%d";
 }
