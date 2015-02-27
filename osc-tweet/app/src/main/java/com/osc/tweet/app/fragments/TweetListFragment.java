@@ -177,7 +177,7 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			protected TweetList doInBackground(Object... params) {
 				try {
-					return OscApi.tweetList(getActivity(), mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
+					return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
 							getArguments().getBoolean(EXTRAS_HOTSPOT, false));
 				} catch (IOException e) {
 					return null;
@@ -205,7 +205,7 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			protected TweetList doInBackground(Object... params) {
 				try {
-					return OscApi.tweetList(getActivity(), mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
+					return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
 							getArguments().getBoolean(EXTRAS_HOTSPOT, false));
 				} catch (IOException e) {
 					return null;

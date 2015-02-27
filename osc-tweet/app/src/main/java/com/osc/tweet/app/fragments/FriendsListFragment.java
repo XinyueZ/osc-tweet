@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
 import com.osc.tweet.R;
+import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.FriendsListAdapter;
 import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.LoadFriendsListEvent;
@@ -119,7 +120,7 @@ public final class FriendsListFragment extends BaseFragment {
 			@Override
 			protected FriendsList doInBackground(Object... params) {
 				try {
-					return OscApi.friendsList(getActivity());
+					return OscApi.friendsList(App.Instance);
 				} catch (IOException e) {
 					return null;
 				} catch (OscTweetException e) {

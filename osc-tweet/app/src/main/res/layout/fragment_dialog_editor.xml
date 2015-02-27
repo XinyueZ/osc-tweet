@@ -11,9 +11,23 @@
         android:id="@+id/toolbar"
         style="@style/ActionBar_ToolBar" />
 
-    <android.support.v7.internal.widget.TintEditText
-        android:id="@+id/message_content_et"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="top|left"/>
+        android:layout_height="match_parent">
+
+        <android.support.v7.internal.widget.TintEditText
+            android:id="@+id/message_content_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="top|left" />
+
+        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+            android:id="@+id/sending_pb"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/pb_height"
+            style="@style/PocketProgressBar"
+            android:layout_gravity="top"
+            android:visibility="invisible"
+            android:indeterminate="true" />
+    </FrameLayout>
 </LinearLayout>

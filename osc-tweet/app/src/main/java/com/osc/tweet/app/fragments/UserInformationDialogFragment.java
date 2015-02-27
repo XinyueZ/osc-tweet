@@ -23,6 +23,7 @@ import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
+import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.UserInfoTweetListAdapter;
 import com.osc.tweet.events.LoadFriendsListEvent;
 import com.osc.tweet.events.SnackMessageEvent;
@@ -150,7 +151,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					protected StatusResult doInBackground(Object... params) {
 						try {
 							User user = mUserInfo.getUser();
-							return OscApi.updateRelation(getActivity().getApplicationContext(), user.getUid(),
+							return OscApi.updateRelation(App.Instance, user.getUid(),
 									user.isRelated());
 						} catch (IOException e) {
 							return null;
@@ -208,7 +209,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 				try {
 					long fri = getArguments().getLong(EXTRAS_FRIEND);
 					boolean nmsg = getArguments().getBoolean(EXTRAS_NEED_MESSAGES);
-					return OscApi.userInformation(getActivity().getApplicationContext(), fri, nmsg);
+					return OscApi.userInformation(App.Instance, fri, nmsg);
 				} catch (IOException e) {
 					return null;
 				} catch (OscTweetException e) {

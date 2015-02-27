@@ -1,13 +1,19 @@
 package com.osc.tweet.app.fragments;
 
+import java.io.IOException;
+
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -15,14 +21,22 @@ import android.widget.FrameLayout;
 
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
+import com.chopping.utils.Utils;
 import com.osc.tweet.R;
+import com.osc.tweet.app.App;
+import com.osc4j.OscApi;
+import com.osc4j.OscTweetException;
+
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBarUtils;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressDrawable;
 
 /**
  * Message editor.
  *
  * @author Xinyue Zhao
  */
-public final class EditorDialogFragment extends DialogFragment {
+public final class EditorDialogFragment extends DialogFragment implements OnMenuItemClickListener {
 	private static final String EXTRAS_DEFAULT_TEXT = EditorDialogFragment.class.getName() + ".EXTRAS.defaultText";
 	private static final String EXTRAS_DEFAULT_FIXED = EditorDialogFragment.class.getName() + ".EXTRAS.defaultFixed";
 	/**
@@ -41,6 +55,14 @@ public final class EditorDialogFragment extends DialogFragment {
 	 * Editor for message.
 	 */
 	private EditText mEditText;
+	/**
+	 * {@link android.view.MenuItem} clicked to send message.
+	 */
+	private MenuItem mSendMi;
+	/**
+	 * An {@link android.view.View} to indicate that "sending" is in progress.
+	 */
+	private SmoothProgressBar mSendingIndicatorV;
 	/**
 	 * Initialize an {@link  EditorDialogFragment}.
 	 *
@@ -81,12 +103,21 @@ public final class EditorDialogFragment extends DialogFragment {
 		mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 		mToolbar.inflateMenu(MENU);
 		mToolbar.setTitle(getString(R.string.lbl_editor_title));
-
+		mSendMi = mToolbar.getMenu().findItem(R.id.action_send);
+		mSendMi.setOnMenuItemClickListener(this);
 		mEditText = (EditText) view.findViewById(R.id.message_content_et);
 		String defaultText = getDefaultText();
-		if(!TextUtils.isEmpty(defaultText)) {
+		if (!TextUtils.isEmpty(defaultText)) {
 			mEditText.setText(defaultText);
 		}
+
+		mSendingIndicatorV = (SmoothProgressBar) view.findViewById(R.id.sending_pb);
+		mSendingIndicatorV.setSmoothProgressDrawableBackgroundDrawable(
+				SmoothProgressBarUtils.generateDrawableWithColors(getResources().getIntArray(
+						R.array.pocket_background_colors),
+						((SmoothProgressDrawable) mSendingIndicatorV.getIndeterminateDrawable()).getStrokeWidth()));
+		mSendingIndicatorV.progressiveStart();
+
 	}
 
 	/**
@@ -104,5 +135,57 @@ public final class EditorDialogFragment extends DialogFragment {
 	 */
 	private boolean isDefaultFixed() {
 		return getArguments().getBoolean(EXTRAS_DEFAULT_FIXED);
+	}
+
+	@Override
+	public boolean onMenuItemClick(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_send:
+			sendMessage();
+			break;
+		}
+		return true;
+	}
+
+	/**
+	 * Send tweet.
+	 */
+	private void sendMessage() {
+		String msg = mEditText.getText().toString();
+		if (!TextUtils.isEmpty(msg)) {
+			AsyncTaskCompat.executeParallel(new AsyncTask<String, Object, String>() {
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					mSendMi.setEnabled(false);
+					mSendingIndicatorV.setVisibility(View.VISIBLE);
+				}
+
+				@Override
+				protected String doInBackground(String... params) {
+					String msg = params[0];
+					try {
+						OscApi.tweetPub(App.Instance, Utils.encode(msg));
+					} catch (IOException | OscTweetException e) {
+						return getString(R.string.msg_message_sent_failed);
+					}
+					return getString(R.string.msg_message_sent_successfully);
+				}
+
+				@Override
+				protected void onPostExecute(String s) {
+					super.onPostExecute(s);
+					Utils.showLongToast(App.Instance, s);
+					if (isVisible() && mSendMi != null) {
+						mSendMi.setEnabled(true);
+						mSendingIndicatorV.setVisibility(View.INVISIBLE);
+						mSendingIndicatorV.progressiveStop();
+						dismiss();
+					}
+				}
+			}, msg);
+		} else {
+			Utils.showShortToast(App.Instance, R.string.msg_message_input);
+		}
 	}
 }
