@@ -20,6 +20,8 @@ import android.widget.TextView;
 import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
+import com.nineoldandroids.view.ViewHelper;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.adapters.UserInfoTweetListAdapter;
 import com.osc.tweet.events.LoadFriendsListEvent;
@@ -75,6 +77,14 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	 */
 	private RecyclerView mRv;
 	/**
+	 * Previous position of {@link #mUserPhotoIv}.
+	 */
+	private float mIvY;
+	/**
+	 * Previous position of {@link #mUserRelationBtn}.
+	 */
+	private float mBtnX;
+	/**
 	 * Initialize an {@link  UserInformationDialogFragment}.
 	 *
 	 * @param context
@@ -115,11 +125,15 @@ public final class UserInformationDialogFragment extends DialogFragment {
 			mUserInfo = (UserInformation) savedInstanceState.getSerializable(USER_INFO);
 		}
 		mUserPhotoIv = (RoundedNetworkImageView) view.findViewById(R.id.user_photo_iv);
+		mIvY = ViewHelper.getY(mUserPhotoIv);
+		ViewHelper.setY(mUserPhotoIv, -100f);
 		mUserNameTv = (TextView) view.findViewById(R.id.user_name_tv);
 		mUserIdentTv = (TextView) view.findViewById(R.id.user_ident_tv);
 		mUserGenderTv = (TextView) view.findViewById(R.id.user_gender_tv);
 		mUserPlatformTv = (TextView) view.findViewById(R.id.user_platform_tv);
 		mUserRelationBtn = (Button) view.findViewById(R.id.relation_btn);
+		mBtnX = ViewHelper.getX(mUserRelationBtn);
+		ViewHelper.setTranslationX(mUserRelationBtn, 100f);
 		mUserRelationBtn.setOnClickListener(new OnViewAnimatedClickedListener2() {
 			@Override
 			public void onClick() {
@@ -210,6 +224,12 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					User user = userInformation.getUser();
 					mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 					mUserPhotoIv.setImageUrl(user.getPortrait(), TaskHelper.getImageLoader());
+					ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mUserPhotoIv);
+					animator.y(mIvY).setDuration(getResources().getInteger(R.integer.anim_fast_duration))
+							.start();
+					animator =  ViewPropertyAnimator.animate(mUserRelationBtn);
+					animator.translationX(mBtnX).setDuration(getResources().getInteger(R.integer.anim_fast_duration))
+							.start();
 					mUserNameTv.setText(user.getName());
 					mUserIdentTv.setText(user.getIdent());
 					mUserSkillTv.setText(user.getExpertise());
