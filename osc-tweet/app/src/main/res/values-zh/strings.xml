@@ -5,6 +5,7 @@
     <string name="action_share">分享</string>
     <string name="action_settings">设置</string>
     <string name="action_about">关于</string>
+    <string name="action_send">发送</string>
 
     <string name="msg_move_to_top">回到顶部</string>
     <string name="msg_focus">您已经对 %s 添加关注。</string>
@@ -45,4 +46,5 @@
     <string name="lbl_user_platform">擅长平台：</string>
     <string name="lbl_user_cancle_focus">取消关注</string>
     <string name="lbl_user_focus">关注</string>
+    <string name="lbl_editor_title">编辑消息</string>
 </resources>

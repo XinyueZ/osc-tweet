@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_v"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.osc.tweet.app.fragments.EditorDialogFragment">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/ActionBar_ToolBar" />
+
+    <android.support.v7.internal.widget.TintEditText
+        android:id="@+id/message_content_et"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|left"/>
+</LinearLayout>

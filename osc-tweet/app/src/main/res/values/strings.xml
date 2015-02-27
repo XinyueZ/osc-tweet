@@ -56,4 +56,6 @@
     <string name="lbl_user_gender">Gender:</string>
     <string name="msg_focus">You have focused on %s</string>
     <string name="msg_focus_cancle">You have cancled focused on %s</string>
+    <string name="action_send">Send</string>
+    <string name="lbl_editor_title">Write message</string>
 </resources>

@@ -30,7 +30,6 @@ import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
 import com.chopping.bus.CloseDrawerEvent;
 import com.chopping.utils.DeviceUtils;
-import com.chopping.utils.Utils;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -41,12 +40,14 @@ import com.osc.tweet.app.adapters.MainViewPagerAdapter;
 import com.osc.tweet.app.fragments.AboutDialogFragment;
 import com.osc.tweet.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.osc.tweet.app.fragments.AppListImpFragment;
+import com.osc.tweet.app.fragments.EditorDialogFragment;
 import com.osc.tweet.app.fragments.FriendsListFragment;
 import com.osc.tweet.app.fragments.UserInformationDialogFragment;
 import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
+import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.events.SnackMessageEvent;
@@ -56,6 +57,7 @@ import com.osc4j.Consts;
 import com.osc4j.LoginDialog;
 import com.osc4j.utils.AuthUtil;
 
+import de.greenrobot.event.EventBus;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 
@@ -212,6 +214,16 @@ public class MainActivity extends BaseActivity {
 	public void onEvent(SnackMessageEvent e) {
 		mSnackBar.show(e.getMessage());
 	}
+
+	/**
+	 * Handler for {@link ShowEditorEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link ShowEditorEvent}.
+	 */
+	public void onEvent(ShowEditorEvent e) {
+		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getDefaultMessage(), e.isDefaultFixed()), null);
+	}
 	//------------------------------------------------
 
 	@Override
@@ -231,7 +243,7 @@ public class MainActivity extends BaseActivity {
 		mEditBtn.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
-				Utils.showLongToast(getApplicationContext(), "edit");
+				EventBus.getDefault().post(new ShowEditorEvent(null));
 			}
 		});
 

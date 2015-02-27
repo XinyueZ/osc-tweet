@@ -15,6 +15,8 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.events.ShowBigImageEvent;
+import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.URLImageParser;
@@ -46,6 +49,11 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 	 * Main layout for this component.
 	 */
 	private static final int ITEM_LAYOUT = R.layout.item_tweet_line;
+
+	/**
+	 * A menu on each line of list.
+	 */
+	private static final int MENU_LIST_ITEM = R.menu.menu_list_item;
 
 	/**
 	 * Constructor of {@link com.osc.tweet.app.adapters.TweetListAdapter}.
@@ -114,7 +122,8 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		holder.mComments.setText(item.getCommentCount() + "");
 
 		if (!TextUtils.isEmpty(item.getBody())) {
-			Spanned htmlSpan = Html.fromHtml(item.getBody(), new URLImageParser(holder.mBodyTv.getContext(), holder.mBodyTv), null);
+			Spanned htmlSpan = Html.fromHtml(item.getBody(), new URLImageParser(holder.mBodyTv.getContext(),
+					holder.mBodyTv), null);
 			holder.mBodyTv.setText(htmlSpan);
 			holder.mBodyTv.setMovementMethod(LinkMovementMethod.getInstance());
 			holder.mBodyTv.setVisibility(View.VISIBLE);
@@ -133,8 +142,16 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 			holder.mTime.setText("?");
 		}
 
-		holder.mToolbar.getMenu().findItem(R.id.action_at_him).setTitle(String.format(
+		MenuItem menuItem = holder.mToolbar.getMenu().findItem(R.id.action_at_him);
+		menuItem.setTitle(String.format(
 				holder.itemView.getContext().getString(R.string.action_at_him), item.getAuthor()));
+		menuItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				EventBus.getDefault().post(new ShowEditorEvent(item.getTitle().toString()));
+				return true;
+			}
+		});
 	}
 
 	@Override
@@ -160,7 +177,8 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 			mComments = (TextView) convertView.findViewById(R.id.comments_tv);
 			mSmallImgIv = (NetworkImageView) convertView.findViewById(R.id.small_img_iv);
 			mToolbar = (Toolbar) convertView.findViewById(R.id.toolbar);
-			mToolbar.inflateMenu(R.menu.menu_list_item);
+			mToolbar.inflateMenu(MENU_LIST_ITEM);
 		}
 	}
+
 }
