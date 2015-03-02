@@ -24,9 +24,11 @@ import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.chopping.utils.Utils;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
+import com.osc.tweet.events.LoadEvent;
 import com.osc4j.OscApi;
 import com.osc4j.OscTweetException;
 
+import de.greenrobot.event.EventBus;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBarUtils;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressDrawable;
@@ -167,7 +169,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 					try {
 						OscApi.tweetPub(App.Instance, Utils.encode(msg));
 					} catch (IOException | OscTweetException e) {
-						return getString(R.string.msg_message_sent_failed);
+						return null;
 					}
 					return getString(R.string.msg_message_sent_successfully);
 				}
@@ -175,12 +177,17 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 				@Override
 				protected void onPostExecute(String s) {
 					super.onPostExecute(s);
-					Utils.showLongToast(App.Instance, s);
-					if (isVisible() && mSendMi != null) {
-						mSendMi.setEnabled(true);
-						mSendingIndicatorV.setVisibility(View.INVISIBLE);
-						mSendingIndicatorV.progressiveStop();
-						dismiss();
+					if( !TextUtils.isEmpty(s)) {
+						Utils.showLongToast(App.Instance, s);
+						if (isVisible() && mSendMi != null) {
+							mSendMi.setEnabled(true);
+							mSendingIndicatorV.setVisibility(View.INVISIBLE);
+							mSendingIndicatorV.progressiveStop();
+							dismiss();
+							EventBus.getDefault().post(new LoadEvent());
+						}
+					} else {
+						Utils.showLongToast(App.Instance, getString(R.string.msg_message_sent_failed));
 					}
 				}
 			}, msg);
