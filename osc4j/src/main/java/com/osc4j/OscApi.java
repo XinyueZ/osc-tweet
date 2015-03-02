@@ -20,6 +20,7 @@ import com.osc4j.ds.personal.FriendsList;
 import com.osc4j.ds.personal.MyInformation;
 import com.osc4j.ds.personal.UserInformation;
 import com.osc4j.ds.tweet.TweetList;
+import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.utils.AuthUtil;
 import com.osc4j.utils.Utils;
 import com.squareup.okhttp.OkHttpClient;
@@ -159,8 +160,32 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		String url = String.format(Consts.TWEET_PUB_URL, msg);
-		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+		Request request = new Request.Builder().url(Consts.TWEET_PUB_URL).get().header("Cookie", sessionInCookie + ";" + tokenInCookie+";msg="+msg)
+				.build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= Status.STATUS_ERR) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), StatusResult.class);
+		}
+
+		return ret;
+	}
+
+	public static StatusResult tweetCommentPub(Context context, TweetListItem tweetListItem, String content) throws IOException, OscTweetException {
+		StatusResult ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+		String url = String.format(Consts.TWEET_COMMENT_PUB_URL, tweetListItem.getId());
+		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie+";content="+content)
 				.build();
 		OkHttpClient client = new OkHttpClient();
 		client.networkInterceptors().add(new StethoInterceptor());

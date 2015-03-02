@@ -6,4 +6,9 @@
         android:id="@+id/action_at_him"
         android:title="@string/action_at_him"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_reply"
+        android:title="@string/action_reply_comment"
+        app:showAsAction="never" />
+
 </menu>

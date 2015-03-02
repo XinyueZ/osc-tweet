@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
@@ -27,6 +29,7 @@ import com.osc.tweet.app.App;
 import com.osc.tweet.events.LoadEvent;
 import com.osc4j.OscApi;
 import com.osc4j.OscTweetException;
+import com.osc4j.ds.tweet.TweetListItem;
 
 import de.greenrobot.event.EventBus;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
@@ -41,6 +44,8 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressDrawable;
 public final class EditorDialogFragment extends DialogFragment implements OnMenuItemClickListener {
 	private static final String EXTRAS_DEFAULT_TEXT = EditorDialogFragment.class.getName() + ".EXTRAS.defaultText";
 	private static final String EXTRAS_DEFAULT_FIXED = EditorDialogFragment.class.getName() + ".EXTRAS.defaultFixed";
+	private static final String EXTRAS_IS_COMMENT = EditorDialogFragment.class.getName() + ".EXTRAS.isComment";
+	private static final String EXTRAS_TWEET_ITEM = EditorDialogFragment.class.getName() + ".EXTRAS.tweetItem";
 	/**
 	 * Main layout for this component.
 	 */
@@ -65,8 +70,9 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 * An {@link android.view.View} to indicate that "sending" is in progress.
 	 */
 	private SmoothProgressBar mSendingIndicatorV;
+
 	/**
-	 * Initialize an {@link  EditorDialogFragment}.
+	 * Initialize an {@link  EditorDialogFragment} for a tweet publish.
 	 *
 	 * @param context
 	 * 		A {@link android.content.Context} object.
@@ -80,8 +86,29 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 */
 	public static DialogFragment newInstance(Context context, @Nullable String defaultText, boolean isDefaultFixed) {
 		Bundle args = new Bundle();
+		args.putBoolean(EXTRAS_IS_COMMENT, false);
 		args.putString(EXTRAS_DEFAULT_TEXT, defaultText);
 		args.putBoolean(EXTRAS_DEFAULT_FIXED, isDefaultFixed);
+		args.putSerializable(EXTRAS_TWEET_ITEM, null);
+		return (DialogFragment) Fragment.instantiate(context, EditorDialogFragment.class.getName(), args);
+	}
+
+	/**
+	 * Initialize an {@link  EditorDialogFragment} for writing comment of {@link com.osc4j.ds.tweet.TweetListItem}.
+	 *
+	 * @param context
+	 * 		A {@link android.content.Context} object.
+	 * @param tweetListItem
+	 * 		{@link com.osc4j.ds.tweet.TweetListItem}.
+	 *
+	 * @return An instance of {@link EditorDialogFragment}.
+	 */
+	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem) {
+		Bundle args = new Bundle();
+		args.putBoolean(EXTRAS_IS_COMMENT, true);
+		args.putString(EXTRAS_DEFAULT_TEXT, null);
+		args.putBoolean(EXTRAS_DEFAULT_FIXED, false);
+		args.putSerializable(EXTRAS_TWEET_ITEM, tweetListItem);
 		return (DialogFragment) Fragment.instantiate(context, EditorDialogFragment.class.getName(), args);
 	}
 
@@ -116,10 +143,18 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 		mSendingIndicatorV = (SmoothProgressBar) view.findViewById(R.id.sending_pb);
 		mSendingIndicatorV.setSmoothProgressDrawableBackgroundDrawable(
 				SmoothProgressBarUtils.generateDrawableWithColors(getResources().getIntArray(
-						R.array.pocket_background_colors),
+								R.array.pocket_background_colors),
 						((SmoothProgressDrawable) mSendingIndicatorV.getIndeterminateDrawable()).getStrokeWidth()));
 		mSendingIndicatorV.progressiveStart();
 
+
+		TweetListItem item = getTweetItem();
+		TextView tweetItemContentTv = (TextView) view.findViewById(R.id.tweet_content_et);
+		if (item != null) {
+			tweetItemContentTv.setText(Html.fromHtml(item.getBody()));
+		} else {
+			tweetItemContentTv.setVisibility(View.GONE);
+		}
 	}
 
 	/**
@@ -137,6 +172,20 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 */
 	private boolean isDefaultFixed() {
 		return getArguments().getBoolean(EXTRAS_DEFAULT_FIXED);
+	}
+
+	/**
+	 * @return {@code true} if the dialog is for writing a comment.
+	 */
+	private boolean isComment() {
+		return getArguments().getBoolean(EXTRAS_IS_COMMENT);
+	}
+
+	/**
+	 * @return {@link com.osc4j.ds.tweet.TweetListItem} which will be written with a comment.
+	 */
+	private TweetListItem getTweetItem() {
+		return (TweetListItem) getArguments().getSerializable(EXTRAS_TWEET_ITEM);
 	}
 
 	@Override
@@ -167,7 +216,11 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 				protected String doInBackground(String... params) {
 					String msg = params[0];
 					try {
-						OscApi.tweetPub(App.Instance, Utils.encode(msg));
+						if (getTweetItem() == null) {
+							OscApi.tweetPub(App.Instance, Utils.encode(msg));
+						} else {
+							OscApi.tweetCommentPub(App.Instance, getTweetItem(), msg);
+						}
 					} catch (IOException | OscTweetException e) {
 						return null;
 					}
@@ -177,7 +230,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 				@Override
 				protected void onPostExecute(String s) {
 					super.onPostExecute(s);
-					if( !TextUtils.isEmpty(s)) {
+					if (!TextUtils.isEmpty(s)) {
 						Utils.showLongToast(App.Instance, s);
 						if (isVisible() && mSendMi != null) {
 							mSendMi.setEnabled(true);

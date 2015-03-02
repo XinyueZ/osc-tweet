@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
+import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
@@ -142,13 +143,24 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 			holder.mTime.setText("?");
 		}
 
-		MenuItem menuItem = holder.mToolbar.getMenu().findItem(R.id.action_at_him);
-		menuItem.setTitle(String.format(
-				holder.itemView.getContext().getString(R.string.action_at_him), item.getAuthor()));
-		menuItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		MenuItem atHimMi = holder.mToolbar.getMenu().findItem(R.id.action_at_him);
+		atHimMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_at_him),
+				item.getAuthor()));
+		atHimMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				EventBus.getDefault().post(new ShowEditorEvent(item.getTitle().toString()));
+				return true;
+			}
+		});
+
+		MenuItem replayMi = holder.mToolbar.getMenu().findItem(R.id.action_reply);
+		replayMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_reply_comment),
+				item.getAuthor()));
+		replayMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem i) {
+				EventBus.getDefault().post(new CommentTweetEvent(item));
 				return true;
 			}
 		});

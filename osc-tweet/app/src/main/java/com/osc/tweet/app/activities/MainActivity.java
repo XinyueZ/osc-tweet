@@ -45,6 +45,7 @@ import com.osc.tweet.app.fragments.FriendsListFragment;
 import com.osc.tweet.app.fragments.MyInfoFragment;
 import com.osc.tweet.app.fragments.UserInformationDialogFragment;
 import com.osc.tweet.events.CloseFriendsListEvent;
+import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
@@ -185,10 +186,10 @@ public class MainActivity extends BaseActivity {
 
 
 	/**
-	 * Handler for {@link CloseFriendsListEvent}.
+	 * Handler for {@link com.osc.tweet.events.CloseFriendsListEvent}.
 	 *
 	 * @param e
-	 * 		Event {@link CloseFriendsListEvent}.
+	 * 		Event {@link com.osc.tweet.events.CloseFriendsListEvent}.
 	 */
 	public void onEvent(CloseFriendsListEvent e) {
 		showFriendsListButton();
@@ -207,23 +208,34 @@ public class MainActivity extends BaseActivity {
 
 
 	/**
-	 * Handler for {@link SnackMessageEvent}.
+	 * Handler for {@link com.osc.tweet.events.SnackMessageEvent}.
 	 *
 	 * @param e
-	 * 		Event {@link SnackMessageEvent}.
+	 * 		Event {@link com.osc.tweet.events.SnackMessageEvent}.
 	 */
 	public void onEvent(SnackMessageEvent e) {
 		mSnackBar.show(e.getMessage());
 	}
 
 	/**
-	 * Handler for {@link ShowEditorEvent}.
+	 * Handler for {@link com.osc.tweet.events.ShowEditorEvent}.
 	 *
 	 * @param e
-	 * 		Event {@link ShowEditorEvent}.
+	 * 		Event {@link com.osc.tweet.events.ShowEditorEvent}.
 	 */
 	public void onEvent(ShowEditorEvent e) {
-		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getDefaultMessage(), e.isDefaultFixed()), null);
+		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getDefaultMessage(), e.isDefaultFixed()), null);
+	}
+
+
+	/**
+	 * Handler for {@link com.osc.tweet.events.CommentTweetEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.CommentTweetEvent}.
+	 */
+	public void onEvent(CommentTweetEvent e) {
+		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getTweetListItem()), null);
 	}
 	//------------------------------------------------
 

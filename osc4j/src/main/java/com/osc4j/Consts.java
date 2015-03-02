@@ -53,7 +53,11 @@ public final class Consts {
 	/**
 	 * Publish tweet.
 	 */
-	static final String TWEET_PUB_URL = OSC_HOST + "tweetPub?msg=%s";
+	static final String TWEET_PUB_URL = OSC_HOST + "tweetPub";
+	/**
+	 * Publish comment on tweet.
+	 */
+	static final String TWEET_COMMENT_PUB_URL = OSC_HOST + "tweetCommentPub?id=%d";
 	/**
 	 * Get tweet-lists.
 	 */
