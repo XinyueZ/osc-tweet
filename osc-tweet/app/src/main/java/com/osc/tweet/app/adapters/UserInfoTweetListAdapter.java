@@ -15,6 +15,8 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.events.ShowBigImageEvent;
+import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.views.URLImageParser;
 import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.utils.Utils;
@@ -123,8 +126,16 @@ public final class UserInfoTweetListAdapter extends RecyclerView.Adapter<UserInf
 			holder.mTime.setText("?");
 		}
 
-		holder.mToolbar.getMenu().findItem(R.id.action_at_him).setTitle(String.format(
+		MenuItem menuItem = holder.mToolbar.getMenu().findItem(R.id.action_at_him);
+		menuItem.setTitle(String.format(
 				holder.itemView.getContext().getString(R.string.action_at_him), item.getAuthor()));
+		menuItem.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				EventBus.getDefault().post(new ShowEditorEvent(item.getTitle().toString()));
+				return true;
+			}
+		});
 	}
 
 	@Override
