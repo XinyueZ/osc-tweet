@@ -77,6 +77,7 @@ public final class TweetListFragment extends BaseFragment {
 	 * 		Event {@link LoadEvent}.
 	 */
 	public void onEvent(LoadEvent e) {
+		mPage = DEFAULT_PAGE;
 		getTweetList();
 	}
 
@@ -207,6 +208,7 @@ public final class TweetListFragment extends BaseFragment {
 				if (tweetList != null) {
 					mAdp.setData(tweetList.getTweets());
 					finishLoading();
+					mLayoutManager.scrollToPositionWithOffset(0, 0);
 				}
 			}
 		});
