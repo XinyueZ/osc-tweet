@@ -42,6 +42,7 @@ import com.osc.tweet.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
 import com.osc.tweet.app.fragments.AppListImpFragment;
 import com.osc.tweet.app.fragments.EditorDialogFragment;
 import com.osc.tweet.app.fragments.FriendsListFragment;
+import com.osc.tweet.app.fragments.MyInfoFragment;
 import com.osc.tweet.app.fragments.UserInformationDialogFragment;
 import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
@@ -498,6 +499,9 @@ public class MainActivity extends BaseActivity {
 
 				}
 			});
+
+			getSupportFragmentManager().beginTransaction().replace(R.id.my_info_fl, MyInfoFragment.newInstance(this))
+					.commit();
 		}
 	}
 }

@@ -17,6 +17,7 @@ import com.osc4j.ds.Login;
 import com.osc4j.ds.common.Status;
 import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.FriendsList;
+import com.osc4j.ds.personal.MyInformation;
 import com.osc4j.ds.personal.UserInformation;
 import com.osc4j.ds.tweet.TweetList;
 import com.osc4j.utils.AuthUtil;
@@ -273,6 +274,37 @@ public final class OscApi {
 			throw new OscTweetException();
 		} else {
 			ret = sGson.fromJson(response.body().string(), StatusResult.class);
+		}
+
+		return ret;
+	}
+
+
+	/**
+	 * Get my personal information.
+	 * @return {@link com.osc4j.ds.personal.MyInformation}.
+	 * @throws IOException
+	 * @throws OscTweetException
+	 */
+	public static MyInformation myInformation(Context context ) throws IOException, OscTweetException {
+		MyInformation ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+		Request request = new Request.Builder().url(Consts.MY_INFORMATION_URL).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+				.build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= Status.STATUS_ERR) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), MyInformation.class);
 		}
 
 		return ret;

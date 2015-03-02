@@ -78,4 +78,8 @@ public final class Consts {
 	 * Update relation between me and user.
 	 */
 	static final String UPDATE_RELATION_URL = OSC_HOST + "updateRelation?fri=%d&rel=%d";
+	/**
+	 * My personal information.
+	 */
+	static final String MY_INFORMATION_URL = OSC_HOST + "myInformation";
 }

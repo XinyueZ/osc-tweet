@@ -3,6 +3,8 @@ package com.osc4j.utils;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -64,7 +66,11 @@ public final class AuthUtil {
 		}
 
 		long expiresTime = prefs.getLong(Consts.KEY_EXPIRES, -1);
-		if(System.currentTimeMillis() >= expiresTime) {
+
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(System.currentTimeMillis());
+		c = Utils.transformTime(c, TimeZone.getTimeZone("GMT+08"), TimeZone.getDefault());
+		if( c.getTimeInMillis() >= expiresTime) {
 			return false;
 		}
 		return true;

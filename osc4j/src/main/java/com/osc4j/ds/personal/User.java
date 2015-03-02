@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class User implements Serializable{
+public  class User implements Serializable{
 	@SerializedName("uid")
 	private int mUid;
 	@SerializedName("name")
