@@ -28,7 +28,7 @@ import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.LoadEvent;
 import com.osc4j.OscApi;
-import com.osc4j.OscTweetException;
+import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.ds.tweet.TweetListItem;
 
 import de.greenrobot.event.EventBus;

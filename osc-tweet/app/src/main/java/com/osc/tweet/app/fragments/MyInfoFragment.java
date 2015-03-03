@@ -20,7 +20,7 @@ import com.osc.tweet.app.App;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
-import com.osc4j.OscTweetException;
+import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.ds.personal.Am;
 import com.osc4j.ds.personal.MyInformation;
 

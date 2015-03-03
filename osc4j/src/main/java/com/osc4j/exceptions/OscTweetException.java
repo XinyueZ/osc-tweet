@@ -1,4 +1,4 @@
-package com.osc4j;
+package com.osc4j.exceptions;
 
 /**
  * Exception

@@ -30,7 +30,7 @@ import com.osc.tweet.events.SnackMessageEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener2;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
-import com.osc4j.OscTweetException;
+import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.Gender;
 import com.osc4j.ds.personal.User;

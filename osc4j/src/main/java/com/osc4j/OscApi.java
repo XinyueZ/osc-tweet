@@ -1,12 +1,15 @@
 package com.osc4j;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Properties;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,6 +24,9 @@ import com.osc4j.ds.personal.MyInformation;
 import com.osc4j.ds.personal.UserInformation;
 import com.osc4j.ds.tweet.TweetList;
 import com.osc4j.ds.tweet.TweetListItem;
+import com.osc4j.exceptions.Osc4jConfigErrorException;
+import com.osc4j.exceptions.Osc4jConfigNotFoundException;
+import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.utils.AuthUtil;
 import com.osc4j.utils.Utils;
 import com.squareup.okhttp.OkHttpClient;
@@ -43,6 +49,7 @@ public final class OscApi {
 	 */
 	private static final Gson sGson = new Gson();
 
+
 	/**
 	 * Login.
 	 *
@@ -55,13 +62,59 @@ public final class OscApi {
 	 *
 	 * @return {@link com.osc4j.ds.Login}, contains user info.
 	 *
-	 * @throws IOException
-	 * @throws OscTweetException
+	 * @throws NoSuchPaddingException,
+	 * @throws InvalidKeyException,
+	 * @throws NoSuchAlgorithmException,
+	 * @throws IllegalBlockSizeException,
+	 * @throws BadPaddingException,
+	 * @throws InvalidAlgorithmParameterException,
+	 * @throws IOException,
+	 * @throws OscTweetException,
+	 * @throws Osc4jConfigNotFoundException,
+	 * @throws Osc4jConfigErrorException
 	 */
 	public static Login login(Context cxt, String account, String password) throws NoSuchPaddingException,
 			InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException,
-			InvalidAlgorithmParameterException, IOException, OscTweetException {
-		String info = String.format(Consts.LOGIN_PARAMS, account, password);
+			InvalidAlgorithmParameterException, IOException, OscTweetException, Osc4jConfigNotFoundException,
+			Osc4jConfigErrorException {
+		InputStream is = null;
+		Properties prop = new Properties();
+		try {
+			AssetManager assManager = cxt.getAssets();
+			is = assManager.open(Consts.CONFIG_FILE);
+			prop.load(is);
+		} catch (IOException ex) {
+			throw new Osc4jConfigNotFoundException();
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					throw new Osc4jConfigNotFoundException();
+				}
+			}
+		}
+
+		String appId = prop.getProperty("appid");
+		String appSec = prop.getProperty("appsec");
+		String redirectUrl = prop.getProperty("appred");
+		String scope = prop.getProperty("scope");
+
+		if (TextUtils.isEmpty(appId)) {
+			throw new Osc4jConfigErrorException("The application-id [appid] must be given.");
+		}
+
+		if (TextUtils.isEmpty(appSec)) {
+			throw new Osc4jConfigErrorException("The application security-code [appsec] must be given.");
+		}
+		if (TextUtils.isEmpty(redirectUrl)) {
+			throw new Osc4jConfigErrorException("A redirection-url of application [appred] must be given.");
+		}
+		if (TextUtils.isEmpty(scope)) {
+			throw new Osc4jConfigErrorException("The application-scope [scope] must be given.");
+		}
+
+		String info = String.format(Consts.LOGIN_PARAMS, account, password, appId, appSec, redirectUrl, scope);
 		String pubBody = AuthUtil.encrypt(info);
 		RequestBody body = RequestBody.create(Consts.CONTENT_TYPE, pubBody);
 		Request request = new Request.Builder().url(Consts.LOGIN_URL).post(body).build();
@@ -89,7 +142,8 @@ public final class OscApi {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(cxt);
 			prefs.edit().putInt(Consts.KEY_UID, login.getUser().getUid()).commit();
 			prefs.edit().putString(Consts.KEY_NAME, login.getUser().getName()).commit();
-			prefs.edit().putLong(Consts.KEY_EXPIRES, System.currentTimeMillis() + login.getUser().getExpired() * 1000).commit();
+			prefs.edit().putLong(Consts.KEY_EXPIRES, System.currentTimeMillis() + login.getUser().getExpired() * 1000)
+					.commit();
 
 			String expiresTime = Utils.convertTimestamps2DateString(cxt, prefs.getLong(Consts.KEY_EXPIRES, -1));
 			Log.d(OscApi.class.getSimpleName(), "Expire on: " + expiresTime);
@@ -151,7 +205,6 @@ public final class OscApi {
 	}
 
 
-
 	public static StatusResult tweetPub(Context context, String msg) throws IOException, OscTweetException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -160,8 +213,8 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		Request request = new Request.Builder().url(Consts.TWEET_PUB_URL).get().header("Cookie", sessionInCookie + ";" + tokenInCookie+";msg="+msg)
-				.build();
+		Request request = new Request.Builder().url(Consts.TWEET_PUB_URL).get().header("Cookie",
+				sessionInCookie + ";" + tokenInCookie + ";msg=" + msg).build();
 		OkHttpClient client = new OkHttpClient();
 		client.networkInterceptors().add(new StethoInterceptor());
 		Response response = client.newCall(request).execute();
@@ -176,7 +229,8 @@ public final class OscApi {
 		return ret;
 	}
 
-	public static StatusResult tweetCommentPub(Context context, TweetListItem tweetListItem, String content) throws IOException, OscTweetException {
+	public static StatusResult tweetCommentPub(Context context, TweetListItem tweetListItem, String content) throws
+			IOException, OscTweetException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -185,8 +239,8 @@ public final class OscApi {
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
 		String url = String.format(Consts.TWEET_COMMENT_PUB_URL, tweetListItem.getId());
-		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie+";content="+content)
-				.build();
+		Request request = new Request.Builder().url(url).get().header("Cookie",
+				sessionInCookie + ";" + tokenInCookie + ";content=" + content).build();
 		OkHttpClient client = new OkHttpClient();
 		client.networkInterceptors().add(new StethoInterceptor());
 		Response response = client.newCall(request).execute();
@@ -204,8 +258,12 @@ public final class OscApi {
 
 	/**
 	 * Get friend list.
-	 * @param context {@link android.content.Context}.
+	 *
+	 * @param context
+	 * 		{@link android.content.Context}.
+	 *
 	 * @return
+	 *
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
@@ -236,14 +294,18 @@ public final class OscApi {
 
 	/**
 	 * Get user information.
+	 *
 	 * @param context
 	 * @param friend
 	 * @param needMessage
+	 *
 	 * @return
+	 *
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static UserInformation userInformation(Context context, long friend, boolean needMessage) throws IOException, OscTweetException {
+	public static UserInformation userInformation(Context context, long friend, boolean needMessage) throws IOException,
+			OscTweetException {
 		UserInformation ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -253,7 +315,7 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		String url = String.format(Consts.USER_INFORMATION_URL, uid, friend, needMessage ? 1 : 0 );
+		String url = String.format(Consts.USER_INFORMATION_URL, uid, friend, needMessage ? 1 : 0);
 		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
 				.build();
 		OkHttpClient client = new OkHttpClient();
@@ -272,14 +334,18 @@ public final class OscApi {
 
 	/**
 	 * Update relation to other users.
+	 *
 	 * @param context
 	 * @param friend
 	 * @param cancel
+	 *
 	 * @return
+	 *
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static StatusResult updateRelation(Context context, long friend, boolean cancel) throws IOException, OscTweetException {
+	public static StatusResult updateRelation(Context context, long friend, boolean cancel) throws IOException,
+			OscTweetException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -287,7 +353,7 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		String url = String.format(Consts.UPDATE_RELATION_URL,  friend, cancel ? 0 : 1 );
+		String url = String.format(Consts.UPDATE_RELATION_URL, friend, cancel ? 0 : 1);
 		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
 				.build();
 		OkHttpClient client = new OkHttpClient();
@@ -307,11 +373,13 @@ public final class OscApi {
 
 	/**
 	 * Get my personal information.
+	 *
 	 * @return {@link com.osc4j.ds.personal.MyInformation}.
+	 *
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static MyInformation myInformation(Context context ) throws IOException, OscTweetException {
+	public static MyInformation myInformation(Context context) throws IOException, OscTweetException {
 		MyInformation ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -319,8 +387,8 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		Request request = new Request.Builder().url(Consts.MY_INFORMATION_URL).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
-				.build();
+		Request request = new Request.Builder().url(Consts.MY_INFORMATION_URL).get().header("Cookie",
+				sessionInCookie + ";" + tokenInCookie).build();
 		OkHttpClient client = new OkHttpClient();
 		client.networkInterceptors().add(new StethoInterceptor());
 		Response response = client.newCall(request).execute();

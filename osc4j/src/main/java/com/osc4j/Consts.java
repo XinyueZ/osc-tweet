@@ -9,6 +9,10 @@ import com.squareup.okhttp.MediaType;
  */
 public final class Consts {
 	/**
+	 * A configuration-file must be located under asset.
+	 */
+	static final String CONFIG_FILE = "osc4j.properties";
+	/**
 	 * Body type when http.
 	 */
 	static final MediaType CONTENT_TYPE = MediaType.parse("application/x-www-form-urlencoded");
@@ -45,7 +49,7 @@ public final class Consts {
 	/**
 	 * Login data format.
 	 */
-	static final String LOGIN_PARAMS = "u=%s&pw=%s";
+	static final String LOGIN_PARAMS = "u=%s&pw=%s&appid=%s&appsec=%s&redurl=%s&scope=%s";
 	/**
 	 * Login
 	 */

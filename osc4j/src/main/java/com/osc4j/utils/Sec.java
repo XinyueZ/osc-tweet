@@ -9,7 +9,7 @@ package com.osc4j.utils;
  */
 public final class Sec {
 
-	public static final byte[] KEY = new byte[] { 11, 45, 78, 110, 118, 9, 3, 4, 18, 47, 3, 7, 77, 8, 56, 101 };
+	public static final byte[] KEY = new byte[] {13, 0, 21, 110, 34, 45, 3,6, 18, 23, 3, 7, 56, 8, 56, 5};
 
-	public static final byte[] IV = { 34, 35, 35, 57, 68, 4, 35, 36, 7, 8, 35, 23, 35, 86, 35, 23 };
+	public static final byte[] IV = {12, 34, 35, 57, 46, 4, 75, 36, 67, 8, 7, 9, 10, 86, 11, 4};
 }

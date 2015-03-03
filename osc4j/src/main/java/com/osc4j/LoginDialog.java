@@ -46,6 +46,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.osc4j.ds.Login;
+import com.osc4j.exceptions.Osc4jConfigErrorException;
+import com.osc4j.exceptions.Osc4jConfigNotFoundException;
+import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.utils.Utils;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -265,26 +268,13 @@ public final class LoginDialog extends DialogFragment {
 
 					@Override
 					protected Login doInBackground(Object... params) {
-
 						try {
 							return OscApi.login(getActivity().getApplicationContext(), mNameEt.getText().toString(),
 									mPasswordEt.getText().toString());
-						} catch (BadPaddingException e) {
+						} catch (BadPaddingException | InvalidKeyException | IOException | IllegalBlockSizeException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException | OscTweetException e) {
 							e.printStackTrace();
-						} catch (InvalidKeyException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						} catch (IllegalBlockSizeException e) {
-							e.printStackTrace();
-						} catch (NoSuchAlgorithmException e) {
-							e.printStackTrace();
-						} catch (NoSuchPaddingException e) {
-							e.printStackTrace();
-						} catch (InvalidAlgorithmParameterException e) {
-							e.printStackTrace();
-						} catch (OscTweetException e) {
-							e.printStackTrace();
+						} catch (Osc4jConfigErrorException | Osc4jConfigNotFoundException e) {
+							Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
 						}
 						return null;
 					}
