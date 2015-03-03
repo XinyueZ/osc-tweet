@@ -30,11 +30,6 @@ import com.osc4j.ds.personal.MyInformation;
  * @author Xinyue Zhao
  */
 public final class MyInfoFragment extends BaseFragment {
-	private static final String EXTRAS_MY_INFO = MyInfoFragment.class.getName() + ".EXTRAS.MyInfo";
-	/**
-	 * Save domain object for fallback when UI destroyed.
-	 */
-	private static final String MY_INFO = "my_info";
 	/**
 	 * Main layout for this component.
 	 */

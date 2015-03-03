@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
+import com.chopping.utils.Utils;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
@@ -195,7 +196,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 
 		ScreenSize sz = DeviceUtils.getScreenSize(getActivity().getApplication());
 		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width,
-				sz.Height));
+				sz.Height - Utils.getActionBarHeight(getActivity())));
 	}
 
 
