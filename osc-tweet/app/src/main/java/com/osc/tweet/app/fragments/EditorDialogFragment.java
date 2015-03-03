@@ -219,7 +219,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 						if (getTweetItem() == null) {
 							OscApi.tweetPub(App.Instance, Utils.encode(msg));
 						} else {
-							OscApi.tweetCommentPub(App.Instance, getTweetItem(), msg);
+							OscApi.tweetCommentPub(App.Instance, getTweetItem(), Utils.encode(msg));
 						}
 					} catch (IOException | OscTweetException e) {
 						return null;
@@ -237,7 +237,9 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 							mSendingIndicatorV.setVisibility(View.INVISIBLE);
 							mSendingIndicatorV.progressiveStop();
 							dismiss();
-							EventBus.getDefault().post(new LoadEvent());
+							if(getTweetItem() == null) {//Reply or comment a tweet don't case reload of list.
+								EventBus.getDefault().post(new LoadEvent());
+							}
 						}
 					} else {
 						Utils.showLongToast(App.Instance, getString(R.string.msg_message_sent_failed));
