@@ -31,7 +31,6 @@ import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.util.DisplayMetrics;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -154,7 +153,6 @@ public final class LoginDialog extends DialogFragment {
 		TextView oscLogoV = new TextView(getActivity());
 		editors.addView(oscLogoV, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		oscLogoV.setText("Login on www.oschina.net");
-		((LayoutParams) oscLogoV.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
 
 		AsyncTaskCompat.executeParallel(new AsyncTask<TextView, Bitmap, Bitmap>() {
 			private WeakReference<TextView> mLogoIvRef;
@@ -198,6 +196,8 @@ public final class LoginDialog extends DialogFragment {
 		editors.addView(mNameEt);
 		editors.addView(mPasswordEt);
 
+		int width = (int) Utils.convertPixelsToDp(getActivity(), 50 );
+		int height = (int) Utils.convertPixelsToDp(getActivity(), 50 );
 		Button loginBtn = new Button(getActivity());
 		loginBtn.setText("Login");
 		loginBtn.setBackgroundColor(Color.TRANSPARENT);
@@ -205,12 +205,10 @@ public final class LoginDialog extends DialogFragment {
 		regBtn.setText("Register");
 		regBtn.setBackgroundColor(Color.TRANSPARENT);
 		LinearLayout buttons = new LinearLayout(getActivity());
-		buttons.setOrientation(LinearLayout.HORIZONTAL);
-		buttons.addView(loginBtn);
-		buttons.addView(regBtn);
+		buttons.addView(loginBtn, new LinearLayoutCompat.LayoutParams(width, height));
+		buttons.addView(regBtn, new LinearLayoutCompat.LayoutParams(width, height));
 		editors.addView(buttons, new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
 				ViewGroup.LayoutParams.WRAP_CONTENT));
-		((LinearLayout.LayoutParams) buttons.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
 
 		AsyncTaskCompat.executeParallel(new AsyncTask<Button, Bitmap[], Bitmap[]>() {
 			private WeakReference<Button> mLoginBtnRef;
@@ -302,9 +300,10 @@ public final class LoginDialog extends DialogFragment {
 		mRootVg.addView(editors, new LayoutParams(screenSize.Width, ViewGroup.LayoutParams.WRAP_CONTENT));
 		MarginLayoutParams ml = ((MarginLayoutParams)editors.getLayoutParams());
 		int margin = (int)Utils.convertPixelsToDp(getActivity(), 16f);
-		ml.rightMargin = margin;
-		ml.leftMargin = margin;
 		ml.topMargin = margin;
+
+		int padding = (int)Utils.convertPixelsToDp(getActivity(), 16f);
+		mRootVg.setPadding(padding, padding,padding ,padding);
 	}
 
 	/**

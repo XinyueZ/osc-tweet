@@ -29,7 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public final class AuthUtil {
 	private static final String ALGORITHM = "AES";
-	private static final String CIPHER_ALGORITHM = "AES/CFB/PKCS5Padding";
+	private static final String CIPHER_ALGORITHM = "AES/CFB/NoPadding";
 
 	/**
 	 * Encrypt by using AES.

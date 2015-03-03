@@ -4,8 +4,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.util.DisplayMetrics;
+import android.util.TypedValue;
 
 import static android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
 import static android.text.format.DateUtils.FORMAT_SHOW_DATE;
@@ -54,10 +53,7 @@ public final class Utils {
 	 * @return A float value to represent dp equivalent to px value
 	 */
 	public static float convertPixelsToDp(Context context, float px) {
-		Resources resources = context.getResources();
-		DisplayMetrics metrics = resources.getDisplayMetrics();
-		float dp = px / (metrics.densityDpi / 160f);
-		return dp;
+		return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, px, context.getResources().getDisplayMetrics());
 	}
 
 
