@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
@@ -127,7 +128,9 @@ public final class UserInfoTweetListAdapter extends RecyclerView.Adapter<UserInf
 			holder.mTime.setText("?");
 		}
 
-		MenuItem atHimMi = holder.mToolbar.getMenu().findItem(R.id.action_at_him);
+		Menu menu =  holder.mToolbar.getMenu();
+
+		MenuItem atHimMi = menu.findItem(R.id.action_at_him);
 		atHimMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_at_him),
 				item.getAuthor()));
 		atHimMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -138,7 +141,7 @@ public final class UserInfoTweetListAdapter extends RecyclerView.Adapter<UserInf
 			}
 		});
 
-		MenuItem replayMi = holder.mToolbar.getMenu().findItem(R.id.action_reply);
+		MenuItem replayMi = menu.findItem(R.id.action_reply);
 		replayMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_reply_comment),
 				item.getAuthor()));
 		replayMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -148,6 +151,7 @@ public final class UserInfoTweetListAdapter extends RecyclerView.Adapter<UserInf
 				return true;
 			}
 		});
+
 	}
 
 	@Override
@@ -172,6 +176,8 @@ public final class UserInfoTweetListAdapter extends RecyclerView.Adapter<UserInf
 			mSmallImgIv = (NetworkImageView) convertView.findViewById(R.id.small_img_iv);
 			mToolbar = (Toolbar) convertView.findViewById(R.id.toolbar);
 			mToolbar.inflateMenu(R.menu.menu_list_item);
+
+			com.osc.tweet.utils.Utils.makeQuickReplyMenuItems(convertView.getContext(), mToolbar.getMenu());
 		}
 	}
 }

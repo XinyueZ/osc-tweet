@@ -15,8 +15,10 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -143,7 +145,10 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 			holder.mTime.setText("?");
 		}
 
-		MenuItem atHimMi = holder.mToolbar.getMenu().findItem(R.id.action_at_him);
+
+		final Menu menu = holder.mToolbar.getMenu();
+
+		MenuItem atHimMi = menu.findItem(R.id.action_at_him);
 		atHimMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_at_him),
 				item.getAuthor()));
 		atHimMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -154,7 +159,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 			}
 		});
 
-		MenuItem replayMi = holder.mToolbar.getMenu().findItem(R.id.action_reply);
+		MenuItem replayMi = menu.findItem(R.id.action_reply);
 		replayMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_reply_comment),
 				item.getAuthor()));
 		replayMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -164,6 +169,18 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 				return true;
 			}
 		});
+
+		MenuItem qReplayMi = menu.findItem(R.id.action_quick_reply);
+		SubMenu subMenu  =  qReplayMi.getSubMenu();
+		for( int i = 0, size = subMenu.size(); i < size; i++ ) {
+			subMenu.getItem(i).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem menuItem) {
+					EventBus.getDefault().post(new CommentTweetEvent(item, menuItem.getTitle().toString()));
+					return true;
+				}
+			});
+		}
 	}
 
 	@Override
@@ -190,6 +207,9 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 			mSmallImgIv = (NetworkImageView) convertView.findViewById(R.id.small_img_iv);
 			mToolbar = (Toolbar) convertView.findViewById(R.id.toolbar);
 			mToolbar.inflateMenu(MENU_LIST_ITEM);
+
+
+			com.osc.tweet.utils.Utils.makeQuickReplyMenuItems(convertView.getContext(), mToolbar.getMenu());
 		}
 	}
 

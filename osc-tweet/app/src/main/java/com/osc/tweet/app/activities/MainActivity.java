@@ -109,8 +109,10 @@ public class MainActivity extends BaseActivity {
 	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			initViewPager();
-			mSmoothProgressBar.setVisibility(View.VISIBLE);
+			if (mConfigLoaded) {
+				initViewPager();
+				mSmoothProgressBar.setVisibility(View.VISIBLE);
+			}
 		}
 	};
 	/**
@@ -128,7 +130,8 @@ public class MainActivity extends BaseActivity {
 	/**
 	 * A bar bottom.
 	 */
-	private SnackBar mSnackBar;
+	private SnackBar mSnackBar
+	;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -150,7 +153,9 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link  EULAConfirmedEvent}.
 	 */
 	public void onEvent(EULAConfirmedEvent e) {
-		initViewPager();
+		if (mConfigLoaded) {
+			initViewPager();
+		}
 	}
 
 
@@ -235,7 +240,7 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.CommentTweetEvent}.
 	 */
 	public void onEvent(CommentTweetEvent e) {
-		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getTweetListItem()), null);
+		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getTweetListItem(), e.getComment()), null);
 	}
 	//------------------------------------------------
 
@@ -444,14 +449,23 @@ public class MainActivity extends BaseActivity {
 		}
 	}
 
+	private boolean mConfigLoaded = true;
+
 	@Override
 	protected void onAppConfigLoaded() {
+		mConfigLoaded = true;
 		super.onAppConfigLoaded();
 		showAppList();
+
+		if (Prefs.getInstance().isEULAOnceConfirmed()) {
+			initViewPager();
+			mSmoothProgressBar.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
 	protected void onAppConfigIgnored() {
+		mConfigLoaded = true;
 		super.onAppConfigIgnored();
 		showAppList();
 	}

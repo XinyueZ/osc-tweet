@@ -11,4 +11,14 @@
         android:title="@string/action_reply_comment"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_quick_reply"
+        android:title="@string/action_quick_reply"
+        app:showAsAction="never">
+
+        <menu>
+            <!-- empty submenu, filled programmatically -->
+        </menu>
+    </item>
+
 </menu>

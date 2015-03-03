@@ -10,7 +10,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,8 +27,8 @@ import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.LoadEvent;
 import com.osc4j.OscApi;
-import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.ds.tweet.TweetListItem;
+import com.osc4j.exceptions.OscTweetException;
 
 import de.greenrobot.event.EventBus;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
@@ -46,6 +45,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	private static final String EXTRAS_DEFAULT_FIXED = EditorDialogFragment.class.getName() + ".EXTRAS.defaultFixed";
 	private static final String EXTRAS_IS_COMMENT = EditorDialogFragment.class.getName() + ".EXTRAS.isComment";
 	private static final String EXTRAS_TWEET_ITEM = EditorDialogFragment.class.getName() + ".EXTRAS.tweetItem";
+	private static final String EXTRAS_COMMENT = EditorDialogFragment.class.getName() + ".EXTRAS.comment";
 	/**
 	 * Main layout for this component.
 	 */
@@ -90,6 +90,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 		args.putString(EXTRAS_DEFAULT_TEXT, defaultText);
 		args.putBoolean(EXTRAS_DEFAULT_FIXED, isDefaultFixed);
 		args.putSerializable(EXTRAS_TWEET_ITEM, null);
+		args.putSerializable(EXTRAS_COMMENT, null);
 		return (DialogFragment) Fragment.instantiate(context, EditorDialogFragment.class.getName(), args);
 	}
 
@@ -100,15 +101,16 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 * 		A {@link android.content.Context} object.
 	 * @param tweetListItem
 	 * 		{@link com.osc4j.ds.tweet.TweetListItem}.
-	 *
+	 *@param comment  Some text to comment.
 	 * @return An instance of {@link EditorDialogFragment}.
 	 */
-	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem) {
+	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem, String comment) {
 		Bundle args = new Bundle();
 		args.putBoolean(EXTRAS_IS_COMMENT, true);
 		args.putString(EXTRAS_DEFAULT_TEXT, null);
 		args.putBoolean(EXTRAS_DEFAULT_FIXED, false);
 		args.putSerializable(EXTRAS_TWEET_ITEM, tweetListItem);
+		args.putSerializable(EXTRAS_COMMENT, comment);
 		return (DialogFragment) Fragment.instantiate(context, EditorDialogFragment.class.getName(), args);
 	}
 
@@ -151,7 +153,11 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 		TweetListItem item = getTweetItem();
 		TextView tweetItemContentTv = (TextView) view.findViewById(R.id.tweet_content_et);
 		if (item != null) {
-			tweetItemContentTv.setText(Html.fromHtml(item.getBody()));
+			com.osc.tweet.utils.Utils.showTweetListItem(App.Instance, tweetItemContentTv, item);
+			String comment = getComment();
+			if(!TextUtils.isEmpty(comment)) {
+				mEditText.setText(comment);
+			}
 		} else {
 			tweetItemContentTv.setVisibility(View.GONE);
 		}
@@ -179,6 +185,14 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 */
 	private boolean isComment() {
 		return getArguments().getBoolean(EXTRAS_IS_COMMENT);
+	}
+
+
+	/**
+	 * @return Some text to comment
+	 */
+	private String getComment() {
+		return getArguments().getString(EXTRAS_COMMENT);
 	}
 
 	/**

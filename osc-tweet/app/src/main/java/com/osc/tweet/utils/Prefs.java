@@ -3,6 +3,7 @@ package com.osc.tweet.utils;
 import android.content.Context;
 
 import com.chopping.application.BasicPrefs;
+import com.osc.tweet.R;
 
 /**
  * Store app and device information.
@@ -85,5 +86,17 @@ public final class Prefs extends BasicPrefs {
 	 */
 	public void setEULAOnceConfirmed(boolean isConfirmed) {
 		setBoolean(KEY_EULA_SHOWN, isConfirmed);
+	}
+
+	/**
+	 * A list to quick reply message.
+	 * @param cxt {@link android.content.Context}.
+	 * @return Array of {@link java.lang.String}.
+	 */
+	public String[] getQuickReplyList(Context cxt) {
+		String original =  getString(cxt.getString(R.string.quick_reply_list), null);
+
+		String[] messages = original.split(";");
+		return messages;
 	}
 }
