@@ -43,9 +43,6 @@ public final class TweetListItem implements Serializable {
 		return mId;
 	}
 
-	public void setId(int id) {
-		mId = id;
-	}
 
 	public String getPubDate() {
 		return mPubDate;

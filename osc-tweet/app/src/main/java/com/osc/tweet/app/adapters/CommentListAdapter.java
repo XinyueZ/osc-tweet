@@ -1,6 +1,5 @@
 package com.osc.tweet.app.adapters;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -8,8 +7,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import android.content.Context;
-import android.os.AsyncTask;
-import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -23,25 +20,17 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
-import com.osc.tweet.app.App;
-import com.osc.tweet.events.CommentTweetEvent;
-import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
-import com.osc.tweet.events.ShowTweetCommentListEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.URLImageParser;
-import com.osc4j.OscApi;
-import com.osc4j.ds.tweet.TweetListItem;
-import com.osc4j.exceptions.OscTweetException;
+import com.osc4j.ds.comment.Comment;
 import com.osc4j.utils.Utils;
 
 import de.greenrobot.event.EventBus;
@@ -51,15 +40,15 @@ import de.greenrobot.event.EventBus;
  *
  * @author Xinyue Zhao
  */
-public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.ViewHolder> {
+public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAdapter.ViewHolder> {
 	/**
 	 * Data-source.
 	 */
-	private List<TweetListItem> mData;
+	private List<Comment> mData;
 	/**
 	 * Main layout for this component.
 	 */
-	private static final int ITEM_LAYOUT = R.layout.item_tweet_line;
+	private static final int ITEM_LAYOUT = R.layout.item_comment_line;
 
 	/**
 	 * A menu on each line of list.
@@ -67,12 +56,12 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 	private static final int MENU_LIST_ITEM = R.menu.menu_list_item;
 
 	/**
-	 * Constructor of {@link com.osc.tweet.app.adapters.TweetListAdapter}.
+	 * Constructor of {@link com.osc.tweet.app.adapters.CommentListAdapter}.
 	 *
 	 * @param data
 	 * 		Data-source.
 	 */
-	public TweetListAdapter(List<TweetListItem> data) {
+	public CommentListAdapter(List<Comment> data) {
 		setData(data);
 	}
 
@@ -82,7 +71,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 	 * @param data
 	 * 		Data-source.
 	 */
-	public void setData(List<TweetListItem> data) {
+	public void setData(List<Comment> data) {
 		mData = data;
 	}
 
@@ -91,7 +80,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 	 *
 	 * @return The data-source.
 	 */
-	public List<TweetListItem> getData() {
+	public List<Comment> getData() {
 		return mData;
 	}
 
@@ -100,40 +89,27 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		Context cxt = parent.getContext();
 		//		boolean landscape = cxt.getResources().getBoolean(R.bool.landscape);
 		View convertView = LayoutInflater.from(cxt).inflate(ITEM_LAYOUT, parent, false);
-		TweetListAdapter.ViewHolder viewHolder = new TweetListAdapter.ViewHolder(convertView);
+		CommentListAdapter.ViewHolder viewHolder = new CommentListAdapter.ViewHolder(convertView);
 		return viewHolder;
 	}
 
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
-		final TweetListItem item = mData.get(position);
+		final Comment item = mData.get(position);
 		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
-		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
+		holder.mPortraitIv.setImageUrl(item.getCommentPortrait(), TaskHelper.getImageLoader());
 		holder.mPortraitIv.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
-				EventBus.getDefault().post(new ShowUserInformationEvent(item.getAuthorId()));
+				EventBus.getDefault().post(new ShowUserInformationEvent(item.getCommentAuthorId()));
 			}
 		});
-		if (!TextUtils.isEmpty(item.getImgSmall())) {
-			holder.mSmallImgIv.setVisibility(View.VISIBLE);
-			holder.mSmallImgIv.setDefaultImageResId(R.drawable.ic_not_loaded);
-			holder.mSmallImgIv.setImageUrl(item.getImgSmall(), TaskHelper.getImageLoader());
-		} else {
-			holder.mSmallImgIv.setVisibility(View.GONE);
-		}
 
-		holder.mSmallImgIv.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EventBus.getDefault().post(new ShowBigImageEvent(item));
-			}
-		});
-		holder.mAuthorTv.setText(item.getAuthor());
-		holder.mComments.setText(item.getCommentCount() + "");
 
-		if (!TextUtils.isEmpty(item.getBody())) {
-			Spanned htmlSpan = Html.fromHtml(item.getBody(), new URLImageParser(holder.mBodyTv.getContext(),
+		holder.mAuthorTv.setText(item.getCommentAuthor());
+
+		if (!TextUtils.isEmpty(item.getContent())) {
+			Spanned htmlSpan = Html.fromHtml(item.getContent(), new URLImageParser(holder.mBodyTv.getContext(),
 					holder.mBodyTv), null);
 			holder.mBodyTv.setText(htmlSpan);
 			holder.mBodyTv.setMovementMethod(LinkMovementMethod.getInstance());
@@ -158,7 +134,7 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 
 		MenuItem atHimMi = menu.findItem(R.id.action_at_him);
 		atHimMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_at_him),
-				item.getAuthor()));
+				item.getCommentAuthor()));
 		atHimMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
@@ -169,51 +145,27 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 
 		MenuItem replayMi = menu.findItem(R.id.action_reply);
 		replayMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_reply_comment),
-				item.getAuthor()));
+				item.getCommentAuthor()));
 		replayMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem i) {
-				EventBus.getDefault().post(new CommentTweetEvent(item));
+				//EventBus.getDefault().post(new CommentTweetEvent(item));
 				return true;
 			}
 		});
 
 		MenuItem qReplayMi = menu.findItem(R.id.action_quick_reply);
-		SubMenu subMenu  =  qReplayMi.getSubMenu();
-		for( int i = 0, size = subMenu.size(); i < size; i++ ) {
+		SubMenu subMenu = qReplayMi.getSubMenu();
+		for (int i = 0, size = subMenu.size(); i < size; i++) {
 			subMenu.getItem(i).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem menuItem) {
 					//EventBus.getDefault().post(new CommentTweetEvent(item, menuItem.getTitle().toString()));
-					AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, Object, String>() {
-						@Override
-						protected String doInBackground(MenuItem... params) {
-							try {
-								OscApi.tweetCommentPub(App.Instance, item, com.chopping.utils.Utils.encode(
-										params[0].getTitle().toString()));
-							} catch (IOException | OscTweetException e) {
-								return App.Instance.getString(R.string.msg_message_sent_failed);
-							}
-							return App.Instance.getString(R.string.msg_message_sent_successfully);
-						}
-
-						@Override
-						protected void onPostExecute(String s) {
-							super.onPostExecute(s);
-							com.chopping.utils.Utils.showLongToast(App.Instance, s);
-						}
-					}, menuItem);
 					return true;
 				}
 			});
 		}
 
-		holder.mCommentsBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EventBus.getDefault().post(new ShowTweetCommentListEvent(item));
-			}
-		});
 	}
 
 	@Override
@@ -226,9 +178,6 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 		private TextView mAuthorTv;
 		private TextView mBodyTv;
 		private TextView mTime;
-		private ImageButton mCommentsBtn;
-		private TextView mComments;
-		private NetworkImageView mSmallImgIv;
 		private Toolbar mToolbar;
 
 		private ViewHolder(View convertView) {
@@ -237,9 +186,6 @@ public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapte
 			mAuthorTv = (TextView) convertView.findViewById(R.id.author_tv);
 			mBodyTv = (TextView) convertView.findViewById(R.id.body_tv);
 			mTime = (TextView) convertView.findViewById(R.id.time_tv);
-			mComments = (TextView) convertView.findViewById(R.id.comments_tv);
-			mCommentsBtn = (ImageButton) convertView.findViewById(R.id.comments_list_btn);
-			mSmallImgIv = (NetworkImageView) convertView.findViewById(R.id.small_img_iv);
 			mToolbar = (Toolbar) convertView.findViewById(R.id.toolbar);
 			mToolbar.inflateMenu(MENU_LIST_ITEM);
 

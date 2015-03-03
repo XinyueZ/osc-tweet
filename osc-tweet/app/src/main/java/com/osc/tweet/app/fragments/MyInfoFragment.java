@@ -59,8 +59,7 @@ public final class MyInfoFragment extends BaseFragment {
 	 * @return An instance of {@link MyInfoFragment}.
 	 */
 	public static  MyInfoFragment newInstance(Context context) {
-		Bundle args = new Bundle();
-		return (MyInfoFragment) Fragment.instantiate(context, MyInfoFragment.class.getName(), args);
+		return (MyInfoFragment) Fragment.instantiate(context, MyInfoFragment.class.getName());
 	}
 
 

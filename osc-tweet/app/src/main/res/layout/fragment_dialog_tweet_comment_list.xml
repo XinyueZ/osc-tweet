@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:id="@+id/root_v"
+    android:background="@color/common_white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.osc.tweet.app.fragments.TweetCommentListDialogFragment">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/ActionBar_ToolBar" />
+
+    <EditText
+        android:id="@+id/tweet_content_et"
+        android:editable="false"
+        android:focusable="false"
+        android:enabled="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/content_srl">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/comments_list_rv"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+            android:id="@+id/loading_pb"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/pb_height"
+            style="@style/GradientProgressBar"
+            android:layout_gravity="top"
+            android:indeterminate="true" />
+
+    </FrameLayout>
+</LinearLayout>

@@ -20,16 +20,11 @@
     <color name="primary_accent">@color/common_green_mid</color>
 
     <integer-array name="loading_colors">
-        <item>@color/color_1</item>
-        <item>@color/color_2</item>
-        <item>@color/color_3</item>
-        <item>@color/color_4</item>
+        <item>@color/color_pocket_1</item>
+        <item>@color/color_pocket_2</item>
+        <item>@color/color_pocket_3</item>
+        <item>@color/color_pocket_4</item>
     </integer-array>
-
-    <color name="color_1">#1B5E20</color>
-    <color name="color_2">#33691E</color>
-    <color name="color_3">#00C853</color>
-    <color name="color_4">#64DD17</color>
 
 
     <color name="color_pocket_1">#4CAF50</color>

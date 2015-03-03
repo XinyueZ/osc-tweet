@@ -1,9 +1,11 @@
 package com.osc4j.ds.common;
 
 
+import java.io.Serializable;
+
 import com.google.gson.annotations.SerializedName;
 
-public final class StatusResult {
+public final class StatusResult implements Serializable {
 	@SerializedName("status")
 	private int mStatus;
 	@SerializedName("result")

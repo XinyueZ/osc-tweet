@@ -90,4 +90,8 @@ public final class Consts {
 	 * My personal information.
 	 */
 	static final String MY_INFORMATION_URL = OSC_HOST + "myInformation";
+	/**
+	 * All comments of a tweet item.
+	 */
+	static final String TWEET_COMMENT_LIST_URL = OSC_HOST + "tweetCommentList?id=%d";
 }

@@ -63,8 +63,9 @@
                 android:id="@+id/time_tv"
                 style="@style/Line_Date_Comments" />
 
-            <ImageView
+            <ImageButton
                 android:src="@drawable/ic_comments"
+                android:id="@+id/comments_list_btn"
                 style="@style/Line_Date_Comments_ImageView" />
 
             <TextView

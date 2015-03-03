@@ -158,7 +158,7 @@ public final class TweetListFragment extends BaseFragment {
 		});
 
 		mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.content_srl);
-		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_1, R.color.color_2, R.color.color_3, R.color.color_4);
+		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_pocket_1, R.color.color_pocket_2, R.color.color_pocket_3, R.color.color_pocket_4);
 		mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {

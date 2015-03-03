@@ -1,9 +1,11 @@
 package com.osc4j.ds.personal;
 
 
+import java.io.Serializable;
+
 import com.google.gson.annotations.SerializedName;
 
-public final class Friend {
+public final class Friend implements Serializable {
 	@SerializedName("expertise")
 	private String mExpertise;
 	@SerializedName("name")

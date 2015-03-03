@@ -17,6 +17,7 @@ import android.util.Log;
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
 import com.osc4j.ds.Login;
+import com.osc4j.ds.comment.Comments;
 import com.osc4j.ds.common.Status;
 import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.FriendsList;
@@ -344,7 +345,7 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static StatusResult updateRelation(Context context, long friend, boolean cancel) throws IOException,
+	public static StatusResult updateRelation(Context context, com.osc4j.ds.personal.User friend, boolean cancel) throws IOException,
 			OscTweetException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -353,7 +354,7 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		String url = String.format(Consts.UPDATE_RELATION_URL, friend, cancel ? 0 : 1);
+		String url = String.format(Consts.UPDATE_RELATION_URL, friend.getUid(), cancel ? 0 : 1);
 		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
 				.build();
 		OkHttpClient client = new OkHttpClient();
@@ -398,6 +399,43 @@ public final class OscApi {
 			throw new OscTweetException();
 		} else {
 			ret = sGson.fromJson(response.body().string(), MyInformation.class);
+		}
+
+		return ret;
+	}
+
+
+	/**
+	 * Get comments of a {@link com.osc4j.ds.tweet.TweetListItem}.
+	 * @param context {@link android.content.Context}.
+	 * @param item {@link com.osc4j.ds.tweet.TweetListItem}.
+	 * @return
+	 * @throws IOException
+	 * @throws OscTweetException
+	 */
+	public static Comments tweetCommentList(Context context, TweetListItem item) throws IOException,
+			OscTweetException {
+		Comments ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+
+		String url =  String.format(Consts.TWEET_COMMENT_LIST_URL, item.getId());
+		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+				.build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= Status.STATUS_ERR) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), Comments.class);
 		}
 
 		return ret;

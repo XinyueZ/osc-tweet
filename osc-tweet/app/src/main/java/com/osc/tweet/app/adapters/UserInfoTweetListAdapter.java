@@ -1,5 +1,6 @@
 package com.osc.tweet.app.adapters;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -7,6 +8,8 @@ import java.util.List;
 import java.util.TimeZone;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -18,19 +21,25 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
+import com.osc.tweet.app.App;
 import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
+import com.osc.tweet.events.ShowTweetCommentListEvent;
 import com.osc.tweet.views.URLImageParser;
+import com.osc4j.OscApi;
 import com.osc4j.ds.tweet.TweetListItem;
+import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.utils.Utils;
 
 import de.greenrobot.event.EventBus;
@@ -152,6 +161,43 @@ public final class UserInfoTweetListAdapter extends RecyclerView.Adapter<UserInf
 			}
 		});
 
+		MenuItem qReplayMi = menu.findItem(R.id.action_quick_reply);
+		SubMenu subMenu  =  qReplayMi.getSubMenu();
+		for( int i = 0, size = subMenu.size(); i < size; i++ ) {
+			subMenu.getItem(i).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem menuItem) {
+					//EventBus.getDefault().post(new CommentTweetEvent(item, menuItem.getTitle().toString()));
+					AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, Object, String>() {
+						@Override
+						protected String doInBackground(MenuItem... params) {
+							try {
+								OscApi.tweetCommentPub(App.Instance, item, com.chopping.utils.Utils.encode(
+										params[0].getTitle().toString()));
+							} catch (IOException | OscTweetException e) {
+								return App.Instance.getString( R.string.msg_message_sent_failed);
+							}
+							return  App.Instance.getString(R.string.msg_message_sent_successfully);
+						}
+
+						@Override
+						protected void onPostExecute(String s) {
+							super.onPostExecute(s);
+							com.chopping.utils.Utils.showLongToast(App.Instance, s);
+						}
+					}, menuItem);
+					return true;
+				}
+			});
+		}
+
+		holder.mCommentsBtn.setVisibility(View.VISIBLE);
+		holder.mCommentsBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				EventBus.getDefault().post(new ShowTweetCommentListEvent(item));
+			}
+		});
 	}
 
 	@Override
@@ -164,6 +210,7 @@ public final class UserInfoTweetListAdapter extends RecyclerView.Adapter<UserInf
 		private TextView mBodyTv;
 		private TextView mTime;
 		private TextView mComments;
+		private ImageButton mCommentsBtn;
 		private NetworkImageView mSmallImgIv;
 		private Toolbar mToolbar;
 
@@ -173,6 +220,7 @@ public final class UserInfoTweetListAdapter extends RecyclerView.Adapter<UserInf
 			mBodyTv = (TextView) convertView.findViewById(R.id.body_tv);
 			mTime = (TextView) convertView.findViewById(R.id.time_tv);
 			mComments = (TextView) convertView.findViewById(R.id.comments_tv);
+			mCommentsBtn = (ImageButton) convertView.findViewById(R.id.comments_list_btn);
 			mSmallImgIv = (NetworkImageView) convertView.findViewById(R.id.small_img_iv);
 			mToolbar = (Toolbar) convertView.findViewById(R.id.toolbar);
 			mToolbar.inflateMenu(R.menu.menu_list_item);

@@ -1,11 +1,12 @@
 package com.osc4j.ds.personal;
 
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class Friends {
+public final class Friends implements Serializable {
 	@SerializedName("fans")
 	private List<Friend> mFansList;
 	@SerializedName("focus")

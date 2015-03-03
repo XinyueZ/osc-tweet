@@ -63,6 +63,7 @@
     <string name="lbl_user_location">From:</string>
     <string name="lbl_user_gender">Gender:</string>
     <string name="lbl_editor_title">Write message</string>
+    <string name="lbl_comments">All replies</string>
 
     <string name="quick_reply_list">quick_reply_en</string>
 </resources>

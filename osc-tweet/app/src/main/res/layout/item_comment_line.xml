@@ -50,13 +50,6 @@
                 android:layout_marginRight="@dimen/common_padding"
                 android:layout_marginBottom="@dimen/common_padding" />
 
-            <com.android.volley.toolbox.NetworkImageView
-                android:id="@+id/small_img_iv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/common_padding"
-                android:layout_marginRight="@dimen/common_padding"
-                android:layout_marginBottom="@dimen/common_padding"/>
 
             <LinearLayout
                 android:layout_marginLeft="@dimen/common_padding"
@@ -72,15 +65,6 @@
 
                 <TextView
                     android:id="@+id/time_tv"
-                    style="@style/Line_Date_Comments" />
-
-                <ImageButton
-                    android:id="@+id/comments_list_btn"
-                    android:src="@drawable/ic_comments"
-                    style="@style/Line_Date_Comments_ImageView" />
-
-                <TextView
-                    android:id="@+id/comments_tv"
                     style="@style/Line_Date_Comments" />
 
             </LinearLayout>

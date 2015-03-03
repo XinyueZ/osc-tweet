@@ -43,6 +43,7 @@ import com.osc.tweet.app.fragments.AppListImpFragment;
 import com.osc.tweet.app.fragments.EditorDialogFragment;
 import com.osc.tweet.app.fragments.FriendsListFragment;
 import com.osc.tweet.app.fragments.MyInfoFragment;
+import com.osc.tweet.app.fragments.TweetCommentListDialogFragment;
 import com.osc.tweet.app.fragments.UserInformationDialogFragment;
 import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.CommentTweetEvent;
@@ -50,6 +51,7 @@ import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
+import com.osc.tweet.events.ShowTweetCommentListEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.events.SnackMessageEvent;
@@ -208,7 +210,7 @@ public class MainActivity extends BaseActivity {
 	 */
 	public void onEvent(ShowUserInformationEvent e) {
 		showDialogFragment(UserInformationDialogFragment.newInstance(getApplicationContext(), e.getUserId(), true),
-				null);
+				"userInfo");
 	}
 
 
@@ -229,7 +231,7 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.ShowEditorEvent}.
 	 */
 	public void onEvent(ShowEditorEvent e) {
-		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getDefaultMessage(), e.isDefaultFixed()), null);
+		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getDefaultMessage(), e.isDefaultFixed()), "editor");
 	}
 
 
@@ -241,6 +243,17 @@ public class MainActivity extends BaseActivity {
 	 */
 	public void onEvent(CommentTweetEvent e) {
 		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getTweetListItem(), e.getComment()), null);
+	}
+
+
+	/**
+	 * Handler for {@link com.osc.tweet.events.ShowTweetCommentListEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.ShowTweetCommentListEvent}.
+	 */
+	public void onEvent(final ShowTweetCommentListEvent e) {
+		showDialogFragment(TweetCommentListDialogFragment.newInstance(getApplicationContext(), e.getTweetItem()), null);
 	}
 	//------------------------------------------------
 

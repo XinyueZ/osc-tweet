@@ -152,7 +152,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					protected StatusResult doInBackground(Object... params) {
 						try {
 							User user = mUserInfo.getUser();
-							return OscApi.updateRelation(App.Instance, user.getUid(),
+							return OscApi.updateRelation(App.Instance, user,
 									user.isRelated());
 						} catch (IOException e) {
 							return null;
