@@ -20,6 +20,8 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.NetworkImageView;
+import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.chopping.utils.Utils;
@@ -28,6 +30,7 @@ import com.osc.tweet.app.App;
 import com.osc.tweet.events.LoadEvent;
 import com.osc.tweet.events.SentMessageEvent;
 import com.osc4j.OscApi;
+import com.osc4j.ds.comment.Comment;
 import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.exceptions.OscTweetException;
@@ -97,22 +100,22 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	}
 
 	/**
-	 * Initialize an {@link  EditorDialogFragment} for writing comment of {@link com.osc4j.ds.tweet.TweetListItem}.
+	 * Initialize an {@link  EditorDialogFragment} for writing comment for a {@link com.osc4j.ds.comment.Comment} of a {@link com.osc4j.ds.tweet.TweetListItem}.
 	 *
 	 * @param context
 	 * 		A {@link android.content.Context} object.
 	 * @param tweetListItem
 	 * 		{@link com.osc4j.ds.tweet.TweetListItem}.
 	 * @param comment
-	 * 		Some text to comment.
+	 * 		The {@code comment} will be replied. Comment the {@code comment} or reply the {@code comment}.
 	 *
 	 * @return An instance of {@link EditorDialogFragment}.
 	 */
-	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem, String comment) {
+	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem, @Nullable Comment comment) {
 		Bundle args = new Bundle();
 		args.putBoolean(EXTRAS_IS_COMMENT, true);
-		args.putString(EXTRAS_DEFAULT_TEXT, null);
-		args.putBoolean(EXTRAS_DEFAULT_FIXED, false);
+		args.putString(EXTRAS_DEFAULT_TEXT, comment != null ? "@" + comment.getCommentAuthor() : null);
+		args.putBoolean(EXTRAS_DEFAULT_FIXED, comment != null);
 		args.putSerializable(EXTRAS_TWEET_ITEM, tweetListItem);
 		args.putSerializable(EXTRAS_COMMENT, comment);
 		return (DialogFragment) Fragment.instantiate(context, EditorDialogFragment.class.getName(), args);
@@ -154,17 +157,32 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 		mSendingIndicatorV.progressiveStart();
 
 
-		TextView tweetItemContentTv = (TextView) view.findViewById(R.id.tweet_content_et);
 		TweetListItem item = getTweetItem();
 		if (item != null) {//Reply
+			view.findViewById(R.id.tweet_ll).setVisibility(View.VISIBLE);
+
+			//Show original tweet information, photo of editor and content of tweet.
+			NetworkImageView photoIv = (NetworkImageView) view.findViewById(R.id.portrait_tweet_iv);
+			photoIv.setDefaultImageResId(R.drawable.ic_not_loaded);
+			photoIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
+
+			TextView tweetItemContentTv = (TextView) view.findViewById(R.id.tweet_content_et);
 			com.osc.tweet.utils.Utils.showTweetListItem(App.Instance, tweetItemContentTv, item);
-			String comment = getComment();
-			if (!TextUtils.isEmpty(comment)) {
-				mEditText.setText(comment);
+
+			//Show the comment of tweet which will be commented further.
+			Comment comment = getComment();
+			if (comment != null) {
+				view.findViewById(R.id.comment_rl).setVisibility(View.VISIBLE);
+
+				TextView commentTv = (TextView) view.findViewById(R.id.comment_tv);
+				com.osc.tweet.utils.Utils.showComment(App.Instance, commentTv, comment);
+
+				photoIv = (NetworkImageView) view.findViewById(R.id.portrait_comment_iv);
+				photoIv.setDefaultImageResId(R.drawable.ic_not_loaded);
+				photoIv.setImageUrl(comment.getCommentPortrait(), TaskHelper.getImageLoader());
 			}
+
 			mToolbar.setTitle(R.string.action_reply_comment);
-		} else {
-			tweetItemContentTv.setVisibility(View.GONE);
 		}
 	}
 
@@ -196,8 +214,8 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	/**
 	 * @return Some text to comment
 	 */
-	private String getComment() {
-		return getArguments().getString(EXTRAS_COMMENT);
+	private Comment getComment() {
+		return (Comment) getArguments().getSerializable(EXTRAS_COMMENT);
 	}
 
 	/**
@@ -257,7 +275,12 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 						}
 
 						if (getTweetItem() ==
-								null) {//It's a new tweet! But the others like reply or comment a tweet don't case reload of list.
+								null) {//It's a new tweet! But writing comment a tweet don't case reload of list.
+							EventBus.getDefault().post(new LoadEvent());
+						}
+
+						if(isComment() && getComment()!= null) {
+							//Reply on a comment cases load on previous view.
 							EventBus.getDefault().post(new LoadEvent());
 						}
 						EventBus.getDefault().post(new SentMessageEvent(true));

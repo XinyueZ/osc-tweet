@@ -21,19 +21,67 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <EditText
-                android:id="@+id/tweet_content_et"
-                android:editable="false" android:focusable="false"
-                android:enabled="false"
+            <LinearLayout
+                android:id="@+id/tweet_ll"
+                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true" />
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+
+
+                <com.osc.tweet.views.RoundedNetworkImageView
+                    android:id="@+id/portrait_tweet_iv"
+                    android:layout_marginRight="@dimen/common_padding"
+                    android:layout_marginLeft="@dimen/common_padding"
+                    android:layout_width="@dimen/portrait_size"
+                    android:layout_height="@dimen/portrait_size" />
+
+
+                <android.support.v7.internal.widget.TintEditText
+                    android:id="@+id/tweet_content_et"
+                    android:editable="false"
+                    android:focusable="false"
+                    android:enabled="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/comment_rl"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_below="@+id/tweet_ll"
+                android:layout_height="wrap_content">
+
+
+                <android.support.v7.internal.widget.TintEditText
+                    android:id="@+id/comment_tv"
+                    android:editable="false"
+                    android:layout_toLeftOf="@+id/portrait_comment_iv"
+                    android:focusable="false"
+                    android:enabled="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+
+                <com.osc.tweet.views.RoundedNetworkImageView
+                    android:id="@+id/portrait_comment_iv"
+                    android:layout_marginRight="@dimen/common_padding"
+                    android:layout_marginLeft="@dimen/common_padding"
+                    android:layout_width="@dimen/portrait_size"
+                    android:layout_height="@dimen/portrait_size"
+                    android:layout_alignParentRight="true" />
+            </RelativeLayout>
 
             <android.support.v7.internal.widget.TintEditText
                 android:id="@+id/message_content_et"
-                android:layout_width="match_parent" android:focusable="true"
-                android:layout_height="match_parent"         android:gravity="top|left"
-                android:layout_below="@+id/tweet_content_et" />
+                android:layout_width="match_parent"
+                android:focusable="true"
+                android:layout_height="match_parent"
+                android:gravity="top|left"
+                android:layout_below="@+id/comment_rl" />
         </RelativeLayout>
 
 

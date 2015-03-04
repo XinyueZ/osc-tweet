@@ -12,18 +12,30 @@
         android:id="@+id/toolbar"
         style="@style/ActionBar_ToolBar" />
 
-    <EditText
-        android:id="@+id/tweet_content_et"
-        android:editable="false"
-        android:focusable="false"
-        android:enabled="false"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true" />
+        android:layout_height="wrap_content">
+
+        <com.osc.tweet.views.RoundedNetworkImageView
+            android:id="@+id/portrait_iv"
+            android:layout_marginRight="@dimen/common_padding"
+            android:layout_marginLeft="@dimen/common_padding"
+            android:layout_width="@dimen/portrait_size"
+            android:layout_height="@dimen/portrait_size" />
+
+        <android.support.v7.internal.widget.TintEditText
+            android:id="@+id/tweet_content_et"
+            android:editable="false"
+            android:focusable="false"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true" />
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:layout_width="match_parent"
@@ -34,7 +46,7 @@
                 android:id="@+id/comments_list_rv"
                 android:layout_gravity="center"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content" />
         </android.support.v4.widget.SwipeRefreshLayout>
 
         <fr.castorflex.android.smoothprogressbar.SmoothProgressBar

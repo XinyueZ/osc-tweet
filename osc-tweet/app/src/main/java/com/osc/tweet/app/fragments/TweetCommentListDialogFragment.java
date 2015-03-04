@@ -18,17 +18,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.NetworkImageView;
+import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.CommentListAdapter;
+import com.osc.tweet.events.LoadEvent;
 import com.osc4j.OscApi;
 import com.osc4j.ds.comment.Comments;
 import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.exceptions.OscTweetException;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * The list of comments of a {@link com.osc4j.ds.tweet.TweetListItem}.
@@ -59,6 +65,22 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	 * Pull to load.
 	 */
 	private SwipeRefreshLayout mSwipeRefreshLayout;
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
+
+	/**
+	 * Handler for {@link com.osc.tweet.events.LoadEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.LoadEvent}.
+	 */
+	public void onEvent(LoadEvent e) {
+		mLoadingIndicatorV.setVisibility(View.VISIBLE);
+		getCommentsList();
+	}
+
+	//------------------------------------------------
 
 	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.TweetCommentListDialogFragment}.
@@ -91,12 +113,13 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		EventBus.getDefault().register(this);
 		mLoadingIndicatorV = view.findViewById(R.id.loading_pb);
 
 		mRv = (RecyclerView) view.findViewById(R.id.comments_list_rv);
 		mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
 		mRv.setHasFixedSize(false);
-		mRv.setAdapter(mAdp = new CommentListAdapter(null));
+		mRv.setAdapter(mAdp = new CommentListAdapter(getTweetItem(), null));
 
 		mLoadingIndicatorV.setVisibility(View.VISIBLE);
 		getCommentsList();
@@ -111,15 +134,28 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 			}
 		});
 
+		//Show original tweet information, photo of editor and content of tweet.
 		TweetListItem item = getTweetItem();
 		TextView originalTextTv = (TextView) view.findViewById(R.id.tweet_content_et);
 		com.osc.tweet.utils.Utils.showTweetListItem(App.Instance, originalTextTv, item);
+		NetworkImageView photoIv = (NetworkImageView) view.findViewById(R.id.portrait_iv);
+		photoIv.setDefaultImageResId(R.drawable.ic_not_loaded);
+		photoIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
 
-		ScreenSize sz = DeviceUtils.getScreenSize(getActivity().getApplication());
-		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width, sz.Height));
 
 		Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 		toolbar.setTitle(R.string.lbl_comments);
+
+		ScreenSize sz = DeviceUtils.getScreenSize(getActivity().getApplication());
+		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width,
+				LayoutParams.MATCH_PARENT));
+
+	}
+
+	@Override
+	public void onDestroyView() {
+		EventBus.getDefault().unregister(this);
+		super.onDestroyView();
 	}
 
 	/**
@@ -143,7 +179,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 			@Override
 			protected void onPostExecute(Comments comments) {
 				super.onPostExecute(comments);
-				mAdp.setData(comments.getComments());
+				mAdp.setData(getTweetItem(), comments.getComments());
 				mAdp.notifyDataSetChanged();
 				mLoadingIndicatorV.setVisibility(View.INVISIBLE);
 				mSwipeRefreshLayout.setRefreshing(false);

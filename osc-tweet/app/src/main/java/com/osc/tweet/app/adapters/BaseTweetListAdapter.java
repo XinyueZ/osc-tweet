@@ -157,7 +157,7 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 		replayMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem i) {
-				EventBus.getDefault().post(new CommentTweetEvent(item));
+				EventBus.getDefault().post(new CommentTweetEvent(item, null));
 				return true;
 			}
 		});

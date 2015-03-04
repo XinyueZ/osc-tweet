@@ -26,11 +26,13 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
+import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.URLImageParser;
 import com.osc4j.ds.comment.Comment;
+import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.utils.Utils;
 
 import de.greenrobot.event.EventBus;
@@ -46,6 +48,10 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 	 */
 	private List<Comment> mData;
 	/**
+	 * The original tweet that hosts comments.
+	 */
+	private TweetListItem mTweetListItem;
+	/**
 	 * Main layout for this component.
 	 */
 	private static final int ITEM_LAYOUT = R.layout.item_comment_line;
@@ -58,20 +64,23 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 	/**
 	 * Constructor of {@link com.osc.tweet.app.adapters.CommentListAdapter}.
 	 *
+	 * @param tweetListItem The original tweet that hosts comments.
 	 * @param data
 	 * 		Data-source.
 	 */
-	public CommentListAdapter(List<Comment> data) {
-		setData(data);
+	public CommentListAdapter(TweetListItem tweetListItem, List<Comment> data) {
+		setData(tweetListItem, data);
 	}
 
 	/**
 	 * Set data-source for list-view.
 	 *
+	 * @param tweetListItem The original tweet that hosts comments.
 	 * @param data
 	 * 		Data-source.
 	 */
-	public void setData(List<Comment> data) {
+	public void setData(TweetListItem tweetListItem, List<Comment> data) {
+		mTweetListItem = tweetListItem;
 		mData = data;
 	}
 
@@ -149,7 +158,7 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 		replayMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem i) {
-				//EventBus.getDefault().post(new CommentTweetEvent(item));
+				EventBus.getDefault().post(new CommentTweetEvent(mTweetListItem, item));
 				return true;
 			}
 		});
