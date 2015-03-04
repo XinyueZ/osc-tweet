@@ -22,12 +22,11 @@ import com.chopping.utils.Utils;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.TweetListAdapter;
-import com.osc.tweet.events.LoadEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc4j.OscApi;
-import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.ds.tweet.TweetList;
+import com.osc4j.exceptions.OscTweetException;
 
 import de.greenrobot.event.EventBus;
 
@@ -66,23 +65,6 @@ public final class TweetListFragment extends BaseFragment {
 	private View mNotLoadedIndicatorV;
 
 
-	//------------------------------------------------
-	//Subscribes, event-handlers
-	//------------------------------------------------
-
-	/**
-	 * Handler for {@link LoadEvent}.
-	 *
-	 * @param e
-	 * 		Event {@link LoadEvent}.
-	 */
-	public void onEvent(LoadEvent e) {
-		showLoadingIndicator();
-		mPage = DEFAULT_PAGE;
-		getTweetList();
-	}
-
-	//------------------------------------------------
 
 	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.

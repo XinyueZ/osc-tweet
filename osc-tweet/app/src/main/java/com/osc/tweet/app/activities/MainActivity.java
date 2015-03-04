@@ -245,7 +245,7 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.CommentTweetEvent}.
 	 */
 	public void onEvent(CommentTweetEvent e) {
-		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getTweetListItem(), e.getComment()), null);
+		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getTweetListItem(), e.getComment()), "comment-editor");
 	}
 
 

@@ -23,7 +23,9 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -203,6 +205,14 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 			});
 		}
 
+		holder.mCommentsTv.setText(item.getReplies() != null ? item.getReplies().size() + "" : "0");
+		holder.mCommentsBtn.setVisibility(View.VISIBLE);
+		holder.mCommentsBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				EventBus.getDefault().post(new CommentTweetEvent(mTweetListItem, item));
+			}
+		});
 	}
 
 	@Override
@@ -216,12 +226,16 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 		private TextView mBodyTv;
 		private TextView mTime;
 		private Toolbar mToolbar;
+		private TextView mCommentsTv;
+		private ImageButton mCommentsBtn;
 
 		private ViewHolder(View convertView) {
 			super(convertView);
 			mPortraitIv = (NetworkImageView) convertView.findViewById(R.id.portrait_iv);
 			mAuthorTv = (TextView) convertView.findViewById(R.id.author_tv);
 			mBodyTv = (TextView) convertView.findViewById(R.id.body_tv);
+			mCommentsTv = (TextView) convertView.findViewById(R.id.comments_tv);
+			mCommentsBtn = (ImageButton) convertView.findViewById(R.id.comments_list_btn);
 			mTime = (TextView) convertView.findViewById(R.id.time_tv);
 			mToolbar = (Toolbar) convertView.findViewById(R.id.toolbar);
 			mToolbar.inflateMenu(MENU_LIST_ITEM);

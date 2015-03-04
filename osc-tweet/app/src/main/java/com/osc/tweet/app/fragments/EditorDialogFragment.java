@@ -29,6 +29,8 @@ import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.LoadEvent;
 import com.osc.tweet.events.SentMessageEvent;
+import com.osc.tweet.events.ShowUserInformationEvent;
+import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.OscApi;
 import com.osc4j.ds.comment.Comment;
 import com.osc4j.ds.common.StatusResult;
@@ -89,7 +91,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 *
 	 * @return An instance of {@link EditorDialogFragment}.
 	 */
-	public static DialogFragment newInstance(Context context, @Nullable String defaultText, boolean isDefaultFixed) {
+	public static DialogFragment newInstance(Context context, @Nullable String defaultText, boolean isDefaultFixed ) {
 		Bundle args = new Bundle();
 		args.putBoolean(EXTRAS_IS_COMMENT, false);
 		args.putString(EXTRAS_DEFAULT_TEXT, defaultText);
@@ -100,7 +102,8 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	}
 
 	/**
-	 * Initialize an {@link  EditorDialogFragment} for writing comment for a {@link com.osc4j.ds.comment.Comment} of a {@link com.osc4j.ds.tweet.TweetListItem}.
+	 * Initialize an {@link  EditorDialogFragment} for writing comment for a {@link com.osc4j.ds.comment.Comment} of a
+	 * {@link com.osc4j.ds.tweet.TweetListItem}.
 	 *
 	 * @param context
 	 * 		A {@link android.content.Context} object.
@@ -111,7 +114,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 *
 	 * @return An instance of {@link EditorDialogFragment}.
 	 */
-	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem, @Nullable Comment comment) {
+	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem, @Nullable Comment comment ) {
 		Bundle args = new Bundle();
 		args.putBoolean(EXTRAS_IS_COMMENT, true);
 		args.putString(EXTRAS_DEFAULT_TEXT, comment != null ? "@" + comment.getCommentAuthor() : null);
@@ -165,6 +168,13 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 			NetworkImageView photoIv = (NetworkImageView) view.findViewById(R.id.portrait_tweet_iv);
 			photoIv.setDefaultImageResId(R.drawable.ic_not_loaded);
 			photoIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
+			photoIv.setOnClickListener(new OnViewAnimatedClickedListener() {
+				@Override
+				public void onClick() {
+					TweetListItem item = getTweetItem();
+					EventBus.getDefault().post(new ShowUserInformationEvent(item.getAuthorId()));
+				}
+			});
 
 			TextView tweetItemContentTv = (TextView) view.findViewById(R.id.tweet_content_et);
 			com.osc.tweet.utils.Utils.showTweetListItem(App.Instance, tweetItemContentTv, item);
@@ -180,6 +190,13 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 				photoIv = (NetworkImageView) view.findViewById(R.id.portrait_comment_iv);
 				photoIv.setDefaultImageResId(R.drawable.ic_not_loaded);
 				photoIv.setImageUrl(comment.getCommentPortrait(), TaskHelper.getImageLoader());
+				photoIv.setOnClickListener(new OnViewAnimatedClickedListener() {
+					@Override
+					public void onClick() {
+						Comment comment = getComment();
+						EventBus.getDefault().post(new ShowUserInformationEvent(comment.getCommentAuthorId()));
+					}
+				});
 			}
 
 			mToolbar.setTitle(R.string.action_reply_comment);
@@ -273,16 +290,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 							mSendingIndicatorV.setVisibility(View.INVISIBLE);
 							mSendingIndicatorV.progressiveStop();
 						}
-
-						if (getTweetItem() ==
-								null) {//It's a new tweet! But writing comment a tweet don't case reload of list.
-							EventBus.getDefault().post(new LoadEvent());
-						}
-
-						if(isComment() && getComment()!= null) {
-							//Reply on a comment cases load on previous view.
-							EventBus.getDefault().post(new LoadEvent());
-						}
+						EventBus.getDefault().post(new LoadEvent());
 						EventBus.getDefault().post(new SentMessageEvent(true));
 					} else {
 						EventBus.getDefault().post(new SentMessageEvent(false));

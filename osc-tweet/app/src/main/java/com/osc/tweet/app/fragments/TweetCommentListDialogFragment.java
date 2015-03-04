@@ -15,6 +15,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -28,7 +30,10 @@ import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.CommentListAdapter;
+import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.LoadEvent;
+import com.osc.tweet.events.ShowUserInformationEvent;
+import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.OscApi;
 import com.osc4j.ds.comment.Comments;
 import com.osc4j.ds.tweet.TweetListItem;
@@ -50,6 +55,10 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	private static final int LAYOUT = R.layout.fragment_dialog_tweet_comment_list;
 
 	/**
+	 * The menu of "actionbar".
+	 */
+	private static final int MENU = R.menu.menu_comments_list;
+	/**
 	 * Adapter for {@link #mRv} to show all comments.
 	 */
 	private CommentListAdapter mAdp;
@@ -65,6 +74,8 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	 * Pull to load.
 	 */
 	private SwipeRefreshLayout mSwipeRefreshLayout;
+
+	private LinearLayoutManager mLayoutManager;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -117,7 +128,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 		mLoadingIndicatorV = view.findViewById(R.id.loading_pb);
 
 		mRv = (RecyclerView) view.findViewById(R.id.comments_list_rv);
-		mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
+		mRv.setLayoutManager(mLayoutManager = new LinearLayoutManager(getActivity()));
 		mRv.setHasFixedSize(false);
 		mRv.setAdapter(mAdp = new CommentListAdapter(getTweetItem(), null));
 
@@ -141,10 +152,25 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 		NetworkImageView photoIv = (NetworkImageView) view.findViewById(R.id.portrait_iv);
 		photoIv.setDefaultImageResId(R.drawable.ic_not_loaded);
 		photoIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
+		photoIv.setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				TweetListItem item = getTweetItem();
+				EventBus.getDefault().post(new ShowUserInformationEvent(item.getAuthorId()));
+			}
+		});
 
 
 		Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 		toolbar.setTitle(R.string.lbl_comments);
+		toolbar.inflateMenu(MENU);
+		toolbar.getMenu().findItem(R.id.action_reply).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				EventBus.getDefault().post(new CommentTweetEvent(getTweetItem(), null));
+				return true;
+			}
+		});
 
 		ScreenSize sz = DeviceUtils.getScreenSize(getActivity().getApplication());
 		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width,
@@ -183,6 +209,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 				mAdp.notifyDataSetChanged();
 				mLoadingIndicatorV.setVisibility(View.INVISIBLE);
 				mSwipeRefreshLayout.setRefreshing(false);
+				mLayoutManager.scrollToPositionWithOffset(0, 0);
 			}
 		});
 	}
@@ -193,4 +220,5 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	private TweetListItem getTweetItem() {
 		return (TweetListItem) getArguments().getSerializable(EXTRAS_TWEET_ITEM);
 	}
+
 }

@@ -115,7 +115,6 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 			}
 		});
 		holder.mAuthorTv.setText(item.getAuthor());
-		holder.mComments.setText(item.getCommentCount() + "");
 
 		if (!TextUtils.isEmpty(item.getBody())) {
 			Spanned htmlSpan = Html.fromHtml(item.getBody(), new URLImageParser(holder.mBodyTv.getContext(),
@@ -133,9 +132,9 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 			editTime = Utils.transformTime(editTime, TimeZone.getTimeZone("GMT+08"), TimeZone.getDefault());
 			CharSequence elapsedSeconds = DateUtils.getRelativeTimeSpanString(editTime.getTimeInMillis(),
 					System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
-			holder.mTime.setText(elapsedSeconds);
+			holder.mTimeTv.setText(elapsedSeconds);
 		} catch (ParseException e) {
-			holder.mTime.setText("?");
+			holder.mTimeTv.setText("?");
 		}
 
 		Menu menu = holder.mToolbar.getMenu();
@@ -191,6 +190,7 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 			});
 		}
 
+		holder.mCommentsTv.setText(item.getCommentCount() + "");
 		holder.mCommentsBtn.setVisibility(View.VISIBLE);
 		holder.mCommentsBtn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -206,8 +206,8 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 	static class ViewHolder extends RecyclerView.ViewHolder {
 		private TextView mAuthorTv;
 		private TextView mBodyTv;
-		private TextView mTime;
-		private TextView mComments;
+		private TextView mTimeTv;
+		private TextView mCommentsTv;
 		private ImageButton mCommentsBtn;
 		private NetworkImageView mSmallImgIv;
 		private Toolbar mToolbar;
@@ -216,8 +216,8 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 			super(convertView);
 			mAuthorTv = (TextView) convertView.findViewById(R.id.author_tv);
 			mBodyTv = (TextView) convertView.findViewById(R.id.body_tv);
-			mTime = (TextView) convertView.findViewById(R.id.time_tv);
-			mComments = (TextView) convertView.findViewById(R.id.comments_tv);
+			mTimeTv = (TextView) convertView.findViewById(R.id.time_tv);
+			mCommentsTv = (TextView) convertView.findViewById(R.id.comments_tv);
 			mCommentsBtn = (ImageButton) convertView.findViewById(R.id.comments_list_btn);
 			mSmallImgIv = (NetworkImageView) convertView.findViewById(R.id.small_img_iv);
 			mToolbar = (Toolbar) convertView.findViewById(R.id.toolbar);

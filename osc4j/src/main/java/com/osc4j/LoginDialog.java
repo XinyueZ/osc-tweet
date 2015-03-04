@@ -151,7 +151,8 @@ public final class LoginDialog extends DialogFragment {
 		editors.setOrientation(LinearLayout.VERTICAL);
 
 		TextView oscLogoV = new TextView(getActivity());
-		editors.addView(oscLogoV, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		editors.addView(oscLogoV, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT));
 		oscLogoV.setText("Login on www.oschina.net");
 
 		AsyncTaskCompat.executeParallel(new AsyncTask<TextView, Bitmap, Bitmap>() {
@@ -175,9 +176,13 @@ public final class LoginDialog extends DialogFragment {
 			@Override
 			protected void onPostExecute(Bitmap bmp) {
 				super.onPostExecute(bmp);
-				if (bmp != null && mLogoIvRef.get() != null) {
-					mLogoIvRef.get().setText("");
-					mLogoIvRef.get().setBackgroundDrawable(new BitmapDrawable(getResources(), bmp));
+				try {
+					if (bmp != null && mLogoIvRef.get() != null) {
+						mLogoIvRef.get().setText("");
+						mLogoIvRef.get().setBackgroundDrawable(new BitmapDrawable(getResources(), bmp));
+					}
+				} catch (IllegalStateException e) {
+					//Ignore.
 				}
 			}
 		}, oscLogoV);
@@ -196,8 +201,8 @@ public final class LoginDialog extends DialogFragment {
 		editors.addView(mNameEt);
 		editors.addView(mPasswordEt);
 
-		int width = (int) Utils.convertPixelsToDp(getActivity(), 50 );
-		int height = (int) Utils.convertPixelsToDp(getActivity(), 50 );
+		int width = (int) Utils.convertPixelsToDp(getActivity(), 50);
+		int height = (int) Utils.convertPixelsToDp(getActivity(), 50);
 		Button loginBtn = new Button(getActivity());
 		loginBtn.setText("Login");
 		loginBtn.setBackgroundColor(Color.TRANSPARENT);
@@ -242,14 +247,18 @@ public final class LoginDialog extends DialogFragment {
 			@Override
 			protected void onPostExecute(Bitmap[] bmp) {
 				super.onPostExecute(bmp);
-				if (bmp != null && mLoginBtnRef.get() != null) {
-					mLoginBtnRef.get().setText("");
-					mLoginBtnRef.get().setBackgroundDrawable(new BitmapDrawable(getResources(), bmp[0]));
-				}
+				try {
+					if (bmp != null && mLoginBtnRef.get() != null) {
+						mLoginBtnRef.get().setText("");
+						mLoginBtnRef.get().setBackgroundDrawable(new BitmapDrawable(getResources(), bmp[0]));
+					}
 
-				if (bmp != null && mRegBtnRef.get() != null) {
-					mRegBtnRef.get().setText("");
-					mRegBtnRef.get().setBackgroundDrawable(new BitmapDrawable(getResources(), bmp[1]));
+					if (bmp != null && mRegBtnRef.get() != null) {
+						mRegBtnRef.get().setText("");
+						mRegBtnRef.get().setBackgroundDrawable(new BitmapDrawable(getResources(), bmp[1]));
+					}
+				} catch (IllegalStateException e) {
+					//Ignore.
 				}
 			}
 		}, loginBtn, regBtn);
@@ -280,15 +289,20 @@ public final class LoginDialog extends DialogFragment {
 					@Override
 					protected void onPostExecute(Login login) {
 						super.onPostExecute(login);
-						mPb.dismiss();
-						if (login != null) {
-							Toast.makeText(getActivity(), "Welcome!", Toast.LENGTH_SHORT).show();
-							LoginDialog.this.dismissAllowingStateLoss();
-							mLocalBroadcastManager.sendBroadcast(new Intent(Consts.ACTION_AUTH_DONE));
-						} else {
-							//TODO error-handling for login.
-							mNameEt.setText("");
-							mPasswordEt.setText("");
+						try {
+							mPb.dismiss();
+
+							if (login != null) {
+								Toast.makeText(getActivity(), "Welcome!", Toast.LENGTH_SHORT).show();
+								LoginDialog.this.dismissAllowingStateLoss();
+								mLocalBroadcastManager.sendBroadcast(new Intent(Consts.ACTION_AUTH_DONE));
+							} else {
+								//TODO error-handling for login.
+								mNameEt.setText("");
+								mPasswordEt.setText("");
+							}
+						} catch (IllegalStateException e) {
+							//Ignore.
 						}
 					}
 				});
@@ -298,12 +312,12 @@ public final class LoginDialog extends DialogFragment {
 
 		ScreenSize screenSize = getScreenSize(getActivity());
 		mRootVg.addView(editors, new LayoutParams(screenSize.Width, ViewGroup.LayoutParams.WRAP_CONTENT));
-		MarginLayoutParams ml = ((MarginLayoutParams)editors.getLayoutParams());
-		int margin = (int)Utils.convertPixelsToDp(getActivity(), 16f);
+		MarginLayoutParams ml = ((MarginLayoutParams) editors.getLayoutParams());
+		int margin = (int) Utils.convertPixelsToDp(getActivity(), 16f);
 		ml.topMargin = margin;
 
-		int padding = (int)Utils.convertPixelsToDp(getActivity(), 16f);
-		mRootVg.setPadding(padding, padding,padding ,padding);
+		int padding = (int) Utils.convertPixelsToDp(getActivity(), 16f);
+		mRootVg.setPadding(padding, padding, padding, padding);
 	}
 
 	/**
