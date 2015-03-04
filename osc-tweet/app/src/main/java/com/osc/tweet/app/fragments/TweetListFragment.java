@@ -77,6 +77,7 @@ public final class TweetListFragment extends BaseFragment {
 	 * 		Event {@link LoadEvent}.
 	 */
 	public void onEvent(LoadEvent e) {
+		showLoadingIndicator();
 		mPage = DEFAULT_PAGE;
 		getTweetList();
 	}
