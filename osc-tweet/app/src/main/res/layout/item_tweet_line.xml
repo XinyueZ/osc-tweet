@@ -48,7 +48,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/common_padding"
                 android:layout_marginRight="@dimen/common_padding"
-                android:layout_marginBottom="@dimen/common_padding" />
+                android:layout_marginBottom="@dimen/common_padding"
+                android:paddingRight="@dimen/activity_horizontal_margin"/>
 
             <com.android.volley.toolbox.NetworkImageView
                 android:id="@+id/small_img_iv"
