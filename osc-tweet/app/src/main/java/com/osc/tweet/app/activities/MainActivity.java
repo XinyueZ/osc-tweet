@@ -255,7 +255,7 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.ShowTweetCommentListEvent}.
 	 */
 	public void onEvent(final ShowTweetCommentListEvent e) {
-		showDialogFragment(TweetCommentListDialogFragment.newInstance(getApplicationContext(), e.getTweetItem()), null);
+		showDialogFragment(TweetCommentListDialogFragment.newInstance(getApplicationContext(), e.getTweetItem()), "comment-list");
 	}
 
 	/**

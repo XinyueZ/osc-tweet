@@ -59,6 +59,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	 * Pull to load.
 	 */
 	private SwipeRefreshLayout mSwipeRefreshLayout;
+
 	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.TweetCommentListDialogFragment}.
 	 *
@@ -101,7 +102,8 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 		getCommentsList();
 
 		mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.content_srl);
-		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_pocket_1, R.color.color_pocket_2, R.color.color_pocket_3, R.color.color_pocket_4);
+		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_pocket_1, R.color.color_pocket_2,
+				R.color.color_pocket_3, R.color.color_pocket_4);
 		mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
@@ -111,11 +113,8 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 
 		TweetListItem item = getTweetItem();
 		TextView originalTextTv = (TextView) view.findViewById(R.id.tweet_content_et);
-		if (item != null) {
-			com.osc.tweet.utils.Utils.showTweetListItem(App.Instance, originalTextTv, item);
-		} else {
-			originalTextTv.setVisibility(View.GONE);
-		}
+		com.osc.tweet.utils.Utils.showTweetListItem(App.Instance, originalTextTv, item);
+
 		ScreenSize sz = DeviceUtils.getScreenSize(getActivity().getApplication());
 		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width, sz.Height));
 
@@ -153,11 +152,9 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	}
 
 	/**
-	 *
 	 * @return The tweet object to comment.
 	 */
 	private TweetListItem getTweetItem() {
-		return (TweetListItem) getArguments().getSerializable(
-				EXTRAS_TWEET_ITEM);
+		return (TweetListItem) getArguments().getSerializable(EXTRAS_TWEET_ITEM);
 	}
 }
