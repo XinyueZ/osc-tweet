@@ -1,48 +1,15 @@
 package com.osc.tweet.app.adapters;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.support.v4.os.AsyncTaskCompat;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
-import android.text.method.LinkMovementMethod;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
-import android.view.SubMenu;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
-import com.osc.tweet.app.App;
-import com.osc.tweet.events.CommentTweetEvent;
-import com.osc.tweet.events.ShowBigImageEvent;
-import com.osc.tweet.events.ShowEditorEvent;
-import com.osc.tweet.events.ShowTweetCommentListEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
-import com.osc.tweet.views.URLImageParser;
-import com.osc4j.OscApi;
 import com.osc4j.ds.tweet.TweetListItem;
-import com.osc4j.exceptions.OscTweetException;
-import com.osc4j.utils.Utils;
 
 import de.greenrobot.event.EventBus;
 
@@ -51,200 +18,43 @@ import de.greenrobot.event.EventBus;
  *
  * @author Xinyue Zhao
  */
-public final class TweetListAdapter extends RecyclerView.Adapter<TweetListAdapter.ViewHolder> {
-	/**
-	 * Data-source.
-	 */
-	private List<TweetListItem> mData;
-	/**
-	 * Main layout for this component.
-	 */
-	private static final int ITEM_LAYOUT = R.layout.item_tweet_line;
-
-	/**
-	 * A menu on each line of list.
-	 */
-	private static final int MENU_LIST_ITEM = R.menu.menu_list_item;
-
-	/**
-	 * Constructor of {@link com.osc.tweet.app.adapters.TweetListAdapter}.
-	 *
-	 * @param data
-	 * 		Data-source.
-	 */
+public final class TweetListAdapter extends BaseTweetListAdapter {
 	public TweetListAdapter(List<TweetListItem> data) {
-		setData(data);
-	}
-
-	/**
-	 * Set data-source for list-view.
-	 *
-	 * @param data
-	 * 		Data-source.
-	 */
-	public void setData(List<TweetListItem> data) {
-		mData = data;
-	}
-
-	/**
-	 * Get current used data-source.
-	 *
-	 * @return The data-source.
-	 */
-	public List<TweetListItem> getData() {
-		return mData;
+		super(data);
 	}
 
 	@Override
-	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-		Context cxt = parent.getContext();
-		//		boolean landscape = cxt.getResources().getBoolean(R.bool.landscape);
-		View convertView = LayoutInflater.from(cxt).inflate(ITEM_LAYOUT, parent, false);
-		TweetListAdapter.ViewHolder viewHolder = new TweetListAdapter.ViewHolder(convertView);
-		return viewHolder;
-	}
-
-	@Override
-	public void onBindViewHolder(ViewHolder holder, int position) {
-		final TweetListItem item = mData.get(position);
-		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
-		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
-		holder.mPortraitIv.setOnClickListener(new OnViewAnimatedClickedListener() {
+	public void onBindViewHolder(BaseTweetListAdapter.ViewHolder holder, int position) {
+		final TweetListItem item = getData().get(position);
+		ViewHolder thisHolder = (ViewHolder) holder;
+		thisHolder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
+		thisHolder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
+		thisHolder.mPortraitIv.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
 				EventBus.getDefault().post(new ShowUserInformationEvent(item.getAuthorId()));
 			}
 		});
-		if (!TextUtils.isEmpty(item.getImgSmall())) {
-			holder.mSmallImgIv.setVisibility(View.VISIBLE);
-			holder.mSmallImgIv.setDefaultImageResId(R.drawable.ic_not_loaded);
-			holder.mSmallImgIv.setImageUrl(item.getImgSmall(), TaskHelper.getImageLoader());
-		} else {
-			holder.mSmallImgIv.setVisibility(View.GONE);
-		}
-
-		holder.mSmallImgIv.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EventBus.getDefault().post(new ShowBigImageEvent(item));
-			}
-		});
-		holder.mAuthorTv.setText(item.getAuthor());
-		holder.mComments.setText(item.getCommentCount() + "");
-
-		if (!TextUtils.isEmpty(item.getBody())) {
-			Spanned htmlSpan = Html.fromHtml(item.getBody(), new URLImageParser(holder.mBodyTv.getContext(),
-					holder.mBodyTv), null);
-			holder.mBodyTv.setText(htmlSpan);
-			holder.mBodyTv.setMovementMethod(LinkMovementMethod.getInstance());
-			holder.mBodyTv.setVisibility(View.VISIBLE);
-		} else {
-			holder.mBodyTv.setVisibility(View.GONE);
-		}
-
-		Calendar editTime = Calendar.getInstance();
-		try {
-			editTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item.getPubDate()));
-			editTime = Utils.transformTime(editTime, TimeZone.getTimeZone("GMT+08"), TimeZone.getDefault());
-			CharSequence elapsedSeconds = DateUtils.getRelativeTimeSpanString(editTime.getTimeInMillis(),
-					System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
-			holder.mTime.setText(elapsedSeconds);
-		} catch (ParseException e) {
-			holder.mTime.setText("?");
-		}
-
-
-		final Menu menu = holder.mToolbar.getMenu();
-
-		MenuItem atHimMi = menu.findItem(R.id.action_at_him);
-		atHimMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_at_him),
-				item.getAuthor()));
-		atHimMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				EventBus.getDefault().post(new ShowEditorEvent(item.getTitle().toString()));
-				return true;
-			}
-		});
-
-		MenuItem replayMi = menu.findItem(R.id.action_reply);
-		replayMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_reply_comment),
-				item.getAuthor()));
-		replayMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem i) {
-				EventBus.getDefault().post(new CommentTweetEvent(item));
-				return true;
-			}
-		});
-
-		MenuItem qReplayMi = menu.findItem(R.id.action_quick_reply);
-		SubMenu subMenu  =  qReplayMi.getSubMenu();
-		for( int i = 0, size = subMenu.size(); i < size; i++ ) {
-			subMenu.getItem(i).setOnMenuItemClickListener(new OnMenuItemClickListener() {
-				@Override
-				public boolean onMenuItemClick(MenuItem menuItem) {
-					//EventBus.getDefault().post(new CommentTweetEvent(item, menuItem.getTitle().toString()));
-					AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, Object, String>() {
-						@Override
-						protected String doInBackground(MenuItem... params) {
-							try {
-								OscApi.tweetCommentPub(App.Instance, item, com.chopping.utils.Utils.encode(
-										params[0].getTitle().toString()));
-							} catch (IOException | OscTweetException e) {
-								return App.Instance.getString(R.string.msg_message_sent_failed);
-							}
-							return App.Instance.getString(R.string.msg_message_sent_successfully);
-						}
-
-						@Override
-						protected void onPostExecute(String s) {
-							super.onPostExecute(s);
-							com.chopping.utils.Utils.showLongToast(App.Instance, s);
-						}
-					}, menuItem);
-					return true;
-				}
-			});
-		}
-
-		holder.mCommentsBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EventBus.getDefault().post(new ShowTweetCommentListEvent(item));
-			}
-		});
+		super.onBindViewHolder(holder, position);
 	}
 
-	@Override
-	public int getItemCount() {
-		return mData == null ? 0 : mData.size();
-	}
-
-	static class ViewHolder extends RecyclerView.ViewHolder {
+	static class ViewHolder extends BaseTweetListAdapter.ViewHolder {
 		private NetworkImageView mPortraitIv;
-		private TextView mAuthorTv;
-		private TextView mBodyTv;
-		private TextView mTime;
-		private ImageButton mCommentsBtn;
-		private TextView mComments;
-		private NetworkImageView mSmallImgIv;
-		private Toolbar mToolbar;
 
 		private ViewHolder(View convertView) {
 			super(convertView);
 			mPortraitIv = (NetworkImageView) convertView.findViewById(R.id.portrait_iv);
-			mAuthorTv = (TextView) convertView.findViewById(R.id.author_tv);
-			mBodyTv = (TextView) convertView.findViewById(R.id.body_tv);
-			mTime = (TextView) convertView.findViewById(R.id.time_tv);
-			mComments = (TextView) convertView.findViewById(R.id.comments_tv);
-			mCommentsBtn = (ImageButton) convertView.findViewById(R.id.comments_list_btn);
-			mSmallImgIv = (NetworkImageView) convertView.findViewById(R.id.small_img_iv);
-			mToolbar = (Toolbar) convertView.findViewById(R.id.toolbar);
-			mToolbar.inflateMenu(MENU_LIST_ITEM);
-
-
-			com.osc.tweet.utils.Utils.makeQuickReplyMenuItems(convertView.getContext(), mToolbar.getMenu());
 		}
+	}
+
+
+	@Override
+	protected int getItemLayout() {
+		return R.layout.item_tweet_line;
+	}
+
+	@Override
+	protected BaseTweetListAdapter.ViewHolder getViewHolder(View convertView) {
+		return new TweetListAdapter.ViewHolder(convertView);
 	}
 }

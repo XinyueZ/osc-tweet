@@ -324,7 +324,6 @@ public class MainActivity extends BaseActivity {
 		if (mDrawerToggle != null) {
 			mDrawerToggle.syncState();
 		}
-		checkPlayService();
 	}
 
 	private void showFriendsListButton() {
@@ -470,6 +469,9 @@ public class MainActivity extends BaseActivity {
 		super.onAppConfigLoaded();
 		showAppList();
 
+
+		checkPlayService();
+
 		if (Prefs.getInstance().isEULAOnceConfirmed()) {
 			initViewPager();
 			mSmoothProgressBar.setVisibility(View.VISIBLE);
@@ -481,6 +483,8 @@ public class MainActivity extends BaseActivity {
 		mConfigLoaded = true;
 		super.onAppConfigIgnored();
 		showAppList();
+
+		checkPlayService();
 	}
 
 	/**
