@@ -14,8 +14,8 @@
     <string name="msg_message_sent_successfully">Sent message successfully.</string>
     <string name="msg_message_sent_failed">Can not send this message.</string>
     <string name="msg_message_input">Please fill your content.</string>
-    <string name="msg_focus">You have focused on %s</string>
-    <string name="msg_focus_cancle">You have cancled focused on %s</string>
+    <string name="msg_focus">You have fallowed on %s</string>
+    <string name="msg_focus_cancel">You have canceled relation on %s</string>
 
     <string name="btn_confirm">Confirm</string>
     <string name="btn_cancel">Cancel</string>

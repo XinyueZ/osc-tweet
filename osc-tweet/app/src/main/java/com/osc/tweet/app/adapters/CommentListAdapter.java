@@ -1,5 +1,6 @@
 package com.osc.tweet.app.adapters;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -7,6 +8,8 @@ import java.util.List;
 import java.util.TimeZone;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -26,13 +29,19 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
+import com.osc.tweet.app.App;
 import com.osc.tweet.events.CommentTweetEvent;
+import com.osc.tweet.events.LoadEvent;
+import com.osc.tweet.events.SentMessageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.URLImageParser;
+import com.osc4j.OscApi;
 import com.osc4j.ds.comment.Comment;
+import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.tweet.TweetListItem;
+import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.utils.Utils;
 
 import de.greenrobot.event.EventBus;
@@ -169,7 +178,26 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 			subMenu.getItem(i).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem menuItem) {
-					//EventBus.getDefault().post(new CommentTweetEvent(item, menuItem.getTitle().toString()));
+					AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, Object, StatusResult>() {
+						@Override
+						protected StatusResult doInBackground(MenuItem... params) {
+							try {
+								return OscApi.tweetCommentPub(App.Instance, mTweetListItem, com.chopping.utils.Utils.encode(
+										"@" + item.getCommentAuthor() + " " + params[0].getTitle().toString()));
+							} catch (IOException | OscTweetException e) {
+								return null;
+							}
+						}
+
+						@Override
+						protected void onPostExecute(StatusResult s) {
+							super.onPostExecute(s);
+							EventBus.getDefault().post(new SentMessageEvent(s != null && Integer.valueOf(
+									s.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK));
+
+							EventBus.getDefault().post(new LoadEvent());
+						}
+					}, menuItem);
 					return true;
 				}
 			});

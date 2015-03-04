@@ -5,6 +5,7 @@ import java.io.IOException;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.chopping.net.TaskHelper;
@@ -27,15 +29,14 @@ import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.UserInfoTweetListAdapter;
 import com.osc.tweet.events.LoadFriendsListEvent;
-import com.osc.tweet.events.SnackMessageEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener2;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
-import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.Gender;
 import com.osc4j.ds.personal.User;
 import com.osc4j.ds.personal.UserInformation;
+import com.osc4j.exceptions.OscTweetException;
 
 import de.greenrobot.event.EventBus;
 
@@ -86,6 +87,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	 * Previous position of {@link #mUserRelationBtn}.
 	 */
 	private float mBtnX;
+
 	/**
 	 * Initialize an {@link  UserInformationDialogFragment}.
 	 *
@@ -152,8 +154,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					protected StatusResult doInBackground(Object... params) {
 						try {
 							User user = mUserInfo.getUser();
-							return OscApi.updateRelation(App.Instance, user,
-									user.isRelated());
+							return OscApi.updateRelation(App.Instance, user, user.isRelated());
 						} catch (IOException e) {
 							return null;
 						} catch (OscTweetException e) {
@@ -169,12 +170,16 @@ public final class UserInformationDialogFragment extends DialogFragment {
 								com.osc4j.ds.common.Status.STATUS_OK) {
 							User user = mUserInfo.getUser();
 							if (user.isRelated()) {
-								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
-										R.string.msg_focus_cancle), user.getName())));
+//								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
+//										R.string.msg_focus_cancel), user.getName())));
+								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_focus_cancel), user.getName()));
 							} else {
-								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
-										R.string.msg_focus), user.getName())));
+//								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
+//										R.string.msg_focus), user.getName())));
+								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_focus), user.getName()));
+
 							}
+							((Vibrator)App.Instance.getSystemService(App.VIBRATOR_SERVICE)).vibrate(300);
 							//New relation.
 							user.setRelation(res.getResult().getRelation());
 							mChangeRelationPb.setVisibility(View.INVISIBLE);
@@ -195,8 +200,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 		getUserInformation();
 
 		ScreenSize sz = DeviceUtils.getScreenSize(getActivity().getApplication());
-		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width,
-				sz.Height - Utils.getActionBarHeight(getActivity())));
+		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width, LayoutParams.MATCH_PARENT));
 	}
 
 
@@ -227,9 +231,8 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 					mUserPhotoIv.setImageUrl(user.getPortrait(), TaskHelper.getImageLoader());
 					ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mUserPhotoIv);
-					animator.y(mIvY).setDuration(getResources().getInteger(R.integer.anim_fast_duration))
-							.start();
-					animator =  ViewPropertyAnimator.animate(mUserRelationBtn);
+					animator.y(mIvY).setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
+					animator = ViewPropertyAnimator.animate(mUserRelationBtn);
 					animator.translationX(mBtnX).setDuration(getResources().getInteger(R.integer.anim_fast_duration))
 							.start();
 					mUserNameTv.setText(user.getName());

@@ -31,6 +31,7 @@ import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
 import com.chopping.bus.CloseDrawerEvent;
 import com.chopping.utils.DeviceUtils;
+import com.chopping.utils.Utils;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -265,7 +266,8 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.SentMessageEvent}.
 	 */
 	public void onEvent(SentMessageEvent e) {
-		mSnackBar.show(e.isSuccess() ? getString(R.string.msg_message_sent_successfully): getString(R.string.msg_message_sent_failed));
+		Utils.showLongToast(getApplicationContext(), e.isSuccess() ? getString(R.string.msg_message_sent_successfully) : getString(
+				R.string.msg_message_sent_failed));
 		((Vibrator)getSystemService(VIBRATOR_SERVICE)).vibrate(300);
 	}
 	//------------------------------------------------
