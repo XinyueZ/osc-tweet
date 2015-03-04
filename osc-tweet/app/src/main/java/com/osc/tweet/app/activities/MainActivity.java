@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -49,6 +50,7 @@ import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
+import com.osc.tweet.events.SentMessageEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowTweetCommentListEvent;
@@ -254,6 +256,17 @@ public class MainActivity extends BaseActivity {
 	 */
 	public void onEvent(final ShowTweetCommentListEvent e) {
 		showDialogFragment(TweetCommentListDialogFragment.newInstance(getApplicationContext(), e.getTweetItem()), null);
+	}
+
+	/**
+	 * Handler for {@link com.osc.tweet.events.SentMessageEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.SentMessageEvent}.
+	 */
+	public void onEvent(SentMessageEvent e) {
+		mSnackBar.show(e.isSuccess() ? getString(R.string.msg_message_sent_successfully): getString(R.string.msg_message_sent_failed));
+		((Vibrator)getSystemService(VIBRATOR_SERVICE)).vibrate(300);
 	}
 	//------------------------------------------------
 

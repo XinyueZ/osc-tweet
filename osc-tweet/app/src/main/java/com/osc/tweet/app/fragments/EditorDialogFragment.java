@@ -26,7 +26,9 @@ import com.chopping.utils.Utils;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.LoadEvent;
+import com.osc.tweet.events.SentMessageEvent;
 import com.osc4j.OscApi;
+import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.exceptions.OscTweetException;
 
@@ -101,7 +103,9 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 * 		A {@link android.content.Context} object.
 	 * @param tweetListItem
 	 * 		{@link com.osc4j.ds.tweet.TweetListItem}.
-	 *@param comment  Some text to comment.
+	 * @param comment
+	 * 		Some text to comment.
+	 *
 	 * @return An instance of {@link EditorDialogFragment}.
 	 */
 	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem, String comment) {
@@ -155,7 +159,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 		if (item != null) {//Reply
 			com.osc.tweet.utils.Utils.showTweetListItem(App.Instance, tweetItemContentTv, item);
 			String comment = getComment();
-			if(!TextUtils.isEmpty(comment)) {
+			if (!TextUtils.isEmpty(comment)) {
 				mEditText.setText(comment);
 			}
 			mToolbar.setTitle(R.string.action_reply_comment);
@@ -219,7 +223,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	private void sendMessage() {
 		String msg = mEditText.getText().toString();
 		if (!TextUtils.isEmpty(msg)) {
-			AsyncTaskCompat.executeParallel(new AsyncTask<String, Object, String>() {
+			AsyncTaskCompat.executeParallel(new AsyncTask<String, Object, StatusResult>() {
 				@Override
 				protected void onPreExecute() {
 					super.onPreExecute();
@@ -227,38 +231,41 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 					mSendingIndicatorV.setVisibility(View.VISIBLE);
 				}
 
+				//				EventBus.getDefault().post(new SentQuickReplyEvent());
 				@Override
-				protected String doInBackground(String... params) {
+				protected StatusResult doInBackground(String... params) {
 					String msg = params[0];
 					try {
 						if (getTweetItem() == null) {
-							OscApi.tweetPub(App.Instance, Utils.encode(msg));
+							return OscApi.tweetPub(App.Instance, Utils.encode(msg));
 						} else {
-							OscApi.tweetCommentPub(App.Instance, getTweetItem(), Utils.encode(msg));
+							return OscApi.tweetCommentPub(App.Instance, getTweetItem(), Utils.encode(msg));
 						}
 					} catch (IOException | OscTweetException e) {
 						return null;
 					}
-					return getString(R.string.msg_message_sent_successfully);
 				}
 
 				@Override
-				protected void onPostExecute(String s) {
+				protected void onPostExecute(StatusResult s) {
 					super.onPostExecute(s);
-					if (!TextUtils.isEmpty(s)) {
-						Utils.showLongToast(App.Instance, s);
+					if (s != null && Integer.valueOf(s.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK) {
 						if (isVisible() && mSendMi != null) {
 							mSendMi.setEnabled(true);
 							mSendingIndicatorV.setVisibility(View.INVISIBLE);
 							mSendingIndicatorV.progressiveStop();
 							dismiss();
-							if(getTweetItem() == null) {//Reply or comment a tweet don't case reload of list.
-								EventBus.getDefault().post(new LoadEvent());
-							}
+
 						}
+
+						if (getTweetItem() == null) {//It's a new tweet! But the others like reply or comment a tweet don't case reload of list.
+							EventBus.getDefault().post(new LoadEvent());
+						}
+						EventBus.getDefault().post(new SentMessageEvent(true));
 					} else {
-						Utils.showLongToast(App.Instance, getString(R.string.msg_message_sent_failed));
+						EventBus.getDefault().post(new SentMessageEvent(false));
 					}
+
 				}
 			}, msg);
 		} else {

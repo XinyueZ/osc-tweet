@@ -33,11 +33,13 @@ import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.CommentTweetEvent;
+import com.osc.tweet.events.SentMessageEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowTweetCommentListEvent;
 import com.osc.tweet.views.URLImageParser;
 import com.osc4j.OscApi;
+import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.utils.Utils;
@@ -166,23 +168,22 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 			subMenu.getItem(i).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 				@Override
 				public boolean onMenuItemClick(MenuItem menuItem) {
-					//EventBus.getDefault().post(new CommentTweetEvent(item, menuItem.getTitle().toString()));
-					AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, Object, String>() {
+					AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, Object, StatusResult>() {
 						@Override
-						protected String doInBackground(MenuItem... params) {
+						protected StatusResult doInBackground(MenuItem... params) {
 							try {
-								OscApi.tweetCommentPub(App.Instance, item, com.chopping.utils.Utils.encode(
+								return OscApi.tweetCommentPub(App.Instance, item, com.chopping.utils.Utils.encode(
 										params[0].getTitle().toString()));
 							} catch (IOException | OscTweetException e) {
-								return App.Instance.getString(R.string.msg_message_sent_failed);
+								return null;
 							}
-							return App.Instance.getString(R.string.msg_message_sent_successfully);
 						}
 
 						@Override
-						protected void onPostExecute(String s) {
+						protected void onPostExecute(StatusResult s) {
 							super.onPostExecute(s);
-							com.chopping.utils.Utils.showLongToast(App.Instance, s);
+							EventBus.getDefault().post(new SentMessageEvent(s != null && Integer.valueOf(s.getResult().getCode()) ==
+									com.osc4j.ds.common.Status.STATUS_OK));
 						}
 					}, menuItem);
 					return true;
