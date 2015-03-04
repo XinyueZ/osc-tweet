@@ -150,14 +150,15 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 		mSendingIndicatorV.progressiveStart();
 
 
-		TweetListItem item = getTweetItem();
 		TextView tweetItemContentTv = (TextView) view.findViewById(R.id.tweet_content_et);
-		if (item != null) {
+		TweetListItem item = getTweetItem();
+		if (item != null) {//Reply
 			com.osc.tweet.utils.Utils.showTweetListItem(App.Instance, tweetItemContentTv, item);
 			String comment = getComment();
 			if(!TextUtils.isEmpty(comment)) {
 				mEditText.setText(comment);
 			}
+			mToolbar.setTitle(R.string.action_reply_comment);
 		} else {
 			tweetItemContentTv.setVisibility(View.GONE);
 		}
