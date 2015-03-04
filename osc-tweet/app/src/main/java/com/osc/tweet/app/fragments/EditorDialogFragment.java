@@ -254,18 +254,17 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 							mSendMi.setEnabled(true);
 							mSendingIndicatorV.setVisibility(View.INVISIBLE);
 							mSendingIndicatorV.progressiveStop();
-							dismiss();
-
 						}
 
-						if (getTweetItem() == null) {//It's a new tweet! But the others like reply or comment a tweet don't case reload of list.
+						if (getTweetItem() ==
+								null) {//It's a new tweet! But the others like reply or comment a tweet don't case reload of list.
 							EventBus.getDefault().post(new LoadEvent());
 						}
 						EventBus.getDefault().post(new SentMessageEvent(true));
 					} else {
 						EventBus.getDefault().post(new SentMessageEvent(false));
 					}
-
+					dismiss();
 				}
 			}, msg);
 		} else {
