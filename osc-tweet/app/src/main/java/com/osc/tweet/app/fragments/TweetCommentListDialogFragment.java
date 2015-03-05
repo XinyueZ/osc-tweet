@@ -24,6 +24,7 @@ import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
+import com.chopping.bus.ReloadEvent;
 import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
@@ -90,6 +91,19 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 		mLoadingIndicatorV.setVisibility(View.VISIBLE);
 		getCommentsList();
 	}
+
+
+	/**
+	 * Handler for {@link com.chopping.bus.ReloadEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.chopping.bus.ReloadEvent}.
+	 */
+	public void onEvent(ReloadEvent e) {
+		mLoadingIndicatorV.setVisibility(View.VISIBLE);
+		getCommentsList();
+	}
+ 
 
 	//------------------------------------------------
 

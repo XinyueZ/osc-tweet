@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -77,6 +78,14 @@ public final class MyInfoFragment extends BaseFragment {
 		mUserIdentTv = (TextView) view.findViewById(R.id.user_ident_tv);
 
 		getMyInformation();
+
+
+		view.findViewById(R.id.refresh_btn).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getMyInformation();
+			}
+		});
 	}
 
 

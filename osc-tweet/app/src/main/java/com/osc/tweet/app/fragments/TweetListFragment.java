@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.chopping.application.BasicPrefs;
+import com.chopping.bus.ReloadEvent;
 import com.chopping.fragments.BaseFragment;
 import com.chopping.utils.Utils;
 import com.osc.tweet.R;
@@ -64,7 +65,23 @@ public final class TweetListFragment extends BaseFragment {
 	 */
 	private View mNotLoadedIndicatorV;
 
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
 
+	/**
+	 * Handler for {@link com.chopping.bus.ReloadEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.chopping.bus.ReloadEvent}.
+	 */
+	public void onEvent(ReloadEvent e) {
+		mPage = DEFAULT_PAGE;
+		showLoadingIndicator();
+		getMoreTweetList();
+	}
+
+	//------------------------------------------------
 
 	/**
 	 * Create an instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
