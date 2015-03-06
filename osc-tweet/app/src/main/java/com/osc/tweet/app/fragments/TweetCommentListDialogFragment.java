@@ -77,6 +77,17 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	private SwipeRefreshLayout mSwipeRefreshLayout;
 
 	private LinearLayoutManager mLayoutManager;
+
+	/**
+	 * The page of tweets to load.
+	 */
+	private int mPage = DEFAULT_PAGE;
+
+	private static final int DEFAULT_PAGE = 1;
+	/**
+	 * On the bottom of all records.
+	 */
+	private boolean mBottom;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -88,7 +99,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	 * 		Event {@link com.osc.tweet.events.LoadEvent}.
 	 */
 	public void onEvent(LoadEvent e) {
-		mLoadingIndicatorV.setVisibility(View.VISIBLE);
+		prepareGetCommentsList();
 		getCommentsList();
 	}
 
@@ -100,10 +111,11 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	 * 		Event {@link com.chopping.bus.ReloadEvent}.
 	 */
 	public void onEvent(ReloadEvent e) {
-		mLoadingIndicatorV.setVisibility(View.VISIBLE);
+		prepareGetCommentsList();
 		getCommentsList();
 	}
- 
+
+
 
 	//------------------------------------------------
 
@@ -135,6 +147,12 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 		return inflater.inflate(LAYOUT, container, false);
 	}
 
+	private int mVisibleItemCount;
+	private int mPastVisibleItems;
+	private int mTotalItemCount;
+	private boolean mLoading = true;
+
+
 	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
@@ -145,6 +163,25 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 		mRv.setLayoutManager(mLayoutManager = new LinearLayoutManager(getActivity()));
 		mRv.setHasFixedSize(false);
 		mRv.setAdapter(mAdp = new CommentListAdapter(getTweetItem(), null));
+		mRv.setOnScrollListener(new RecyclerView.OnScrollListener() {
+			@Override
+			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+				mVisibleItemCount = mLayoutManager.getChildCount();
+				mTotalItemCount = mLayoutManager.getItemCount();
+				mPastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
+
+				if (mLoading) {
+					if ((mVisibleItemCount + mPastVisibleItems) >= mTotalItemCount ) {
+						mLoading = false;
+						if( !mBottom) {
+							mLoadingIndicatorV.setVisibility(View.VISIBLE);
+							getMoreCommentsList();
+						}
+					}
+				}
+			}
+		});
 
 		mLoadingIndicatorV.setVisibility(View.VISIBLE);
 		getCommentsList();
@@ -155,6 +192,8 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 		mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
+				mPage = DEFAULT_PAGE;
+				mBottom = false;
 				getCommentsList();
 			}
 		});
@@ -208,7 +247,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 			@Override
 			protected Comments doInBackground(Object... params) {
 				try {
-					return OscApi.tweetCommentList(App.Instance, getTweetItem());
+					return OscApi.tweetCommentList(App.Instance, getTweetItem(), mPage);
 				} catch (IOException e) {
 					return null;
 				} catch (OscTweetException e) {
@@ -220,13 +259,63 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 			protected void onPostExecute(Comments comments) {
 				super.onPostExecute(comments);
 				mAdp.setData(getTweetItem(), comments.getComments());
-				mAdp.notifyDataSetChanged();
-				mLoadingIndicatorV.setVisibility(View.INVISIBLE);
-				mSwipeRefreshLayout.setRefreshing(false);
+				finishLoading();
 				mLayoutManager.scrollToPositionWithOffset(0, 0);
 			}
 		});
 	}
+
+	/**
+	 * Load more comments.
+	 */
+	private void getMoreCommentsList() {
+		AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, Comments>() {
+
+
+			@Override
+			protected Comments doInBackground(Object... params) {
+				try {
+					return OscApi.tweetCommentList(App.Instance, getTweetItem(), mPage);
+				} catch (IOException e) {
+					return null;
+				} catch (OscTweetException e) {
+					return null;
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Comments comments) {
+				super.onPostExecute(comments);
+				if(comments.getComments() != null) {
+					mAdp.getData().addAll(comments.getComments());
+				} else {
+					mBottom = true;
+				}
+				finishLoading();
+			}
+		});
+	}
+
+	/**
+	 * Calls when loading data has been done.
+	 */
+	private void finishLoading() {
+		mAdp.notifyDataSetChanged();
+		mPage++;
+		mLoading = true;
+		mLoadingIndicatorV.setVisibility(View.INVISIBLE);
+		mSwipeRefreshLayout.setRefreshing(false);
+	}
+
+	/**
+	 * Reset all data before loading new feeds.
+	 */
+	private void prepareGetCommentsList() {
+		mPage = DEFAULT_PAGE;
+		mLoadingIndicatorV.setVisibility(View.VISIBLE);
+		mBottom = false;
+	}
+
 
 	/**
 	 * @return The tweet object to comment.

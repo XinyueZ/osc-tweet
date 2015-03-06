@@ -345,8 +345,8 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static StatusResult updateRelation(Context context, com.osc4j.ds.personal.User friend, boolean cancel) throws IOException,
-			OscTweetException {
+	public static StatusResult updateRelation(Context context, com.osc4j.ds.personal.User friend, boolean cancel) throws
+			IOException, OscTweetException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -407,13 +407,20 @@ public final class OscApi {
 
 	/**
 	 * Get comments of a {@link com.osc4j.ds.tweet.TweetListItem}.
-	 * @param context {@link android.content.Context}.
-	 * @param item {@link com.osc4j.ds.tweet.TweetListItem}.
+	 *
+	 * @param context
+	 * 		{@link android.content.Context}.
+	 * @param item
+	 * 		{@link com.osc4j.ds.tweet.TweetListItem}.
+	 * @param page
+	 * 		Which page.
+	 *
 	 * @return
+	 *
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static Comments tweetCommentList(Context context, TweetListItem item) throws IOException,
+	public static Comments tweetCommentList(Context context, TweetListItem item, int page) throws IOException,
 			OscTweetException {
 		Comments ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -424,7 +431,7 @@ public final class OscApi {
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
 
-		String url =  String.format(Consts.TWEET_COMMENT_LIST_URL, item.getId());
+		String url = String.format(Consts.TWEET_COMMENT_LIST_URL, item.getId(), page);
 		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
 				.build();
 		OkHttpClient client = new OkHttpClient();

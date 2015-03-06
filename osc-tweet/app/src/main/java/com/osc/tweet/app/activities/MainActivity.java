@@ -114,10 +114,10 @@ public class MainActivity extends BaseActivity {
 	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if (mConfigLoaded) {
-				initViewPager();
-				mSmoothProgressBar.setVisibility(View.VISIBLE);
-			}
+
+			initViewPager();
+			mSmoothProgressBar.setVisibility(View.VISIBLE);
+
 		}
 	};
 	/**
@@ -135,8 +135,7 @@ public class MainActivity extends BaseActivity {
 	/**
 	 * A bar bottom.
 	 */
-	private SnackBar mSnackBar
-	;
+	private SnackBar mSnackBar;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -158,9 +157,9 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link  EULAConfirmedEvent}.
 	 */
 	public void onEvent(EULAConfirmedEvent e) {
-		if (mConfigLoaded) {
-			initViewPager();
-		}
+
+		initViewPager();
+
 	}
 
 
@@ -234,7 +233,8 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.ShowEditorEvent}.
 	 */
 	public void onEvent(ShowEditorEvent e) {
-		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getDefaultMessage(), e.isDefaultFixed()), "editor");
+		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getDefaultMessage(),
+				e.isDefaultFixed()), "editor");
 	}
 
 
@@ -245,7 +245,8 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.CommentTweetEvent}.
 	 */
 	public void onEvent(CommentTweetEvent e) {
-		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(),  e.getTweetListItem(), e.getComment()), "comment-editor");
+		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getTweetListItem(),
+				e.getComment()), "comment-editor");
 	}
 
 
@@ -256,7 +257,8 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.ShowTweetCommentListEvent}.
 	 */
 	public void onEvent(final ShowTweetCommentListEvent e) {
-		showDialogFragment(TweetCommentListDialogFragment.newInstance(getApplicationContext(), e.getTweetItem()), "comment-list");
+		showDialogFragment(TweetCommentListDialogFragment.newInstance(getApplicationContext(), e.getTweetItem()),
+				"comment-list");
 	}
 
 	/**
@@ -266,9 +268,9 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.SentMessageEvent}.
 	 */
 	public void onEvent(SentMessageEvent e) {
-		Utils.showLongToast(getApplicationContext(), e.isSuccess() ? getString(R.string.msg_message_sent_successfully) : getString(
-				R.string.msg_message_sent_failed));
-		((Vibrator)getSystemService(VIBRATOR_SERVICE)).vibrate(300);
+		Utils.showLongToast(getApplicationContext(), e.isSuccess() ? getString(R.string.msg_message_sent_successfully) :
+				getString(R.string.msg_message_sent_failed));
+		((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(300);
 	}
 	//------------------------------------------------
 
@@ -295,10 +297,7 @@ public class MainActivity extends BaseActivity {
 
 		//No-pulling indicator  of loading feeds.
 		mSmoothProgressBar = (SmoothProgressBar) findViewById(R.id.loading_pb);
-		if (Prefs.getInstance().isEULAOnceConfirmed()) {
-			initViewPager();
-			mSmoothProgressBar.setVisibility(View.VISIBLE);
-		}
+
 
 		//Handler when login would have been done.
 		mLocalBroadcastManager = LocalBroadcastManager.getInstance(getApplication());
@@ -329,6 +328,7 @@ public class MainActivity extends BaseActivity {
 
 	@Override
 	protected void onDestroy() {
+		mPagesInit = false;
 		mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
 		super.onDestroy();
 	}
@@ -451,7 +451,8 @@ public class MainActivity extends BaseActivity {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		MenuItem menuShare = menu.findItem(R.id.action_share_app);
 		//Getting the actionprovider associated with the menu item whose id is share.
-		android.support.v7.widget.ShareActionProvider provider = (android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
+		android.support.v7.widget.ShareActionProvider provider =
+				(android.support.v7.widget.ShareActionProvider) MenuItemCompat.getActionProvider(menuShare);
 		//Setting a share intent.
 		String subject = getString(R.string.lbl_share_app_title, getString(R.string.application_name));
 		String text = getString(R.string.lbl_share_app_content);
@@ -476,30 +477,34 @@ public class MainActivity extends BaseActivity {
 		}
 	}
 
-	private boolean mConfigLoaded = true;
 
 	@Override
 	protected void onAppConfigLoaded() {
-		mConfigLoaded = true;
 		super.onAppConfigLoaded();
 		showAppList();
-
-
-		checkPlayService();
-
-		if (Prefs.getInstance().isEULAOnceConfirmed()) {
-			initViewPager();
-			mSmoothProgressBar.setVisibility(View.VISIBLE);
-		}
+		checkAndInit();
 	}
 
 	@Override
 	protected void onAppConfigIgnored() {
-		mConfigLoaded = true;
 		super.onAppConfigIgnored();
 		showAppList();
+		checkAndInit();
+	}
 
+	private boolean mPagesInit = false;
+
+
+	/**
+	 * Check play-service and do init-pages.
+	 */
+	private void checkAndInit() {
 		checkPlayService();
+		if (Prefs.getInstance().isEULAOnceConfirmed() && !mPagesInit) {
+			initViewPager();
+			mSmoothProgressBar.setVisibility(View.VISIBLE);
+			mPagesInit = true;
+		}
 	}
 
 	/**

@@ -93,5 +93,5 @@ public final class Consts {
 	/**
 	 * All comments of a tweet item.
 	 */
-	static final String TWEET_COMMENT_LIST_URL = OSC_HOST + "tweetCommentList?id=%d";
+	static final String TWEET_COMMENT_LIST_URL = OSC_HOST + "tweetCommentList?id=%d&page=%d";
 }

@@ -65,6 +65,11 @@ public final class TweetListFragment extends BaseFragment {
 	 */
 	private View mNotLoadedIndicatorV;
 
+	/**
+	 * On the bottom of all records.
+	 */
+	private boolean mBottom;
+
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -78,6 +83,7 @@ public final class TweetListFragment extends BaseFragment {
 	public void onEvent(ReloadEvent e) {
 		mPage = DEFAULT_PAGE;
 		showLoadingIndicator();
+		mBottom = false;
 		getMoreTweetList();
 	}
 
@@ -150,8 +156,10 @@ public final class TweetListFragment extends BaseFragment {
 				if (mLoading) {
 					if ((mVisibleItemCount + mPastVisibleItems) >= mTotalItemCount) {
 						mLoading = false;
-						showLoadingIndicator();
-						getMoreTweetList();
+						if( !mBottom) {
+							showLoadingIndicator();
+							getMoreTweetList();
+						}
 					}
 				}
 			}
@@ -163,6 +171,7 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			public void onRefresh() {
 				mPage = DEFAULT_PAGE;
+				mBottom = false;
 				getTweetList();
 			}
 		});
@@ -234,10 +243,12 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			protected void onPostExecute(TweetList tweetList) {
 				super.onPostExecute(tweetList);
-				if (tweetList != null) {
+				if (tweetList.getTweets() != null) {
 					mAdp.getData().addAll(tweetList.getTweets());
-					finishLoading();
+				} else {
+					mBottom = true;
 				}
+				finishLoading();
 			}
 		});
 	}
