@@ -83,7 +83,8 @@
     </FrameLayout>
 
 
-    <com.chopping.utils.views.OneDirectionScrollView
+    <ScrollView
+        android:id="@+id/drawer_sv"
         android:layout_width="250dp"
         android:layout_gravity="left"
         android:scrollbars="none"
@@ -111,5 +112,5 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>
-    </com.chopping.utils.views.OneDirectionScrollView>
+    </ScrollView>
 </android.support.v4.widget.DrawerLayout>

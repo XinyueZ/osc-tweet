@@ -25,4 +25,8 @@ public final class Actives implements Serializable {
 	public List<Active> getActives() {
 		return mActives;
 	}
+
+	public void setActivesList(List<Active> actives) {
+		mActives = actives;
+		}
 }

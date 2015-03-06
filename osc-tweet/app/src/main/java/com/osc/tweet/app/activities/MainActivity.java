@@ -16,7 +16,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -318,6 +318,17 @@ public class MainActivity extends BaseActivity {
 		});
 		ViewHelper.setX(mOpenFriendsListV, 99999);
 		showFriendsListButton();
+
+		findViewById(R.id.drawer_sv).setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				View view = findViewById(R.id.actives_sv);
+				if(view != null) {
+					view.getParent().requestDisallowInterceptTouchEvent(false);
+				}
+				return false;
+			}
+		});
 	}
 
 	@Override
@@ -548,20 +559,6 @@ public class MainActivity extends BaseActivity {
 			mTabs.setViewPager(mViewPager);
 			mTabs.setVisibility(View.VISIBLE);
 			mTabs.setIndicatorColorResource(R.color.common_white);
-			mTabs.setOnPageChangeListener(new OnPageChangeListener() {
-				@Override
-				public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-				}
-
-				@Override
-				public void onPageSelected(int position) {
-				}
-
-				@Override
-				public void onPageScrollStateChanged(int state) {
-
-				}
-			});
 
 			getSupportFragmentManager().beginTransaction().replace(R.id.my_info_fl, MyInfoFragment.newInstance(this))
 					.commit();

@@ -64,6 +64,8 @@
     <string name="lbl_hotspot">HOT</string>
     <string name="lbl_my">Mine</string>
     <string name="lbl_open">Open</string>
+    <string name="lbl_at_me">\@me</string>
+    <string name="lbl_new_comments">New comments</string>
 
     <string name="quick_reply_list">quick_reply_en</string>
 </resources>

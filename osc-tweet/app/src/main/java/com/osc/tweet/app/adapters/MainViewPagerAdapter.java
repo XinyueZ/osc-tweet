@@ -44,7 +44,7 @@ public final class MainViewPagerAdapter extends FragmentPagerAdapter {
 
 	@Override
 	public int getCount() {
-		return 3;
+		return TITLES.length;
 	}
 
 

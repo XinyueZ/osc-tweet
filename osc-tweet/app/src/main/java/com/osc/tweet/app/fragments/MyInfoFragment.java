@@ -7,22 +7,24 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
 import com.chopping.net.TaskHelper;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
+import com.osc.tweet.app.adapters.ActivesListsViewPagerAdapter;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
-import com.osc4j.ds.personal.Actives;
 import com.osc4j.ds.personal.Am;
 import com.osc4j.ds.personal.MyInformation;
 import com.osc4j.exceptions.OscTweetException;
@@ -53,6 +55,15 @@ public final class MyInfoFragment extends BaseFragment {
 	 * Click to refresh my-info.
 	 */
 	private View mRefreshV;
+	/**
+	 * The pagers
+	 */
+	private ViewPager mViewPager;
+	/**
+	 * Tabs.
+	 */
+	private PagerSlidingTabStrip mTabs;
+
 	/**
 	 * Initialize an {@link  MyInfoFragment}.
 	 *
@@ -85,6 +96,12 @@ public final class MyInfoFragment extends BaseFragment {
 				getMyInformation();
 			}
 		});
+
+
+		mViewPager = (ViewPager) view.findViewById(R.id.vp);
+		// Bind the tabs to the ViewPager
+		mTabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
+		mTabs.setIndicatorColorResource(R.color.common_white);
 	}
 
 
@@ -126,11 +143,9 @@ public final class MyInfoFragment extends BaseFragment {
 					mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
 					mUserNameTv.setText(am.getName());
 
-					if (myInfo.getActives() != null) {
-						Actives actives = new Actives(com.osc4j.ds.common.Status.STATUS_OK, myInfo.getActives());
-						getChildFragmentManager().beginTransaction().replace(R.id.my_last_actives_fl,
-								ActivesListFragment.newInstance(App.Instance, actives)).commit();
-					}
+					mViewPager.setAdapter(new ActivesListsViewPagerAdapter(App.Instance, getChildFragmentManager(),
+							myInfo));
+					mTabs.setViewPager(mViewPager);
 				}
 
 				objectAnimator.cancel();

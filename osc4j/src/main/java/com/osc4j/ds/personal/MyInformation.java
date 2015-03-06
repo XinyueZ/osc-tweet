@@ -13,13 +13,16 @@ public final class MyInformation implements Serializable{
 	private Am mAm;
 	@SerializedName("actives")
 	private List<Active> mActives;
+	@SerializedName("comments")
+	private List<Active> mComments;
 
-	public MyInformation(int status, Am am, List<Active> actives) {
+
+	public MyInformation(int status, Am am, List<Active> actives, List<Active> comments) {
 		mStatus = status;
 		mAm = am;
 		mActives = actives;
+		mComments = comments;
 	}
-
 
 	public int getStatus() {
 		return mStatus;
@@ -31,5 +34,9 @@ public final class MyInformation implements Serializable{
 
 	public List<Active> getActives() {
 		return mActives;
+	}
+
+	public List<Active> getComments() {
+		return mComments;
 	}
 }

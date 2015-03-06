@@ -3,15 +3,14 @@ package com.osc.tweet.app.fragments;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -70,11 +69,20 @@ public final class ActivesListFragment extends BaseFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		view.findViewById(R.id.actives_sv).setOnTouchListener(new View.OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// Disallow the touch request for parent scroll on touch of  child view
+				v.getParent().requestDisallowInterceptTouchEvent(true);
+				return false;
+			}
+		});
 		mActivesVg = (ViewGroup) view.findViewById(R.id.actives_ll);
 		List<Active> activesList = getActives().getActives();
 		if (activesList != null) {
 			for (final Active item : activesList) {
-				View v = getActivity().getLayoutInflater().inflate(R.layout.item_actives_list, (ViewGroup) view, false);
+				View v = getActivity().getLayoutInflater().inflate(R.layout.item_actives_list, mActivesVg, false);
 				TextView messageTv = (TextView) v.findViewById(R.id.message_tv);
 				NetworkImageView portraitIv = (NetworkImageView) v.findViewById(R.id.portrait_iv);
 				NetworkImageView imageIv = (NetworkImageView) v.findViewById(R.id.small_img_iv);
@@ -126,23 +134,4 @@ public final class ActivesListFragment extends BaseFragment {
 		return Prefs.getInstance();
 	}
 
-	public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
-		private int space;
-
-		public SpacesItemDecoration(int space) {
-			this.space = space;
-		}
-
-		@Override
-		public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-			outRect.left = space;
-			outRect.right = space;
-			outRect.bottom = space * 2;
-
-			// Add top margin only for the first item to avoid double space between items
-			if (parent.getChildPosition(view) == 0) {
-				outRect.top = space * 2;
-			}
-		}
-	}
 }
