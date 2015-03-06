@@ -9,16 +9,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
 import com.chopping.net.TaskHelper;
+import com.nineoldandroids.animation.ObjectAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.utils.Prefs;
+import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
 import com.osc4j.ds.personal.Actives;
@@ -48,7 +49,10 @@ public final class MyInfoFragment extends BaseFragment {
 	 * My information personal.
 	 */
 	private MyInformation mMyInfo;
-
+	/**
+	 * Click to refresh my-info.
+	 */
+	private View mRefreshV;
 	/**
 	 * Initialize an {@link  MyInfoFragment}.
 	 *
@@ -73,11 +77,11 @@ public final class MyInfoFragment extends BaseFragment {
 
 		mUserPhotoIv = (RoundedNetworkImageView) view.findViewById(R.id.user_photo_iv);
 		mUserNameTv = (TextView) view.findViewById(R.id.user_name_tv);
-
+		mRefreshV = view.findViewById(R.id.refresh_btn);
 		getMyInformation();
-		view.findViewById(R.id.refresh_btn).setOnClickListener(new OnClickListener() {
+		mRefreshV.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick() {
 				getMyInformation();
 			}
 		});
@@ -89,6 +93,18 @@ public final class MyInfoFragment extends BaseFragment {
 	 */
 	private void getMyInformation() {
 		AsyncTaskCompat.executeParallel(new AsyncTask<Object, MyInformation, MyInformation>() {
+			ObjectAnimator objectAnimator;
+
+
+			@Override
+			protected void onPreExecute() {
+				objectAnimator = ObjectAnimator.ofFloat(mRefreshV, "rotation", 0, 360f);
+				objectAnimator.setDuration(800);
+				objectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+				objectAnimator.start();
+				super.onPreExecute();
+			}
+
 			@Override
 			protected MyInformation doInBackground(Object... params) {
 				try {
@@ -116,6 +132,8 @@ public final class MyInfoFragment extends BaseFragment {
 								ActivesListFragment.newInstance(App.Instance, actives)).commit();
 					}
 				}
+
+				objectAnimator.cancel();
 			}
 		});
 	}
