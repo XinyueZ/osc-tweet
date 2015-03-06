@@ -28,6 +28,7 @@ import com.chopping.bus.ReloadEvent;
 import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
+import com.chopping.utils.Utils;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.CommentListAdapter;
@@ -221,6 +222,16 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				EventBus.getDefault().post(new CommentTweetEvent(getTweetItem(), null));
+				return true;
+			}
+		});
+		toolbar.getMenu().findItem(R.id.action_top).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				if (mAdp != null && mAdp.getItemCount() > 0) {
+					mLayoutManager.scrollToPositionWithOffset(0, 0);
+					Utils.showShortToast(App.Instance, R.string.msg_move_to_top);
+				}
 				return true;
 			}
 		});
