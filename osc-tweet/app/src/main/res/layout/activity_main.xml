@@ -105,6 +105,7 @@
                 android:id="@+id/my_info_fl"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
             <FrameLayout
                 android:id="@+id/app_list_fl"
                 android:layout_width="match_parent"

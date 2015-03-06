@@ -21,9 +21,10 @@ import com.osc.tweet.app.App;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
-import com.osc4j.exceptions.OscTweetException;
+import com.osc4j.ds.personal.Actives;
 import com.osc4j.ds.personal.Am;
 import com.osc4j.ds.personal.MyInformation;
+import com.osc4j.exceptions.OscTweetException;
 
 /**
  * Show my information.
@@ -44,13 +45,10 @@ public final class MyInfoFragment extends BaseFragment {
 	 */
 	private TextView mUserNameTv;
 	/**
-	 * My nickname.
-	 */
-	private TextView mUserIdentTv;
-	/**
 	 * My information personal.
 	 */
 	private MyInformation mMyInfo;
+
 	/**
 	 * Initialize an {@link  MyInfoFragment}.
 	 *
@@ -59,7 +57,7 @@ public final class MyInfoFragment extends BaseFragment {
 	 *
 	 * @return An instance of {@link MyInfoFragment}.
 	 */
-	public static  MyInfoFragment newInstance(Context context) {
+	public static MyInfoFragment newInstance(Context context) {
 		return (MyInfoFragment) Fragment.instantiate(context, MyInfoFragment.class.getName());
 	}
 
@@ -75,11 +73,8 @@ public final class MyInfoFragment extends BaseFragment {
 
 		mUserPhotoIv = (RoundedNetworkImageView) view.findViewById(R.id.user_photo_iv);
 		mUserNameTv = (TextView) view.findViewById(R.id.user_name_tv);
-		mUserIdentTv = (TextView) view.findViewById(R.id.user_ident_tv);
 
 		getMyInformation();
-
-
 		view.findViewById(R.id.refresh_btn).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -109,19 +104,21 @@ public final class MyInfoFragment extends BaseFragment {
 			protected void onPostExecute(MyInformation myInfo) {
 				super.onPostExecute(myInfo);
 				if (myInfo != null && myInfo.getAm() != null) {
-					mMyInfo  = myInfo;
+					mMyInfo = myInfo;
 					Am am = mMyInfo.getAm();
 					mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 					mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
 					mUserNameTv.setText(am.getName());
-					mUserIdentTv.setText(am.getIdent());
+
+					if (myInfo.getActives() != null) {
+						Actives actives = new Actives(com.osc4j.ds.common.Status.STATUS_OK, myInfo.getActives());
+						getChildFragmentManager().beginTransaction().replace(R.id.my_last_actives_fl,
+								ActivesListFragment.newInstance(App.Instance, actives)).commit();
+					}
 				}
 			}
 		});
 	}
-
-
-
 
 
 	@Override

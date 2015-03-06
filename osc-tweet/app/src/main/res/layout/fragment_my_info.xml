@@ -4,56 +4,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/primary_color"
-    android:padding="@dimen/common_padding"
     tools:context="com.osc.tweet.app.fragments.MyInfoFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/primary_color"
+        android:padding="@dimen/common_padding">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <com.osc.tweet.views.RoundedNetworkImageView
+                android:id="@+id/user_photo_iv"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="@dimen/portrait_large_size"
+                android:layout_height="@dimen/portrait_large_size" />
+
+
+            <ImageButton
+                android:id="@+id/refresh_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/common_transparent"
+                android:src="@drawable/ic_refresh"
+                android:layout_gravity="right|top" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:text="@string/lbl_user_name"
+                style="@style/Style_My_Information_Label" />
+
+            <TextView
+                android:id="@+id/user_name_tv"
+                style="@style/Style_User_Information_Value" />
+        </LinearLayout>
+
+    </LinearLayout>
+
     <FrameLayout
+        android:id="@+id/my_last_actives_fl"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
-        <com.osc.tweet.views.RoundedNetworkImageView
-            android:id="@+id/user_photo_iv"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="@dimen/portrait_large_size"
-            android:layout_height="@dimen/portrait_large_size" />
-
-
-        <ImageButton
-            android:id="@+id/refresh_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/common_transparent"
-            android:src="@drawable/ic_refresh" android:layout_gravity="right|top"/>
-    </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <TextView
-            android:text="@string/lbl_user_name"
-            style="@style/Style_My_Information_Label" />
-
-        <TextView
-            android:id="@+id/user_name_tv"
-            style="@style/Style_User_Information_Value" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <TextView
-            android:text="@string/lbl_user_nickname"
-            style="@style/Style_My_Information_Label" />
-
-        <TextView
-            android:id="@+id/user_ident_tv"
-            style="@style/Style_User_Information_Value" />
-    </LinearLayout>
-
+        android:layout_height="match_parent" />
 </LinearLayout>

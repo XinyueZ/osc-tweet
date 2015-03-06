@@ -25,10 +25,6 @@
     <string name="btn_not_agree">I do not agree.</string>
     <string name="btn_retry">Retry</string>
 
-    <string name="lbl_all">All</string>
-    <string name="lbl_hotspot">HOT</string>
-    <string name="lbl_my">Mine</string>
-
     <string name="lbl_play_service">This application needs Google Play Service, you must install it first.</string>
     <string name="lbl_share_app_title">A good App you should have: %s</string>
     <string name="lbl_share_app_content">Hello!\n\n\u00A0\u00A0\u00A0\u00A0Use osc-Tweet and join oschina.net?\n\nDownload:\n
@@ -64,6 +60,10 @@
     <string name="lbl_user_gender">Gender:</string>
     <string name="lbl_editor_title">Write message</string>
     <string name="lbl_comments">All replies</string>
+    <string name="lbl_all">All</string>
+    <string name="lbl_hotspot">HOT</string>
+    <string name="lbl_my">Mine</string>
+    <string name="lbl_open">Open</string>
 
     <string name="quick_reply_list">quick_reply_en</string>
 </resources>

@@ -94,4 +94,8 @@ public final class Consts {
 	 * All comments of a tweet item.
 	 */
 	static final String TWEET_COMMENT_LIST_URL = OSC_HOST + "tweetCommentList?id=%d&page=%d";
+	/**
+	 * Last replies of tweets that you joined.
+	 */
+	static final String LAST_TWEET_ACTIVE_LIST_URL = OSC_HOST + "lastTweetActiveList?uid=%d&page=%d";
 }

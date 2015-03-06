@@ -13,5 +13,6 @@
     <dimen name="padding_eula">16dp</dimen>
     <dimen name="friends_list_width">60dp</dimen>
     <dimen name="user_info_list_margin">25dp</dimen>
-
+    <dimen name="actives_list_height">300dp</dimen>
+    <dimen name="active_btn_height">20dp</dimen>
 </resources>
