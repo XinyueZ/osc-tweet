@@ -102,4 +102,12 @@ public final class Consts {
 	 * Tweet detail.
 	 */
 	static final String TWEET_DETAIL_URL = OSC_HOST + "tweetDetail?id=%d";
+	/**
+	 * Clear "@me" notice.
+	 */
+	static final String CLEAR_AT_NOTICE_URL = OSC_HOST + "handleClearAtNotice";
+	/**
+	 * Clear comment notice.
+	 */
+	static final String CLEAR_COMMENTS_NOTICE_URL = OSC_HOST + "handleClearCommentsNotice";
 }

@@ -18,6 +18,7 @@ import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
 import com.osc4j.ds.Login;
 import com.osc4j.ds.comment.Comments;
+import com.osc4j.ds.common.NoticeType;
 import com.osc4j.ds.common.Status;
 import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.FriendsList;
@@ -488,6 +489,48 @@ public final class OscApi {
 		return ret;
 	}
 
+
+	/**
+	 * Clear different notice.
+	 * @param context {@link android.content.Context}.
+	 * @param type {@link com.osc4j.ds.common.NoticeType}.
+	 * @return The result of clear action.
+	 * @throws IOException
+	 * @throws OscTweetException
+	 */
+	public static StatusResult clearNotice(Context context, NoticeType type) throws
+			IOException, OscTweetException {
+		StatusResult ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+		String url = null;
+		switch (type) {
+			case AtMe:
+				url = Consts.CLEAR_AT_NOTICE_URL;
+				break;
+			case Comments:
+				url = Consts.CLEAR_COMMENTS_NOTICE_URL;
+				break;
+		}
+		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+				.build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= Status.STATUS_ERR) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), StatusResult.class);
+		}
+
+		return ret;
+	}
 
 	/**
 	 * Get last replies of tweets you joined. Who at you, who replied you, etc.
