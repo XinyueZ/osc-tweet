@@ -103,7 +103,7 @@ public final class ActivesListFragment extends BaseFragment {
 
 			// Add top margin only for the first item to avoid double space between items
 			if (parent.getChildPosition(view) == 0) {
-				outRect.top = space;
+				outRect.top = space * 2;
 			}
 		}
 	}

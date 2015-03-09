@@ -5,6 +5,7 @@ import java.io.IOException;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.view.ViewPager;
@@ -17,6 +18,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
 import com.chopping.net.TaskHelper;
+import com.chopping.utils.Utils;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
@@ -156,6 +158,9 @@ public final class MyInfoFragment extends BaseFragment {
 					objectAnimator.cancel();
 
 					mRootV.setVisibility(View.VISIBLE);
+					((Vibrator) App.Instance.getSystemService(App.VIBRATOR_SERVICE)).vibrate(300);
+
+					Utils.showShortToast(App.Instance, R.string.msg_update_my_info);
 				} catch ( IllegalStateException e) {
 					//Activity has been destroyed
 				}
