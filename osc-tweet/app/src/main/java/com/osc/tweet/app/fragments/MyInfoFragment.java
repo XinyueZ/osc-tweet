@@ -64,6 +64,10 @@ public final class MyInfoFragment extends BaseFragment {
 	 */
 	private PagerSlidingTabStrip mTabs;
 
+	private View mRootV;
+
+
+
 	/**
 	 * Initialize an {@link  MyInfoFragment}.
 	 *
@@ -85,7 +89,7 @@ public final class MyInfoFragment extends BaseFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-
+		mRootV = view.findViewById(R.id.root_ll);
 		mUserPhotoIv = (RoundedNetworkImageView) view.findViewById(R.id.user_photo_iv);
 		mUserNameTv = (TextView) view.findViewById(R.id.user_name_tv);
 		mRefreshV = view.findViewById(R.id.refresh_btn);
@@ -150,6 +154,8 @@ public final class MyInfoFragment extends BaseFragment {
 					}
 
 					objectAnimator.cancel();
+
+					mRootV.setVisibility(View.VISIBLE);
 				} catch ( IllegalStateException e) {
 					//Activity has been destroyed
 				}
