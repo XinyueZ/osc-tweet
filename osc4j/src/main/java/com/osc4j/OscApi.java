@@ -23,6 +23,7 @@ import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.FriendsList;
 import com.osc4j.ds.personal.MyInformation;
 import com.osc4j.ds.personal.UserInformation;
+import com.osc4j.ds.tweet.TweetDetail;
 import com.osc4j.ds.tweet.TweetList;
 import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.exceptions.Osc4jConfigErrorException;
@@ -449,6 +450,46 @@ public final class OscApi {
 	}
 
 	/**
+	 * Get detail of a tweet item.
+	 *
+	 * @param context
+	 * 		{@link android.content.Context}.
+	 * @param tweetId
+	 * 		The id of tweet.
+	 *
+	 * @return A {@link com.osc4j.ds.tweet.TweetDetail}.
+	 *
+	 * @throws IOException
+	 * @throws OscTweetException
+	 */
+	public static TweetDetail tweetDetail(Context context, long tweetId) throws IOException, OscTweetException {
+		TweetDetail ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+
+		String url = String.format(Consts.TWEET_DETAIL_URL, tweetId);
+		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+				.build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= Status.STATUS_ERR) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), TweetDetail.class);
+		}
+		return ret;
+	}
+
+
+	/**
 	 * Get last replies of tweets you joined. Who at you, who replied you, etc.
 	 * @param context
 	 * @param me
@@ -457,31 +498,31 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-//	public static Comments lastTweetActiveList(Context context, Am me, int page) throws IOException,
-//			OscTweetException {
-//		Comments ret;
-//		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-//		String session = prefs.getString(Consts.KEY_SESSION, null);
-//		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
-//
-//		//Get session and set to cookie returning to server.
-//		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
-//		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-//
-//		String url = String.format(Consts.TWEET_COMMENT_LIST_URL, item.getId(), page);
-//		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
-//				.build();
-//		OkHttpClient client = new OkHttpClient();
-//		client.networkInterceptors().add(new StethoInterceptor());
-//		Response response = client.newCall(request).execute();
-//		int responseCode = response.code();
-//		if (responseCode >= Status.STATUS_ERR) {
-//			response.body().close();
-//			throw new OscTweetException();
-//		} else {
-//			ret = sGson.fromJson(response.body().string(), Comments.class);
-//		}
-//
-//		return ret;
-//	}
+	//	public static Comments lastTweetActiveList(Context context, Am me, int page) throws IOException,
+	//			OscTweetException {
+	//		Comments ret;
+	//		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+	//		String session = prefs.getString(Consts.KEY_SESSION, null);
+	//		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+	//
+	//		//Get session and set to cookie returning to server.
+	//		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+	//		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+	//
+	//		String url = String.format(Consts.TWEET_COMMENT_LIST_URL, item.getId(), page);
+	//		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+	//				.build();
+	//		OkHttpClient client = new OkHttpClient();
+	//		client.networkInterceptors().add(new StethoInterceptor());
+	//		Response response = client.newCall(request).execute();
+	//		int responseCode = response.code();
+	//		if (responseCode >= Status.STATUS_ERR) {
+	//			response.body().close();
+	//			throw new OscTweetException();
+	//		} else {
+	//			ret = sGson.fromJson(response.body().string(), Comments.class);
+	//		}
+	//
+	//		return ret;
+	//	}
 }

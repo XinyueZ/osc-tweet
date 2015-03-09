@@ -98,4 +98,8 @@ public final class Consts {
 	 * Last replies of tweets that you joined.
 	 */
 	static final String LAST_TWEET_ACTIVE_LIST_URL = OSC_HOST + "lastTweetActiveList?uid=%d&page=%d";
+	/**
+	 * Tweet detail.
+	 */
+	static final String TWEET_DETAIL_URL = OSC_HOST + "tweetDetail?id=%d";
 }

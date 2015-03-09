@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 public final class TweetListItem implements Serializable {
 	@SerializedName("id")
-	private int mId;
+	private long mId;
 	@SerializedName("pubDate")
 	private String mPubDate;
 	@SerializedName("body")
@@ -26,7 +26,7 @@ public final class TweetListItem implements Serializable {
 	private String mPortrait;
 
 
-	public TweetListItem(int id, String pubDate, String body, String author, long authorId, String imgSmall,
+	public TweetListItem(long id, String pubDate, String body, String author, long authorId, String imgSmall,
 			int commentCount, String imgBig, String portrait) {
 		mId = id;
 		mPubDate = pubDate;
@@ -39,7 +39,7 @@ public final class TweetListItem implements Serializable {
 		mPortrait = portrait;
 	}
 
-	public int getId() {
+	public long getId() {
 		return mId;
 	}
 

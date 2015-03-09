@@ -1,8 +1,11 @@
 package com.osc.tweet.app.adapters;
 
+import java.io.IOException;
 import java.util.List;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
@@ -18,10 +21,15 @@ import android.widget.TextView;
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
+import com.osc.tweet.app.App;
+import com.osc.tweet.events.ShowTweetCommentListEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.URLImageParser;
+import com.osc4j.OscApi;
 import com.osc4j.ds.personal.Active;
+import com.osc4j.ds.tweet.TweetDetail;
+import com.osc4j.exceptions.OscTweetException;
 
 import de.greenrobot.event.EventBus;
 
@@ -76,7 +84,7 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 	}
 
 	@Override
-	public void onBindViewHolder(ViewHolder holder, int position) {
+	public void onBindViewHolder(final ViewHolder holder, int position) {
 		final Active item = getData().get(position);
 		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
@@ -107,6 +115,36 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 
 		Context cxt = holder.itemView.getContext();
 		holder.mReplyBtn.setText(cxt.getString(R.string.action_reply_comment) + " " + item.getAuthor());
+
+		holder.mOpenBtn.setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				holder.mOpenPb.setVisibility(View.VISIBLE);
+				AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, TweetDetail>() {
+					@Override
+					protected TweetDetail doInBackground(Object... params) {
+						try {
+							return OscApi.tweetDetail(App.Instance, item.getObjectId());
+						} catch (IOException e) {
+							return null;
+						} catch (OscTweetException e) {
+							return null;
+						}
+					}
+
+					@Override
+					protected void onPostExecute(TweetDetail item) {
+						super.onPostExecute(item);
+						try {
+							holder.mOpenPb.setVisibility(View.GONE);
+							EventBus.getDefault().post(new ShowTweetCommentListEvent(item.getTweet()));
+						} catch (IllegalStateException e) {
+							//Activity has been destroyed
+						}
+					}
+				});
+			}
+		});
 	}
 
 	/**
@@ -117,7 +155,9 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 		private TextView messageTv;
 		private NetworkImageView mImageIv;
 		private Button mReplyBtn;
+		private View mReplyPb;
 		private Button mOpenBtn;
+		private View mOpenPb;
 
 		private ViewHolder(View convertView) {
 			super(convertView);
@@ -125,7 +165,9 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 			mPortraitIv = (NetworkImageView) convertView.findViewById(R.id.portrait_iv);
 			mImageIv = (NetworkImageView) convertView.findViewById(R.id.small_img_iv);
 			mReplyBtn = (Button) convertView.findViewById(R.id.reply_btn);
+			mReplyPb =  convertView.findViewById(R.id.reply_pb);
 			mOpenBtn = (Button) convertView.findViewById(R.id.open_btn);
+			mOpenPb  =  convertView.findViewById(R.id.open_pb);
 		}
 	}
 

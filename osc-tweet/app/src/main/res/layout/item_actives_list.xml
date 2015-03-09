@@ -39,9 +39,25 @@
             android:text="@string/action_reply_comment"
             style="@style/Actives_List_Item" />
 
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/reply_pb" android:visibility="gone"
+            android:layout_gravity="center_vertical" />
+
         <Button
             android:id="@+id/open_btn"
             android:text="@string/lbl_open"
             style="@style/Actives_List_Item" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/open_pb" android:visibility="gone"
+            android:layout_gravity="center_vertical" />
     </LinearLayout>
+
+
 </LinearLayout>
