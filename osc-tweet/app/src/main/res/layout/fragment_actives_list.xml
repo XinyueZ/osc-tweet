@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/actives_sv"
     android:layout_width="match_parent"
     android:scrollbars="none"
+    android:id="@id/child_view"
     tools:context="com.osc.tweet.app.fragments.ActivesListFragment"
     android:background="@color/common_yellow"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content" />
 
-    <LinearLayout
-        android:id="@+id/actives_ll"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/common_padding" />
-</ScrollView>
 

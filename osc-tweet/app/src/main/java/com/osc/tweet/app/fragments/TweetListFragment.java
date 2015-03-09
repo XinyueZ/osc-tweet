@@ -156,7 +156,7 @@ public final class TweetListFragment extends BaseFragment {
 				if (mLoading) {
 					if ((mVisibleItemCount + mPastVisibleItems) >= mTotalItemCount) {
 						mLoading = false;
-						if( !mBottom) {
+						if (!mBottom) {
 							showLoadingIndicator();
 							getMoreTweetList();
 						}
@@ -166,7 +166,8 @@ public final class TweetListFragment extends BaseFragment {
 		});
 
 		mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.content_srl);
-		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_pocket_1, R.color.color_pocket_2, R.color.color_pocket_3, R.color.color_pocket_4);
+		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_pocket_1, R.color.color_pocket_2,
+				R.color.color_pocket_3, R.color.color_pocket_4);
 		mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
 			@Override
 			public void onRefresh() {
@@ -214,10 +215,14 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			protected void onPostExecute(TweetList tweetList) {
 				super.onPostExecute(tweetList);
-				if (tweetList != null) {
-					mAdp.setData(tweetList.getTweets());
-					finishLoading();
-					mLayoutManager.scrollToPositionWithOffset(0, 0);
+				try {
+					if (tweetList != null) {
+						mAdp.setData(tweetList.getTweets());
+						finishLoading();
+						mLayoutManager.scrollToPositionWithOffset(0, 0);
+					}
+				} catch (IllegalStateException e) {
+					//Activity has been destroyed
 				}
 			}
 		});
@@ -243,12 +248,23 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			protected void onPostExecute(TweetList tweetList) {
 				super.onPostExecute(tweetList);
-				if (tweetList.getTweets() != null) {
-					mAdp.getData().addAll(tweetList.getTweets());
-				} else {
-					mBottom = true;
+				try {
+					if (tweetList != null && tweetList.getTweets() != null) {
+						mAdp.getData().addAll(tweetList.getTweets());
+					} else {
+						if (tweetList != null) {
+							mPage--;
+							if (mPage < 0) {
+								mPage = 0;
+							}
+						} else {
+							mBottom = true;
+						}
+					}
+					finishLoading();
+				} catch (IllegalStateException e) {
+					//Activity has been destroyed
 				}
-				finishLoading();
 			}
 		});
 	}

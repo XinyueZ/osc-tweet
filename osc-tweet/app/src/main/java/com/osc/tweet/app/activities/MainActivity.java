@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -21,6 +22,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -318,13 +320,22 @@ public class MainActivity extends BaseActivity {
 		});
 		ViewHelper.setX(mOpenFriendsListV, 99999);
 		showFriendsListButton();
+		findViewById(R.id.parent_view).setOnTouchListener(new View.OnTouchListener() {
 
-		findViewById(R.id.drawer_sv).setOnTouchListener(new View.OnTouchListener() {
-			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				View view = findViewById(R.id.actives_sv);
-				if(view != null) {
-					view.getParent().requestDisallowInterceptTouchEvent(false);
+				View childV = findViewById(R.id.child_view);
+				if (childV != null) {
+					//childV.getParent().requestDisallowInterceptTouchEvent(false);
+					int[] l = new int[2];
+					childV.getLocationOnScreen(l);
+					RectF rect = new RectF(l[0], l[1], l[0] + childV.getWidth(), l[1] + childV.getHeight());
+				 	if(rect.contains(  event.getX(), event.getY())) {
+						Log.v("PARENT", "PARENT TOUCH");
+						childV.onTouchEvent(event);
+						return true;
+					} else {
+						return false;
+					}
 				}
 				return false;
 			}

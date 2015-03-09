@@ -136,19 +136,23 @@ public final class MyInfoFragment extends BaseFragment {
 			@Override
 			protected void onPostExecute(MyInformation myInfo) {
 				super.onPostExecute(myInfo);
-				if (myInfo != null && myInfo.getAm() != null) {
-					mMyInfo = myInfo;
-					Am am = mMyInfo.getAm();
-					mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
-					mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
-					mUserNameTv.setText(am.getName());
+				try {
+					if (myInfo != null && myInfo.getAm() != null) {
+						mMyInfo = myInfo;
+						Am am = mMyInfo.getAm();
+						mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
+						mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
+						mUserNameTv.setText(am.getName());
 
-					mViewPager.setAdapter(new ActivesListsViewPagerAdapter(App.Instance, getChildFragmentManager(),
-							myInfo));
-					mTabs.setViewPager(mViewPager);
+						mViewPager.setAdapter(new ActivesListsViewPagerAdapter(App.Instance, getChildFragmentManager(),
+								myInfo));
+						mTabs.setViewPager(mViewPager);
+					}
+
+					objectAnimator.cancel();
+				} catch ( IllegalStateException e) {
+					//Activity has been destroyed
 				}
-
-				objectAnimator.cancel();
 			}
 		});
 	}

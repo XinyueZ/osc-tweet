@@ -170,16 +170,18 @@ public final class UserInformationDialogFragment extends DialogFragment {
 								com.osc4j.ds.common.Status.STATUS_OK) {
 							User user = mUserInfo.getUser();
 							if (user.isRelated()) {
-//								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
-//										R.string.msg_focus_cancel), user.getName())));
-								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_focus_cancel), user.getName()));
+								//								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
+								//										R.string.msg_focus_cancel), user.getName())));
+								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_focus_cancel),
+										user.getName()));
 							} else {
-//								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
-//										R.string.msg_focus), user.getName())));
-								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_focus), user.getName()));
+								//								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
+								//										R.string.msg_focus), user.getName())));
+								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_focus),
+										user.getName()));
 
 							}
-							((Vibrator)App.Instance.getSystemService(App.VIBRATOR_SERVICE)).vibrate(300);
+							((Vibrator) App.Instance.getSystemService(App.VIBRATOR_SERVICE)).vibrate(300);
 							//New relation.
 							user.setRelation(res.getResult().getRelation());
 							mChangeRelationPb.setVisibility(View.INVISIBLE);
@@ -200,7 +202,8 @@ public final class UserInformationDialogFragment extends DialogFragment {
 		getUserInformation();
 
 		ScreenSize sz = DeviceUtils.getScreenSize(getActivity().getApplication());
-		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width, LayoutParams.MATCH_PARENT));
+		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width,
+				LayoutParams.MATCH_PARENT));
 	}
 
 
@@ -225,29 +228,34 @@ public final class UserInformationDialogFragment extends DialogFragment {
 			@Override
 			protected void onPostExecute(UserInformation userInformation) {
 				super.onPostExecute(userInformation);
-				if (userInformation != null && userInformation.getUser() != null) {
-					mUserInfo = userInformation;
-					User user = userInformation.getUser();
-					mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
-					mUserPhotoIv.setImageUrl(user.getPortrait(), TaskHelper.getImageLoader());
-					ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mUserPhotoIv);
-					animator.y(mIvY).setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
-					animator = ViewPropertyAnimator.animate(mUserRelationBtn);
-					animator.translationX(mBtnX).setDuration(getResources().getInteger(R.integer.anim_fast_duration))
-							.start();
-					mUserNameTv.setText(user.getName());
-					mUserIdentTv.setText(user.getIdent());
-					mUserSkillTv.setText(user.getExpertise());
-					mUserPlatformTv.setText(user.getPlatforms());
-					mUserGenderTv.setText(getString(user.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
-							R.string.lbl_user_gender_famle));
-					updateFocusButton();
-					mUserLocationTv.setText(String.format("%s, %s", user.getCity(), user.getProvince()));
-					mLoadUserInfoPb.setVisibility(View.INVISIBLE);
-					mAllContainerV.setVisibility(View.VISIBLE);
-					mAdp.setData(userInformation.getTweets());
-					mAdp.notifyDataSetChanged();
-					mLoadTweetsPb.setVisibility(View.INVISIBLE);
+				try {
+					if (userInformation != null && userInformation.getUser() != null) {
+						mUserInfo = userInformation;
+						User user = userInformation.getUser();
+						mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
+						mUserPhotoIv.setImageUrl(user.getPortrait(), TaskHelper.getImageLoader());
+						ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mUserPhotoIv);
+						animator.y(mIvY).setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
+						animator = ViewPropertyAnimator.animate(mUserRelationBtn);
+						animator.translationX(mBtnX).setDuration(getResources().getInteger(
+								R.integer.anim_fast_duration)).start();
+						mUserNameTv.setText(user.getName());
+						mUserIdentTv.setText(user.getIdent());
+						mUserSkillTv.setText(user.getExpertise());
+						mUserPlatformTv.setText(user.getPlatforms());
+						mUserGenderTv.setText(getString(
+								user.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
+										R.string.lbl_user_gender_famle));
+						updateFocusButton();
+						mUserLocationTv.setText(String.format("%s, %s", user.getCity(), user.getProvince()));
+						mLoadUserInfoPb.setVisibility(View.INVISIBLE);
+						mAllContainerV.setVisibility(View.VISIBLE);
+						mAdp.setData(userInformation.getTweets());
+						mAdp.notifyDataSetChanged();
+						mLoadTweetsPb.setVisibility(View.INVISIBLE);
+					}
+				} catch (IllegalStateException e) {
+					//Activity has been destroyed
 				}
 			}
 		});

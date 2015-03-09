@@ -117,7 +117,6 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	}
 
 
-
 	//------------------------------------------------
 
 	/**
@@ -173,9 +172,9 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 				mPastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
 				if (mLoading) {
-					if ((mVisibleItemCount + mPastVisibleItems) >= mTotalItemCount ) {
+					if ((mVisibleItemCount + mPastVisibleItems) >= mTotalItemCount) {
 						mLoading = false;
-						if( !mBottom) {
+						if (!mBottom) {
 							mLoadingIndicatorV.setVisibility(View.VISIBLE);
 							getMoreCommentsList();
 						}
@@ -269,9 +268,13 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 			@Override
 			protected void onPostExecute(Comments comments) {
 				super.onPostExecute(comments);
-				mAdp.setData(getTweetItem(), comments.getComments());
-				finishLoading();
-				mLayoutManager.scrollToPositionWithOffset(0, 0);
+				try {
+					mAdp.setData(getTweetItem(), comments.getComments());
+					finishLoading();
+					mLayoutManager.scrollToPositionWithOffset(0, 0);
+				} catch (IllegalStateException e) {
+					//Activity has been destroyed
+				}
 			}
 		});
 	}
@@ -297,12 +300,23 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 			@Override
 			protected void onPostExecute(Comments comments) {
 				super.onPostExecute(comments);
-				if(comments.getComments() != null) {
-					mAdp.getData().addAll(comments.getComments());
-				} else {
-					mBottom = true;
+				try {
+					if (comments != null && comments.getComments() != null) {
+						mAdp.getData().addAll(comments.getComments());
+					} else {
+						if (comments != null) {
+							mPage--;
+							if (mPage < 0) {
+								mPage = 0;
+							}
+						} else {
+							mBottom = true;
+						}
+					}
+					finishLoading();
+				} catch (IllegalStateException e) {
+					//Activity has been destroyed
 				}
-				finishLoading();
 			}
 		});
 	}

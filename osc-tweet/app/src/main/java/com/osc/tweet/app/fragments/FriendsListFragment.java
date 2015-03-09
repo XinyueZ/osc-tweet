@@ -25,10 +25,10 @@ import com.osc.tweet.events.LoadFriendsListEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.OscApi;
-import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.ds.personal.Friend;
 import com.osc4j.ds.personal.Friends;
 import com.osc4j.ds.personal.FriendsList;
+import com.osc4j.exceptions.OscTweetException;
 
 import de.greenrobot.event.EventBus;
 
@@ -131,21 +131,25 @@ public final class FriendsListFragment extends BaseFragment {
 			@Override
 			protected void onPostExecute(FriendsList friendsList) {
 				super.onPostExecute(friendsList);
-				if (friendsList != null) {
-					Friends friends = friendsList.getFriends();
-					List<Friend> all = new ArrayList<>();
-					List<Friend> fansList = friends.getFansList();
-					if (fansList != null) {
-						all.addAll(fansList);
-					}
+				try {
+					if (friendsList != null) {
+						Friends friends = friendsList.getFriends();
+						List<Friend> all = new ArrayList<>();
+						List<Friend> fansList = friends.getFansList();
+						if (fansList != null) {
+							all.addAll(fansList);
+						}
 
-					List<Friend> focusList = friends.getFocusList();
-					if (focusList != null) {
-						all.addAll(focusList);
+						List<Friend> focusList = friends.getFocusList();
+						if (focusList != null) {
+							all.addAll(focusList);
+						}
+						mAdp.setData(all);
+						mAdp.notifyDataSetChanged();
+						mPbV.setVisibility(View.GONE);
 					}
-					mAdp.setData(all);
-					mAdp.notifyDataSetChanged();
-					mPbV.setVisibility(View.GONE);
+				} catch (IllegalStateException e) {
+					//Activity has been destroyed
 				}
 			}
 		});

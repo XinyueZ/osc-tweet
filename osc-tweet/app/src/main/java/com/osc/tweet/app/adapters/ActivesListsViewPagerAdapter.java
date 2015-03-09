@@ -59,7 +59,25 @@ public final class ActivesListsViewPagerAdapter extends FragmentPagerAdapter {
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		return mContext.getString(TITLES[position]);
+		String s = mContext.getString(TITLES[position]);
+		int n = 0;
+		switch (position) {
+		case 0:
+			if (myInformation.getActives() != null) {
+				n = myInformation.getActives().size();
+			}
+			break;
+		case 1:
+			if (myInformation.getComments() != null) {
+				n =myInformation.getComments().size();
+			}
+			break;
+		default:
+			break;
+		}
+
+		s = String.format("%s (%d)", s, n);
+		return s;
 	}
 
 }
