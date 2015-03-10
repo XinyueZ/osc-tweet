@@ -28,7 +28,7 @@ import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.URLImageParser;
 import com.osc4j.OscApi;
-import com.osc4j.ds.personal.Active;
+import com.osc4j.ds.personal.Notice;
 import com.osc4j.ds.tweet.TweetDetail;
 import com.osc4j.exceptions.OscTweetException;
 
@@ -47,7 +47,7 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 	/**
 	 * Data-source.
 	 */
-	private List<Active> mData;
+	private List<Notice> mData;
 
 	/**
 	 * Constructor of {@link ActivesListAdapter}.
@@ -55,7 +55,7 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 	 * @param data
 	 * 		Data-source.
 	 */
-	public ActivesListAdapter(List<Active> data) {
+	public ActivesListAdapter(List<Notice> data) {
 		setData(data);
 	}
 
@@ -65,7 +65,7 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 	 * @param data
 	 * 		Data-source.
 	 */
-	public void setData(List<Active> data) {
+	public void setData(List<Notice> data) {
 		mData = data;
 	}
 
@@ -74,7 +74,7 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 	 *
 	 * @return The data-source.
 	 */
-	public List<Active> getData() {
+	public List<Notice> getData() {
 		return mData;
 	}
 
@@ -86,7 +86,7 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, int position) {
-		final Active item = getData().get(position);
+		final Notice item = getData().get(position);
 		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
 		holder.mPortraitIv.setOnClickListener(new OnViewAnimatedClickedListener() {

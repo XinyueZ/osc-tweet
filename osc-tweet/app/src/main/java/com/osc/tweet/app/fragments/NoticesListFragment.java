@@ -18,44 +18,62 @@ import com.chopping.fragments.BaseFragment;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.ActivesListAdapter;
+import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc4j.ds.common.NoticeType;
-import com.osc4j.ds.personal.Active;
-import com.osc4j.ds.personal.Actives;
+import com.osc4j.ds.personal.Notice;
+import com.osc4j.ds.personal.Notices;
 
 /**
  * Show list of notice.
  */
 public final class NoticesListFragment extends BaseFragment {
-	private static final String EXTRAS_ACTIVES = NoticesListFragment.class.getName() + ".EXTRAS.actives";
+	private static final String EXTRAS_NOTICES = NoticesListFragment.class.getName() + ".EXTRAS.notices";
 	private static final String EXTRAS_TYPE = NoticesListFragment.class.getName() + ".EXTRAS.type";
 	/**
 	 * Main layout for this component.
 	 */
-	private static final int LAYOUT = R.layout.fragment_actives_list;
+	private static final int LAYOUT = R.layout.fragment_notices_list;
 	/**
-	 * Adapter for {@link #mRv} to show all actives.
+	 * Adapter for {@link #mRv} to show all notices.
 	 */
 	private ActivesListAdapter mAdp;
 	/**
-	 * List container for showing all actives.
+	 * List container for showing all notices.
 	 */
 	private RecyclerView mRv;
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
+
+	/**
+	 * Handler for {@link com.osc.tweet.events.ClearNoticeEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.ClearNoticeEvent}.
+	 */
+	public void onEvent(ClearNoticeEvent e) {
+		clearList(getType());
+	}
+
+	//------------------------------------------------
 
 	/**
 	 * Init a {@link NoticesListFragment}.
 	 *
 	 * @param context
 	 * 		{@link android.content.Context}.
-	 * @param actives
-	 * 		{@link com.osc4j.ds.personal.Actives}, that contains objects to show.
-	 * @param type  {@link NoticeType}, type of actives.
+	 * @param notices
+	 * 		{@link Notices}, that contains objects to show.
+	 * @param type
+	 * 		{@link NoticeType}, type of notices.
+	 *
 	 * @return {@link NoticesListFragment}.
 	 */
-	public static Fragment newInstance(Context context, Actives actives, NoticeType type) {
+	public static Fragment newInstance(Context context, Notices notices, NoticeType type) {
 		Bundle args = new Bundle();
-		args.putSerializable(EXTRAS_ACTIVES, actives);
-		args.putSerializable(EXTRAS_TYPE, actives);
+		args.putSerializable(EXTRAS_NOTICES, notices);
+		args.putSerializable(EXTRAS_TYPE, type);
 		return NoticesListFragment.instantiate(context, NoticesListFragment.class.getName(), args);
 	}
 
@@ -69,38 +87,43 @@ public final class NoticesListFragment extends BaseFragment {
 		super.onViewCreated(view, savedInstanceState);
 		mRv = (RecyclerView) view.findViewById(R.id.child_view);
 		mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
-		mRv.addItemDecoration(new SpacesItemDecoration((int) com.osc4j.utils.Utils.convertPixelsToDp(App.Instance,
-				5)));
+		mRv.addItemDecoration(new SpacesItemDecoration((int) com.osc4j.utils.Utils.convertPixelsToDp(App.Instance, 5)));
 		mRv.setItemAnimator(new DefaultItemAnimator());
 		mRv.setHasFixedSize(false);
-		List<Active> activesList = getActives().getActives();
+		List<Notice> activesList = getNotices().getNotices();
 		if (activesList != null) {
 			mRv.setAdapter(mAdp = new ActivesListAdapter(activesList));
 		}
 	}
 
 	/**
-	 *
 	 * @return For which type of notice.
 	 */
 	private NoticeType getType() {
 		return (NoticeType) getArguments().getSerializable(EXTRAS_TYPE);
 	}
+
 	/**
 	 * Clear the list.
+	 *
+	 * @param type
+	 * 		{@link NoticeType}. The type of notices of this list.
 	 */
-	private void clearList() {
-		if(mAdp != null) {
+	private void clearList(NoticeType type) {
+		if (getType() != type) {
+			return;
+		}
+		if (mAdp != null) {
 			mAdp.setData(null);
 			mAdp.notifyDataSetChanged();
 		}
 	}
 
 	/**
-	 * @return {@link Active}s to show.
+	 * @return {@link Notice}s to show.
 	 */
-	private Actives getActives() {
-		return (Actives) getArguments().getSerializable(EXTRAS_ACTIVES);
+	private Notices getNotices() {
+		return (Notices) getArguments().getSerializable(EXTRAS_NOTICES);
 	}
 
 	@Override

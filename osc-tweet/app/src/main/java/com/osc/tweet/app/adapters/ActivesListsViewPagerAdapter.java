@@ -7,8 +7,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
-import com.osc.tweet.app.fragments.ActivesListFragment;
-import com.osc4j.ds.personal.Actives;
+import com.osc.tweet.app.fragments.NoticesListFragment;
+import com.osc4j.ds.common.NoticeType;
+import com.osc4j.ds.personal.Notices;
 import com.osc4j.ds.personal.MyInformation;
 
 /**
@@ -30,21 +31,21 @@ public final class ActivesListsViewPagerAdapter extends FragmentPagerAdapter {
 	@Override
 	public Fragment getItem(int position) {
 		Fragment f = null;
-		Actives actives;
+		Notices notices;
 		switch (position) {
 		case 0:
-			actives = new Actives(com.osc4j.ds.common.Status.STATUS_OK, null);
-			if (myInformation.getActives() != null) {
-				actives.setActivesList(myInformation.getActives());
+			notices = new Notices(com.osc4j.ds.common.Status.STATUS_OK, null);
+			if (myInformation.getNotices() != null) {
+				notices.setNotices(myInformation.getNotices());
 			}
-			f = ActivesListFragment.newInstance(App.Instance, actives);
+			f = NoticesListFragment.newInstance(App.Instance, notices, NoticeType.AtMe);
 			break;
 		case 1:
-			actives = new Actives(com.osc4j.ds.common.Status.STATUS_OK, null);
+			notices = new Notices(com.osc4j.ds.common.Status.STATUS_OK, null);
 			if (myInformation.getComments() != null) {
-				actives.setActivesList(myInformation.getComments());
+				notices.setNotices(myInformation.getComments());
 			}
-			f = ActivesListFragment.newInstance(App.Instance, actives);
+			f = NoticesListFragment.newInstance(App.Instance, notices, NoticeType.Comments);
 		default:
 			break;
 		}
@@ -63,8 +64,8 @@ public final class ActivesListsViewPagerAdapter extends FragmentPagerAdapter {
 		int n = 0;
 		switch (position) {
 		case 0:
-			if (myInformation.getActives() != null) {
-				n = myInformation.getActives().size();
+			if (myInformation.getNotices() != null) {
+				n = myInformation.getNotices().size();
 			}
 			break;
 		case 1:

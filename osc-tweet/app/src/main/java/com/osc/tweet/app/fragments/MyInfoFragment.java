@@ -26,6 +26,7 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.ActivesListsViewPagerAdapter;
+import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
@@ -217,7 +218,7 @@ public final class MyInfoFragment extends BaseFragment {
 
 						((Vibrator) App.Instance.getSystemService(App.VIBRATOR_SERVICE)).vibrate(300);
 
-						int atMeCount = myInfo.getActives() == null ? 0 : myInfo.getActives().size();
+						int atMeCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
 						int cmmCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
 						Utils.showShortToast(App.Instance, String.format(getString(R.string.msg_update_my_info),
 								atMeCount, cmmCount));
@@ -286,14 +287,7 @@ public final class MyInfoFragment extends BaseFragment {
 					EventBus.getDefault().post(event);
 					if (event.isSuccess()) {
 						if (mAdp != null) {
-							switch (mNoticeType) {
-							case AtMe:
-								((ActivesListFragment) mAdp.getItem(0)).clearList();
-								break;
-							case Comments:
-								((ActivesListFragment) mAdp.getItem(1)).clearList();
-								break;
-							}
+							EventBus.getDefault().post(new ClearNoticeEvent(mNoticeType));
 						}
 					}
 				} catch (IllegalStateException e) {
