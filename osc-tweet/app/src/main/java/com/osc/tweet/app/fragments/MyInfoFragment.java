@@ -9,6 +9,7 @@ import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,10 @@ public final class MyInfoFragment extends BaseFragment {
 	 */
 	private static final int LAYOUT = R.layout.fragment_my_info;
 	/**
+	 * Menu-resource of the popup.
+	 */
+	private static final int MENU_RES = R.menu.menu_my_info;
+	/**
 	 * My photo.
 	 */
 	private RoundedNetworkImageView mUserPhotoIv;
@@ -68,6 +73,10 @@ public final class MyInfoFragment extends BaseFragment {
 
 	private View mRootV;
 
+	/**
+	 * The popup-menu to clear all list.
+	 */
+	private PopupMenu mPopupMenu;
 
 
 	/**
@@ -108,6 +117,17 @@ public final class MyInfoFragment extends BaseFragment {
 		// Bind the tabs to the ViewPager
 		mTabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
 		mTabs.setIndicatorColorResource(R.color.common_white);
+
+
+		View clearListV = view.findViewById(R.id.clean_list_btn);
+		mPopupMenu = new PopupMenu(getActivity(), clearListV);
+		mPopupMenu.inflate(MENU_RES);
+		clearListV.setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				mPopupMenu.show();
+			}
+		});
 	}
 
 
@@ -175,4 +195,5 @@ public final class MyInfoFragment extends BaseFragment {
 	protected BasicPrefs getPrefs() {
 		return Prefs.getInstance();
 	}
+
 }

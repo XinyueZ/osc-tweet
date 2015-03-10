@@ -9,6 +9,8 @@
     <string name="action_about">About</string>
     <string name="action_send">Send</string>
     <string name="action_quick_reply">Quick reply</string>
+    <string name="action_clear_at_me">Clear @me</string>
+    <string name="action_clear_comments">Clear new comments</string>
 
     <string name="msg_move_to_top">Return top</string>
     <string name="msg_message_sent_successfully">Sent message successfully.</string>
