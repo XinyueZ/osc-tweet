@@ -40,12 +40,26 @@
                     android:background="@color/common_transparent"
                     android:src="@drawable/ic_refresh" />
 
-                <ImageButton
-                    android:id="@+id/clean_list_btn"
+                <FrameLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/common_transparent"
-                    android:src="@drawable/ic_clear_list" />
+                    android:layout_height="wrap_content">
+
+
+                    <ImageButton
+                        android:id="@+id/clean_list_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/common_transparent"
+                        android:src="@drawable/ic_clear_list" />
+
+
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/clear_pb"
+                        android:visibility="gone" android:layout_gravity="center" />
+                </FrameLayout>
             </LinearLayout>
         </FrameLayout>
 

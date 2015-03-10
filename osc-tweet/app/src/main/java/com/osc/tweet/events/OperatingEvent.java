@@ -1,21 +1,21 @@
 package com.osc.tweet.events;
 
 /**
- * Event fired after sending message.
+ * Event fired after operating.
  *
  * @author Xinyue Zhao
  */
-public final class SentMessageEvent {
+public final class OperatingEvent {
 	/**
 	 * Success or not.
 	 */
 	private boolean mSuccess;
 
 	/**
-	 * Constructor of {@link SentMessageEvent}
+	 * Constructor of {@link OperatingEvent}
 	 * @param success  Success or not.
 	 */
-	public SentMessageEvent(boolean success) {
+	public OperatingEvent(boolean success) {
 		mSuccess = success;
 	}
 

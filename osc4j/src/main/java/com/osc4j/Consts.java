@@ -105,9 +105,9 @@ public final class Consts {
 	/**
 	 * Clear "@me" notice.
 	 */
-	static final String CLEAR_AT_NOTICE_URL = OSC_HOST + "handleClearAtNotice";
+	static final String CLEAR_AT_NOTICE_URL = OSC_HOST + "clearAtNotice";
 	/**
 	 * Clear comment notice.
 	 */
-	static final String CLEAR_COMMENTS_NOTICE_URL = OSC_HOST + "handleClearCommentsNotice";
+	static final String CLEAR_COMMENTS_NOTICE_URL = OSC_HOST + "clearCommentsNotice";
 }

@@ -77,6 +77,15 @@ public final class ActivesListFragment extends BaseFragment {
 	}
 
 	/**
+	 * Clear the list.
+	 */
+	public void clearList() {
+		if(mAdp != null) {
+			mAdp.setData(null);
+			mAdp.notifyDataSetChanged();
+		}
+	}
+	/**
 	 * @return {@link Active}s to show.
 	 */
 	private Actives getActives() {

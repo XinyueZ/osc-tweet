@@ -28,7 +28,7 @@ import com.chopping.utils.Utils;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.LoadEvent;
-import com.osc.tweet.events.SentMessageEvent;
+import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.OscApi;
@@ -291,9 +291,9 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 							mSendingIndicatorV.progressiveStop();
 						}
 						EventBus.getDefault().post(new LoadEvent());
-						EventBus.getDefault().post(new SentMessageEvent(true));
+						EventBus.getDefault().post(new OperatingEvent(true));
 					} else {
-						EventBus.getDefault().post(new SentMessageEvent(false));
+						EventBus.getDefault().post(new OperatingEvent(false));
 					}
 					dismiss();
 				}

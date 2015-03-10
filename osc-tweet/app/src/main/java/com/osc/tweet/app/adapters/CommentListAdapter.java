@@ -34,7 +34,7 @@ import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.LoadEvent;
-import com.osc.tweet.events.SentMessageEvent;
+import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
@@ -194,7 +194,7 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 						@Override
 						protected void onPostExecute(StatusResult s) {
 							super.onPostExecute(s);
-							EventBus.getDefault().post(new SentMessageEvent(s != null && Integer.valueOf(
+							EventBus.getDefault().post(new OperatingEvent(s != null && s.getResult() != null && Integer.valueOf(
 									s.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK));
 
 							EventBus.getDefault().post(new LoadEvent());

@@ -10,7 +10,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -24,13 +26,21 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.ActivesListsViewPagerAdapter;
+import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
+import com.osc4j.ds.common.NoticeType;
+import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.Am;
 import com.osc4j.ds.personal.MyInformation;
 import com.osc4j.exceptions.OscTweetException;
+
+import de.greenrobot.event.EventBus;
+
+import static com.osc4j.ds.common.NoticeType.AtMe;
+import static com.osc4j.ds.common.NoticeType.Comments;
 
 /**
  * Show my information.
@@ -57,7 +67,7 @@ public final class MyInfoFragment extends BaseFragment {
 	/**
 	 * My information personal.
 	 */
-	private MyInformation mMyInfo;
+	private MyInformation myInfo;
 	/**
 	 * Click to refresh my-info.
 	 */
@@ -66,6 +76,10 @@ public final class MyInfoFragment extends BaseFragment {
 	 * The pagers
 	 */
 	private ViewPager mViewPager;
+	/**
+	 * The adapter to {@link #mViewPager}.
+	 */
+	private ActivesListsViewPagerAdapter mAdp;
 	/**
 	 * Tabs.
 	 */
@@ -77,7 +91,15 @@ public final class MyInfoFragment extends BaseFragment {
 	 * The popup-menu to clear all list.
 	 */
 	private PopupMenu mPopupMenu;
+	/**
+	 * Progress indicator for clearing.
+	 */
+	private View mClearPb;
 
+	/**
+	 * Open the popup of clearing lists.
+	 */
+	private View mClearListV;
 
 	/**
 	 * Initialize an {@link  MyInfoFragment}.
@@ -119,15 +141,33 @@ public final class MyInfoFragment extends BaseFragment {
 		mTabs.setIndicatorColorResource(R.color.common_white);
 
 
-		View clearListV = view.findViewById(R.id.clean_list_btn);
-		mPopupMenu = new PopupMenu(getActivity(), clearListV);
+		mClearListV = view.findViewById(R.id.clean_list_btn);
+		mPopupMenu = new PopupMenu(getActivity(), mClearListV);
 		mPopupMenu.inflate(MENU_RES);
-		clearListV.setOnClickListener(new OnViewAnimatedClickedListener() {
+		mClearListV.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
 				mPopupMenu.show();
 			}
 		});
+		mPopupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem menuItem) {
+				mClearListV.setVisibility(View.INVISIBLE);
+				mClearPb.setVisibility(View.VISIBLE);
+				switch (menuItem.getItemId()) {
+				case R.id.action_clear_at_me:
+					clearAtMe();
+					break;
+				case R.id.action_clear_comments:
+					clearNewComments();
+					break;
+				}
+				return true;
+			}
+		});
+
+		mClearPb = view.findViewById(R.id.clear_pb);
 	}
 
 
@@ -164,14 +204,14 @@ public final class MyInfoFragment extends BaseFragment {
 				super.onPostExecute(myInfo);
 				try {
 					if (myInfo != null && myInfo.getAm() != null) {
-						mMyInfo = myInfo;
-						Am am = mMyInfo.getAm();
+						MyInfoFragment.this.myInfo = myInfo;
+						Am am = MyInfoFragment.this.myInfo.getAm();
 						mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 						mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
 						mUserNameTv.setText(am.getName());
 
-						mViewPager.setAdapter(new ActivesListsViewPagerAdapter(App.Instance, getChildFragmentManager(),
-								myInfo));
+						mViewPager.setAdapter(mAdp = new ActivesListsViewPagerAdapter(App.Instance,
+								getChildFragmentManager(), myInfo));
 						mTabs.setViewPager(mViewPager);
 
 
@@ -179,17 +219,89 @@ public final class MyInfoFragment extends BaseFragment {
 
 						int atMeCount = myInfo.getActives() == null ? 0 : myInfo.getActives().size();
 						int cmmCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
-						Utils.showShortToast(App.Instance, String.format(getString(R.string.msg_update_my_info),atMeCount, cmmCount) );
+						Utils.showShortToast(App.Instance, String.format(getString(R.string.msg_update_my_info),
+								atMeCount, cmmCount));
+
+						//Menu shows dynamically according to the count of list-items.
+						mClearListV.setVisibility(atMeCount == 0 && cmmCount == 0 ? View.INVISIBLE : View.VISIBLE);
+						mPopupMenu.getMenu().findItem(R.id.action_clear_at_me).setVisible(atMeCount > 0);
+						mPopupMenu.getMenu().findItem(R.id.action_clear_comments).setVisible(cmmCount > 0);
+					} else {
+						mClearListV.setVisibility(View.INVISIBLE);
 					}
-					objectAnimator.cancel();
 					mRootV.setVisibility(View.VISIBLE);
-				} catch ( IllegalStateException e) {
+					objectAnimator.cancel();
+				} catch (IllegalStateException e) {
 					//Activity has been destroyed
 				}
 			}
 		});
 	}
 
+	/**
+	 * Clear all new "@me".
+	 */
+	private void clearAtMe() {
+		clear(AtMe);
+	}
+
+	/**
+	 * Clear all new comments.
+	 */
+	private void clearNewComments() {
+		clear(Comments);
+	}
+
+	/**
+	 * Clear different notices.
+	 *
+	 * @param type
+	 * 		{@link NoticeType} The type of notice.
+	 */
+	private void clear(NoticeType type) {
+		AsyncTaskCompat.executeParallel(new AsyncTask<NoticeType, Void, StatusResult>() {
+			NoticeType mNoticeType;
+
+			@Override
+			protected StatusResult doInBackground(NoticeType... params) {
+				mNoticeType = params[0];
+				try {
+					return OscApi.clearNotice(App.Instance, mNoticeType);
+				} catch (IOException e) {
+					return null;
+				} catch (OscTweetException e) {
+					return null;
+				}
+			}
+
+			@Override
+			protected void onPostExecute(StatusResult res) {
+				super.onPostExecute(res);
+				try {
+					mClearPb.setVisibility(View.GONE);
+					mClearListV.setVisibility(View.VISIBLE);
+
+					OperatingEvent event = new OperatingEvent(res != null && res.getResult() != null && Integer.valueOf(
+							res.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK);
+					EventBus.getDefault().post(event);
+					if (event.isSuccess()) {
+						if (mAdp != null) {
+							switch (mNoticeType) {
+							case AtMe:
+								((ActivesListFragment) mAdp.getItem(0)).clearList();
+								break;
+							case Comments:
+								((ActivesListFragment) mAdp.getItem(1)).clearList();
+								break;
+							}
+						}
+					}
+				} catch (IllegalStateException e) {
+					//Activity has been destroyed
+				}
+			}
+		}, type);
+	}
 
 	@Override
 	protected BasicPrefs getPrefs() {

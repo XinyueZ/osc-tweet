@@ -52,7 +52,7 @@ import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
-import com.osc.tweet.events.SentMessageEvent;
+import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowTweetCommentListEvent;
@@ -263,14 +263,14 @@ public class MainActivity extends BaseActivity {
 	}
 
 	/**
-	 * Handler for {@link com.osc.tweet.events.SentMessageEvent}.
+	 * Handler for {@link OperatingEvent}.
 	 *
 	 * @param e
-	 * 		Event {@link com.osc.tweet.events.SentMessageEvent}.
+	 * 		Event {@link OperatingEvent}.
 	 */
-	public void onEvent(SentMessageEvent e) {
-		Utils.showLongToast(getApplicationContext(), e.isSuccess() ? getString(R.string.msg_message_sent_successfully) :
-				getString(R.string.msg_message_sent_failed));
+	public void onEvent(OperatingEvent e) {
+		Utils.showLongToast(getApplicationContext(), e.isSuccess() ? getString(R.string.msg_operating_successfully) :
+				getString(R.string.msg_operating_failed));
 		((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(300);
 	}
 	//------------------------------------------------
@@ -332,9 +332,9 @@ public class MainActivity extends BaseActivity {
 						childV.onTouchEvent(event);
 						return true;
 					}
+					childV.getParent()
+							.requestDisallowInterceptTouchEvent(true);
 				}
-				childV.getParent()
-						.requestDisallowInterceptTouchEvent(true);
 				return false;
 			}
 		});

@@ -22,6 +22,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
+import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowTweetCommentListEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
@@ -137,7 +138,11 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 						super.onPostExecute(item);
 						try {
 							holder.mOpenPb.setVisibility(View.GONE);
-							EventBus.getDefault().post(new ShowTweetCommentListEvent(item.getTweet()));
+							if(item != null) {
+								EventBus.getDefault().post(new ShowTweetCommentListEvent(item.getTweet()));
+							} else {
+								EventBus.getDefault().post(new OperatingEvent(false));
+							}
 						} catch (IllegalStateException e) {
 							//Activity has been destroyed
 						}

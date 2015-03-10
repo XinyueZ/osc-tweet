@@ -269,7 +269,11 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 			protected void onPostExecute(Comments comments) {
 				super.onPostExecute(comments);
 				try {
-					mAdp.setData(getTweetItem(), comments.getComments());
+					if(comments != null) {
+						mAdp.setData(getTweetItem(), comments.getComments());
+					} else {
+						mAdp.setData(getTweetItem(), null);
+					}
 					finishLoading();
 					mLayoutManager.scrollToPositionWithOffset(0, 0);
 				} catch (IllegalStateException e) {
