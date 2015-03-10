@@ -153,14 +153,16 @@ public final class MyInfoFragment extends BaseFragment {
 						mViewPager.setAdapter(new ActivesListsViewPagerAdapter(App.Instance, getChildFragmentManager(),
 								myInfo));
 						mTabs.setViewPager(mViewPager);
+
+
+						((Vibrator) App.Instance.getSystemService(App.VIBRATOR_SERVICE)).vibrate(300);
+
+						int atMeCount = myInfo.getActives() == null ? 0 : myInfo.getActives().size();
+						int cmmCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
+						Utils.showShortToast(App.Instance, String.format(getString(R.string.msg_update_my_info),atMeCount, cmmCount) );
 					}
-
 					objectAnimator.cancel();
-
 					mRootV.setVisibility(View.VISIBLE);
-					((Vibrator) App.Instance.getSystemService(App.VIBRATOR_SERVICE)).vibrate(300);
-
-					Utils.showShortToast(App.Instance, R.string.msg_update_my_info);
 				} catch ( IllegalStateException e) {
 					//Activity has been destroyed
 				}

@@ -19,6 +19,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
+    lintOptions {
+        htmlReport false
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -33,6 +39,9 @@ dependencies {
     compile project(':volley_cz')
     compile project(':ChoppingBootstrap')
     compile project(':osc4j')
+
+
+
 }
 
 

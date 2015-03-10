@@ -327,12 +327,14 @@ public class MainActivity extends BaseActivity {
 					childV.getLocationOnScreen(l);
 					RectF rect = new RectF(l[0], l[1], l[0] + childV.getWidth(), l[1] + childV.getHeight());
 				 	if(rect.contains(  event.getX(), event.getY())) {
+						childV.getParent()
+								.requestDisallowInterceptTouchEvent(false);
 						childV.onTouchEvent(event);
 						return true;
-					} else {
-						return false;
 					}
 				}
+				childV.getParent()
+						.requestDisallowInterceptTouchEvent(true);
 				return false;
 			}
 		});

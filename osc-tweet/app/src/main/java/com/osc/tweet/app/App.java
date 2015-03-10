@@ -1,4 +1,3 @@
-
 /*
                    _ooOoo_
                   o8888888o
@@ -48,6 +47,7 @@ public final class App extends Application {
 	 * Application's instance.
 	 */
 	public static App Instance;
+
 	{
 		Instance = this;
 	}
@@ -59,7 +59,7 @@ public final class App extends Application {
 		TaskHelper.init(getApplicationContext());
 
 		Stetho.initialize(Stetho.newInitializerBuilder(this).enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-						.enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
+				.enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
 	}
 
 }

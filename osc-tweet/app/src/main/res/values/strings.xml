@@ -16,7 +16,7 @@
     <string name="msg_message_input">Please fill your content.</string>
     <string name="msg_focus">You have fallowed on %s</string>
     <string name="msg_focus_cancel">You have canceled relation on %s</string>
-    <string name="msg_update_my_info">Refreshed my information.</string>
+    <string name="msg_update_my_info" formatted="false">(%d)\@me, (%d)new comments.</string>
 
     <string name="btn_confirm">Confirm</string>
     <string name="btn_cancel">Cancel</string>
