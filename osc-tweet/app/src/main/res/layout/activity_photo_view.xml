@@ -24,15 +24,15 @@
         <!--android:indeterminate="true" />-->
 
     <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
+        style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/load_user_info_pb"
         android:layout_gravity="center" />
 
 
-    <ImageView
-        android:id="@+id/big_img_iv"
+    <com.osc.tweet.views.touch.ScalableView
+        android:id="@+id/big_img_v"
         android:layout_width="wrap_content"
         android:layout_gravity="center"
         android:layout_height="wrap_content" />

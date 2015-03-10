@@ -5,6 +5,7 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +18,7 @@ import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
-import com.osc.tweet.app.adapters.ActivesListAdapter;
+import com.osc.tweet.app.adapters.NoticesListAdapter;
 import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc4j.ds.common.NoticeType;
@@ -37,7 +38,7 @@ public final class NoticesListFragment extends BaseFragment {
 	/**
 	 * Adapter for {@link #mRv} to show all notices.
 	 */
-	private ActivesListAdapter mAdp;
+	private NoticesListAdapter mAdp;
 	/**
 	 * List container for showing all notices.
 	 */
@@ -57,7 +58,7 @@ public final class NoticesListFragment extends BaseFragment {
 	 * 		Event {@link com.osc.tweet.events.ClearNoticeEvent}.
 	 */
 	public void onEvent(ClearNoticeEvent e) {
-		clearList(getType());
+		clearList(e.getType());
 	}
 
 	//------------------------------------------------
@@ -74,7 +75,7 @@ public final class NoticesListFragment extends BaseFragment {
 	 *
 	 * @return {@link NoticesListFragment}.
 	 */
-	public static Fragment newInstance(Context context, Notices notices, NoticeType type) {
+	public static Fragment newInstance(Context context, @Nullable Notices notices, NoticeType type) {
 		Bundle args = new Bundle();
 		args.putSerializable(EXTRAS_NOTICES, notices);
 		args.putSerializable(EXTRAS_TYPE, type);
@@ -89,20 +90,28 @@ public final class NoticesListFragment extends BaseFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		mRv = (RecyclerView) view.findViewById(R.id.child_view);
-		mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
-		mRv.addItemDecoration(new SpacesItemDecoration((int) com.osc4j.utils.Utils.convertPixelsToDp(App.Instance, 5)));
-		mRv.setItemAnimator(new DefaultItemAnimator());
-		mRv.setHasFixedSize(false);
-		mEmptyV = view.findViewById(R.id.empty_notices_iv);
-		List<Notice> notices = getNotices().getNotices();
-		if (notices != null && notices.size() > 0) {
-			mRv.setAdapter(mAdp = new ActivesListAdapter(notices));
-			mRv.setVisibility(View.VISIBLE);
+		if(getType() == NoticeType.Null || getNotices() == null) {
+			View errorV = view.findViewById(R.id.errors_iv);
+			errorV.setVisibility(View.VISIBLE);
+			mRv.setVisibility(View.INVISIBLE);
 			mEmptyV.setVisibility(View.INVISIBLE);
 		} else {
-			mRv.setVisibility(View.INVISIBLE);
-			mEmptyV.setVisibility(View.VISIBLE);
+			mRv = (RecyclerView) view.findViewById(R.id.child_view);
+			mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
+			mRv.addItemDecoration(new SpacesItemDecoration((int) com.osc4j.utils.Utils.convertPixelsToDp(App.Instance,
+					5)));
+			mRv.setItemAnimator(new DefaultItemAnimator());
+			mRv.setHasFixedSize(false);
+			mEmptyV = view.findViewById(R.id.empty_notices_iv);
+			List<Notice> notices = getNotices().getNotices();
+			if (notices != null && notices.size() > 0) {
+				mRv.setAdapter(mAdp = new NoticesListAdapter(notices));
+				mRv.setVisibility(View.VISIBLE);
+				mEmptyV.setVisibility(View.INVISIBLE);
+			} else {
+				mRv.setVisibility(View.INVISIBLE);
+				mEmptyV.setVisibility(View.VISIBLE);
+			}
 		}
 	}
 
@@ -134,7 +143,7 @@ public final class NoticesListFragment extends BaseFragment {
 	/**
 	 * @return {@link Notice}s to show.
 	 */
-	private Notices getNotices() {
+	private @Nullable Notices getNotices() {
 		return (Notices) getArguments().getSerializable(EXTRAS_NOTICES);
 	}
 

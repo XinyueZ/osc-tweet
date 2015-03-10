@@ -184,6 +184,7 @@ public final class MyInfoFragment extends BaseFragment {
 
 			@Override
 			protected void onPreExecute() {
+				mRefreshV.setEnabled(false);
 				objectAnimator = ObjectAnimator.ofFloat(mRefreshV, "rotation", 0, 360f);
 				objectAnimator.setDuration(800);
 				objectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
@@ -231,9 +232,14 @@ public final class MyInfoFragment extends BaseFragment {
 						mPopupMenu.getMenu().findItem(R.id.action_clear_comments).setVisible(cmmCount > 0);
 					} else {
 						mClearListV.setVisibility(View.INVISIBLE);
+
+						mViewPager.setAdapter(mAdp = new NoticesListsViewPagerAdapter(App.Instance,
+								getChildFragmentManager(), null));
+						mTabs.setViewPager(mViewPager);
 					}
 					mRootV.setVisibility(View.VISIBLE);
 					objectAnimator.cancel();
+					mRefreshV.setEnabled(true);
 				} catch (IllegalStateException e) {
 					//Activity has been destroyed
 				}
@@ -290,6 +296,20 @@ public final class MyInfoFragment extends BaseFragment {
 					if (event.isSuccess()) {
 						if (mAdp != null) {
 							EventBus.getDefault().post(new ClearNoticeEvent(mNoticeType));
+						}
+
+						MenuItem atMi = mPopupMenu.getMenu().findItem(R.id.action_clear_at_me);
+						MenuItem cmmMi =  mPopupMenu.getMenu().findItem(R.id.action_clear_comments);
+						switch (mNoticeType) {
+						case AtMe:
+							atMi.setVisible(false);
+							break;
+						case Comments:
+							cmmMi.setVisible(false);
+							break;
+						}
+						if(!atMi.isVisible() && !cmmMi.isVisible()) {
+							mClearListV.setVisibility(View.INVISIBLE);
 						}
 					}
 				} catch (IllegalStateException e) {

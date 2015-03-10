@@ -1,6 +1,7 @@
 package com.osc.tweet.app.activities;
 
 import android.app.AlertDialog.Builder;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -137,6 +138,10 @@ public class MainActivity extends BaseActivity {
 	 * A bar bottom.
 	 */
 	private SnackBar mSnackBar;
+	/**
+	 * Indicator when loading application config.
+	 */
+	private ProgressDialog mConfigDlg;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -326,18 +331,19 @@ public class MainActivity extends BaseActivity {
 					int[] l = new int[2];
 					childV.getLocationOnScreen(l);
 					RectF rect = new RectF(l[0], l[1], l[0] + childV.getWidth(), l[1] + childV.getHeight());
-				 	if(rect.contains(  event.getX(), event.getY())) {
-						childV.getParent()
-								.requestDisallowInterceptTouchEvent(false);
+					if (rect.contains(event.getX(), event.getY())) {
+						childV.getParent().requestDisallowInterceptTouchEvent(false);
 						childV.onTouchEvent(event);
 						return true;
 					}
-					childV.getParent()
-							.requestDisallowInterceptTouchEvent(true);
+					childV.getParent().requestDisallowInterceptTouchEvent(true);
 				}
 				return false;
 			}
 		});
+
+		mConfigDlg = ProgressDialog.show(this, null, getString(R.string.msg_load_config));
+		mConfigDlg.setCancelable(false);
 	}
 
 	@Override
@@ -503,6 +509,9 @@ public class MainActivity extends BaseActivity {
 		super.onAppConfigLoaded();
 		showAppList();
 		checkAndInit();
+		if(mConfigDlg!= null && mConfigDlg.isShowing()) {
+			mConfigDlg.dismiss();
+		}
 	}
 
 	@Override
@@ -510,6 +519,9 @@ public class MainActivity extends BaseActivity {
 		super.onAppConfigIgnored();
 		showAppList();
 		checkAndInit();
+		if(mConfigDlg!= null && mConfigDlg.isShowing()) {
+			mConfigDlg.dismiss();
+		}
 	}
 
 	private boolean mPagesInit = false;

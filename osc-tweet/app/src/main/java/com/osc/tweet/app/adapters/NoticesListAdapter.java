@@ -35,11 +35,11 @@ import com.osc4j.exceptions.OscTweetException;
 import de.greenrobot.event.EventBus;
 
 /**
- * The adapter that hold list of actives.
+ * The adapter that hold list of notices.
  *
  * @author Xinyue Zhao
  */
-public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAdapter.ViewHolder> {
+public final class NoticesListAdapter extends RecyclerView.Adapter<NoticesListAdapter.ViewHolder> {
 	/**
 	 * Main layout for this component.
 	 */
@@ -50,12 +50,12 @@ public final class ActivesListAdapter extends RecyclerView.Adapter<ActivesListAd
 	private List<Notice> mData;
 
 	/**
-	 * Constructor of {@link ActivesListAdapter}.
+	 * Constructor of {@link NoticesListAdapter}.
 	 *
 	 * @param data
 	 * 		Data-source.
 	 */
-	public ActivesListAdapter(List<Notice> data) {
+	public NoticesListAdapter(List<Notice> data) {
 		setData(data);
 	}
 

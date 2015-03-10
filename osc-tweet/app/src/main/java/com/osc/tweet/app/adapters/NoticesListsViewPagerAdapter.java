@@ -3,7 +3,7 @@ package com.osc.tweet.app.adapters;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
@@ -17,7 +17,7 @@ import com.osc4j.ds.personal.Notices;
  *
  * @author Xinyue Zhao
  */
-public final class NoticesListsViewPagerAdapter extends FragmentPagerAdapter {
+public final class NoticesListsViewPagerAdapter extends FragmentStatePagerAdapter {
 	/**
 	 * {@link Context}
 	 */
@@ -50,23 +50,27 @@ public final class NoticesListsViewPagerAdapter extends FragmentPagerAdapter {
 	@Override
 	public Fragment getItem(int position) {
 		Fragment f = null;
-		Notices notices;
-		switch (position) {
-		case 0:
-			notices = new Notices(com.osc4j.ds.common.Status.STATUS_OK, null);
-			if (myInformation.getNotices() != null) {
-				notices.setNotices(myInformation.getNotices());
+		if (myInformation == null) {
+			f = NoticesListFragment.newInstance(App.Instance, null, NoticeType.Null);
+		} else {
+			Notices notices;
+			switch (position) {
+			case 0:
+				notices = new Notices(com.osc4j.ds.common.Status.STATUS_OK, null);
+				if (myInformation.getNotices() != null) {
+					notices.setNotices(myInformation.getNotices());
+				}
+				f = NoticesListFragment.newInstance(App.Instance, notices, NoticeType.AtMe);
+				break;
+			case 1:
+				notices = new Notices(com.osc4j.ds.common.Status.STATUS_OK, null);
+				if (myInformation.getComments() != null) {
+					notices.setNotices(myInformation.getComments());
+				}
+				f = NoticesListFragment.newInstance(App.Instance, notices, NoticeType.Comments);
+			default:
+				break;
 			}
-			f = NoticesListFragment.newInstance(App.Instance, notices, NoticeType.AtMe);
-			break;
-		case 1:
-			notices = new Notices(com.osc4j.ds.common.Status.STATUS_OK, null);
-			if (myInformation.getComments() != null) {
-				notices.setNotices(myInformation.getComments());
-			}
-			f = NoticesListFragment.newInstance(App.Instance, notices, NoticeType.Comments);
-		default:
-			break;
 		}
 		return f;
 	}

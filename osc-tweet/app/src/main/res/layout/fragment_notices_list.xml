@@ -10,16 +10,27 @@
         android:layout_width="match_parent"
         android:scrollbars="none"
         android:background="@color/common_yellow"
-        android:id="@id/child_view" android:visibility="gone"
+        android:id="@id/child_view"
+        android:visibility="invisible"
         android:layout_height="wrap_content" />
 
     <ImageView
         android:id="@+id/empty_notices_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"  android:visibility="visible"
+        android:layout_gravity="center"
+        android:visibility="visible"
         android:background="@color/common_transparent"
         android:src="@drawable/ic_empty" />
+
+    <ImageView
+        android:id="@+id/errors_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        android:background="@color/common_transparent"
+        android:src="@drawable/ic_not_loaded" />
 
 </FrameLayout>
 

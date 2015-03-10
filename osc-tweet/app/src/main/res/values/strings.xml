@@ -18,7 +18,8 @@
     <string name="msg_message_input">Please fill your content.</string>
     <string name="msg_focus">You have fallowed on %s</string>
     <string name="msg_focus_cancel">You have canceled relation on %s</string>
-    <string name="msg_update_my_info" formatted="false">(%d)\@me, (%d)new comments.</string>
+    <string name="msg_update_my_info" formatted="false">(%d) \@me, (%d) new comments.</string>
+    <string name="msg_load_config">Load application configuration…</string>
 
     <string name="btn_confirm">Confirm</string>
     <string name="btn_cancel">Cancel</string>
@@ -69,6 +70,7 @@
     <string name="lbl_open">Open</string>
     <string name="lbl_at_me">\@me</string>
     <string name="lbl_new_comments">New comments</string>
+    <string name="lbl_hello">Hello</string>
 
     <string name="quick_reply_list">quick_reply_en</string>
 </resources>

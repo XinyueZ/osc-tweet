@@ -58,7 +58,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/clear_pb"
-                        android:visibility="gone" android:layout_gravity="center" />
+                        android:visibility="gone"
+                        android:layout_gravity="center" />
                 </FrameLayout>
             </LinearLayout>
         </FrameLayout>
@@ -69,11 +70,11 @@
             android:orientation="horizontal">
 
             <TextView
-                android:text="@string/lbl_user_name"
+                android:text="@string/lbl_hello"
                 style="@style/Style_My_Information_Label" />
 
             <TextView
-                android:id="@+id/user_name_tv"
+                android:id="@+id/user_name_tv" android:textColor="@color/common_white"
                 style="@style/Style_User_Information_Value" />
         </LinearLayout>
 

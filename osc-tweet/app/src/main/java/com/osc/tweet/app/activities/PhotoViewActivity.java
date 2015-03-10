@@ -6,13 +6,13 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader.ImageContainer;
@@ -23,6 +23,7 @@ import com.chopping.net.TaskHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.utils.Prefs;
+import com.osc.tweet.views.touch.ScalableView;
 import com.osc4j.ds.tweet.TweetListItem;
 
 /**
@@ -32,6 +33,9 @@ import com.osc4j.ds.tweet.TweetListItem;
  */
 public final class PhotoViewActivity extends BaseActivity implements ImageListener {
 	private static final String EXTRAS_TWEET = "com.osc.tweet.app.extras.TWEET";
+	/**
+	 * Menu on "actionbar".
+	 */
 	private static final int MENU = R.menu.menu_photo_view;
 	/**
 	 * Main layout for this component.
@@ -73,6 +77,7 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setTitle(null);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		calcActionBarHeight();
 		showImage();
 	}
@@ -107,16 +112,17 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 
 	@Override
 	public void onResponse(ImageContainer response, boolean isImmediate) {
-		ImageView iv = (ImageView) findViewById(R.id.big_img_iv);
+		ScalableView iv = (ScalableView) findViewById(R.id.big_img_v);
 		if (response != null && response.getBitmap() != null) {
 			iv.setImageBitmap(response.getBitmap());
 			animToolActionBar(-getActionBarHeight() * 4);
 		}
+		findViewById(R.id.load_user_info_pb).setVisibility(View.GONE);
 	}
 
 	@Override
 	public void onErrorResponse(VolleyError error) {
-		findViewById(R.id.loading_pb).setVisibility(View.GONE);
+		findViewById(R.id.load_user_info_pb).setVisibility(View.GONE);
 	}
 
 	@Override
@@ -134,6 +140,16 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 		String text = String.format("%s\n%s", mTweetListItem.getBody(), mTweetListItem.getImgBig());
 		provider.setShareIntent(com.osc.tweet.utils.Utils.getDefaultShareIntent(provider, subject, text));
 		return super.onPrepareOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			ActivityCompat.finishAfterTransition(this);
+			break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
