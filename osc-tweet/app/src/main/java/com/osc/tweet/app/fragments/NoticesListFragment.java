@@ -42,6 +42,10 @@ public final class NoticesListFragment extends BaseFragment {
 	 * List container for showing all notices.
 	 */
 	private RecyclerView mRv;
+	/**
+	 * Show when list is empty.
+	 */
+	private View mEmptyV;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -90,9 +94,15 @@ public final class NoticesListFragment extends BaseFragment {
 		mRv.addItemDecoration(new SpacesItemDecoration((int) com.osc4j.utils.Utils.convertPixelsToDp(App.Instance, 5)));
 		mRv.setItemAnimator(new DefaultItemAnimator());
 		mRv.setHasFixedSize(false);
-		List<Notice> activesList = getNotices().getNotices();
-		if (activesList != null) {
-			mRv.setAdapter(mAdp = new ActivesListAdapter(activesList));
+		mEmptyV = view.findViewById(R.id.empty_notices_iv);
+		List<Notice> notices = getNotices().getNotices();
+		if (notices != null && notices.size() > 0) {
+			mRv.setAdapter(mAdp = new ActivesListAdapter(notices));
+			mRv.setVisibility(View.VISIBLE);
+			mEmptyV.setVisibility(View.INVISIBLE);
+		} else {
+			mRv.setVisibility(View.INVISIBLE);
+			mEmptyV.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -117,6 +127,8 @@ public final class NoticesListFragment extends BaseFragment {
 			mAdp.setData(null);
 			mAdp.notifyDataSetChanged();
 		}
+		mRv.setVisibility(View.INVISIBLE);
+		mEmptyV.setVisibility(View.VISIBLE);
 	}
 
 	/**
@@ -131,6 +143,9 @@ public final class NoticesListFragment extends BaseFragment {
 		return Prefs.getInstance();
 	}
 
+	/**
+	 * Walk around to make padding or margin of every line on the {@link RecyclerView}.
+	 */
 	public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
 		private int space;
 

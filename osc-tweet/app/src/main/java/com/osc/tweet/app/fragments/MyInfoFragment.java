@@ -25,7 +25,7 @@ import com.chopping.utils.Utils;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
-import com.osc.tweet.app.adapters.ActivesListsViewPagerAdapter;
+import com.osc.tweet.app.adapters.NoticesListsViewPagerAdapter;
 import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.utils.Prefs;
@@ -80,12 +80,14 @@ public final class MyInfoFragment extends BaseFragment {
 	/**
 	 * The adapter to {@link #mViewPager}.
 	 */
-	private ActivesListsViewPagerAdapter mAdp;
+	private NoticesListsViewPagerAdapter mAdp;
 	/**
 	 * Tabs.
 	 */
 	private PagerSlidingTabStrip mTabs;
-
+	/**
+	 * Root of all views of this {@link Fragment}.
+	 */
 	private View mRootV;
 
 	/**
@@ -211,7 +213,7 @@ public final class MyInfoFragment extends BaseFragment {
 						mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
 						mUserNameTv.setText(am.getName());
 
-						mViewPager.setAdapter(mAdp = new ActivesListsViewPagerAdapter(App.Instance,
+						mViewPager.setAdapter(mAdp = new NoticesListsViewPagerAdapter(App.Instance,
 								getChildFragmentManager(), myInfo));
 						mTabs.setViewPager(mViewPager);
 

@@ -9,20 +9,39 @@ import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.fragments.NoticesListFragment;
 import com.osc4j.ds.common.NoticeType;
-import com.osc4j.ds.personal.Notices;
 import com.osc4j.ds.personal.MyInformation;
+import com.osc4j.ds.personal.Notices;
 
 /**
- * Adapter for the pages of actives.
+ * Adapter for the pages of notices.
  *
  * @author Xinyue Zhao
  */
-public final class ActivesListsViewPagerAdapter extends FragmentPagerAdapter {
+public final class NoticesListsViewPagerAdapter extends FragmentPagerAdapter {
+	/**
+	 * {@link Context}
+	 */
 	private Context mContext;
+	/**
+	 * Title of tabs.
+	 */
 	private final int[] TITLES = { R.string.lbl_at_me, R.string.lbl_new_comments };
+	/**
+	 * The whole data source for each page.
+	 */
 	private MyInformation myInformation;
 
-	public ActivesListsViewPagerAdapter(Context cxt, FragmentManager fm, MyInformation myInformation) {
+	/**
+	 * Constructor of {@link NoticesListsViewPagerAdapter}
+	 *
+	 * @param cxt
+	 * 		{@link Context}
+	 * @param fm
+	 * 		{@link FragmentManager}.
+	 * @param myInformation
+	 * 		The whole data source for each page.
+	 */
+	public NoticesListsViewPagerAdapter(Context cxt, FragmentManager fm, MyInformation myInformation) {
 		super(fm);
 		mContext = cxt;
 		this.myInformation = myInformation;
@@ -60,25 +79,7 @@ public final class ActivesListsViewPagerAdapter extends FragmentPagerAdapter {
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		String s = mContext.getString(TITLES[position]);
-		int n = 0;
-		switch (position) {
-		case 0:
-			if (myInformation.getNotices() != null) {
-				n = myInformation.getNotices().size();
-			}
-			break;
-		case 1:
-			if (myInformation.getComments() != null) {
-				n =myInformation.getComments().size();
-			}
-			break;
-		default:
-			break;
-		}
-
-		s = String.format("%s (%d)", s, n);
-		return s;
+		return mContext.getString(TITLES[position]);
 	}
 
 }
