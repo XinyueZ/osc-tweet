@@ -1,5 +1,7 @@
 package com.osc4j.ds.common;
 
-public enum NoticeType {
+import java.io.Serializable;
+
+public enum NoticeType implements Serializable{
 	AtMe, Comments
 }

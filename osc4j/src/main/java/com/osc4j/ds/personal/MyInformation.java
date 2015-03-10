@@ -11,16 +11,16 @@ public final class MyInformation implements Serializable{
 	private int mStatus;
 	@SerializedName("am")
 	private Am mAm;
-	@SerializedName("actives")
-	private List<Active> mActives;
+	@SerializedName("atMe")
+	private List<Notice> mNotices;
 	@SerializedName("comments")
-	private List<Active> mComments;
+	private List<Notice> mComments;
 
 
-	public MyInformation(int status, Am am, List<Active> actives, List<Active> comments) {
+	public MyInformation(int status, Am am, List<Notice> notices, List<Notice> comments) {
 		mStatus = status;
 		mAm = am;
-		mActives = actives;
+		mNotices = notices;
 		mComments = comments;
 	}
 
@@ -32,11 +32,11 @@ public final class MyInformation implements Serializable{
 		return mAm;
 	}
 
-	public List<Active> getActives() {
-		return mActives;
+	public List<Notice> getNotices() {
+		return mNotices;
 	}
 
-	public List<Active> getComments() {
+	public List<Notice> getComments() {
 		return mComments;
 	}
 }

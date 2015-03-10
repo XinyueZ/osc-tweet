@@ -19,14 +19,16 @@ import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.ActivesListAdapter;
 import com.osc.tweet.utils.Prefs;
+import com.osc4j.ds.common.NoticeType;
 import com.osc4j.ds.personal.Active;
 import com.osc4j.ds.personal.Actives;
 
 /**
- * Show list of actives.
+ * Show list of notice.
  */
-public final class ActivesListFragment extends BaseFragment {
-	private static final String EXTRAS_ACTIVES = ActivesListFragment.class.getName() + ".EXTRAS.actives";
+public final class NoticesListFragment extends BaseFragment {
+	private static final String EXTRAS_ACTIVES = NoticesListFragment.class.getName() + ".EXTRAS.actives";
+	private static final String EXTRAS_TYPE = NoticesListFragment.class.getName() + ".EXTRAS.type";
 	/**
 	 * Main layout for this component.
 	 */
@@ -41,19 +43,20 @@ public final class ActivesListFragment extends BaseFragment {
 	private RecyclerView mRv;
 
 	/**
-	 * Init a {@link ActivesListFragment}.
+	 * Init a {@link NoticesListFragment}.
 	 *
 	 * @param context
 	 * 		{@link android.content.Context}.
 	 * @param actives
 	 * 		{@link com.osc4j.ds.personal.Actives}, that contains objects to show.
-	 *
-	 * @return {@link ActivesListFragment}.
+	 * @param type  {@link NoticeType}, type of actives.
+	 * @return {@link NoticesListFragment}.
 	 */
-	public static Fragment newInstance(Context context, Actives actives) {
+	public static Fragment newInstance(Context context, Actives actives, NoticeType type) {
 		Bundle args = new Bundle();
 		args.putSerializable(EXTRAS_ACTIVES, actives);
-		return ActivesListFragment.instantiate(context, ActivesListFragment.class.getName(), args);
+		args.putSerializable(EXTRAS_TYPE, actives);
+		return NoticesListFragment.instantiate(context, NoticesListFragment.class.getName(), args);
 	}
 
 	@Override
@@ -77,14 +80,22 @@ public final class ActivesListFragment extends BaseFragment {
 	}
 
 	/**
+	 *
+	 * @return For which type of notice.
+	 */
+	private NoticeType getType() {
+		return (NoticeType) getArguments().getSerializable(EXTRAS_TYPE);
+	}
+	/**
 	 * Clear the list.
 	 */
-	public void clearList() {
+	private void clearList() {
 		if(mAdp != null) {
 			mAdp.setData(null);
 			mAdp.notifyDataSetChanged();
 		}
 	}
+
 	/**
 	 * @return {@link Active}s to show.
 	 */

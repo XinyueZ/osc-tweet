@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:scrollbars="none"
     android:id="@id/child_view"
-    tools:context="com.osc.tweet.app.fragments.ActivesListFragment"
+    tools:context="com.osc.tweet.app.fragments.NoticesListFragment"
     android:background="@color/common_yellow"
     android:layout_height="wrap_content" />
 

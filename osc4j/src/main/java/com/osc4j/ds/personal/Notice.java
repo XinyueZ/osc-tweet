@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class Active implements Serializable{
+public final class Notice implements Serializable{
 	@SerializedName("id")
 	private int mId;
 	@SerializedName("portrait")
@@ -39,7 +39,7 @@ public final class Active implements Serializable{
 	@SerializedName("objectReply")
 	private ObjectReply mObjectReply;
 
-	public Active(int id, String portrait, String author, int authorId, int catalog, int appClient, int objectId,
+	public Notice(int id, String portrait, String author, int authorId, int catalog, int appClient, int objectId,
 			int objectType, int objectCatalog, String objectTitle, String url, String message, String tweetImage,
 			int commentCount, String pubDate, ObjectReply objectReply) {
 		mId = id;
