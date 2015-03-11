@@ -43,7 +43,7 @@ public final class NoticesListAdapter extends RecyclerView.Adapter<NoticesListAd
 	/**
 	 * Main layout for this component.
 	 */
-	private static final int ITEM_LAYOUT = R.layout.item_actives_list;
+	private static final int ITEM_LAYOUT = R.layout.item_notices_list;
 	/**
 	 * Data-source.
 	 */

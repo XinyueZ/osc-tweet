@@ -64,7 +64,7 @@
                             android:layout_height="35dp" />
 
                         <ProgressBar
-                            style="?android:attr/progressBarStyleSmall"
+                            android:indeterminateDrawable="@drawable/progress_custom_small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:visibility="invisible"
@@ -174,7 +174,7 @@
     </FrameLayout>
 
     <ProgressBar
-        style="?android:attr/progressBarStyleSmall"
+        android:indeterminateDrawable="@drawable/progress_custom_small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/load_user_info_pb"

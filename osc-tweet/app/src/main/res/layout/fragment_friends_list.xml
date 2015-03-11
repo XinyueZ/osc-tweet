@@ -24,7 +24,7 @@
         android:background="@color/common_transparent" />
 
     <ProgressBar
-        style="?android:attr/progressBarStyleSmall"
+        android:indeterminateDrawable="@drawable/progress_custom_small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/load_user_info_pb"
