@@ -129,11 +129,11 @@ public final class MyInfoFragment extends BaseFragment {
 		mUserPhotoIv = (RoundedNetworkImageView) view.findViewById(R.id.user_photo_iv);
 		mUserNameTv = (TextView) view.findViewById(R.id.user_name_tv);
 		mRefreshV = view.findViewById(R.id.refresh_btn);
-		getMyInformation();
+		getMyInformation(true);
 		mRefreshV.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
-				getMyInformation();
+				getMyInformation(false);
 			}
 		});
 
@@ -183,8 +183,9 @@ public final class MyInfoFragment extends BaseFragment {
 
 	/**
 	 * Get my personal information.
+	 * @param feeback  Show some feedback when loaded if {@code true}.
 	 */
-	private void getMyInformation() {
+	private void getMyInformation(final boolean feeback) {
 		AsyncTaskCompat.executeParallel(new AsyncTask<Object, MyInformation, MyInformation>() {
 			ObjectAnimator objectAnimator;
 
@@ -227,15 +228,17 @@ public final class MyInfoFragment extends BaseFragment {
 
 						int atMeCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
 						int cmmCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
-						Utils.showShortToast(App.Instance, String.format(getString(R.string.msg_update_my_info),
-								atMeCount, cmmCount));
 
 						//Menu shows dynamically according to the count of list-items.
 						mClearListV.setVisibility(atMeCount == 0 && cmmCount == 0 ? View.INVISIBLE : View.VISIBLE);
 						mPopupMenu.getMenu().findItem(R.id.action_clear_at_me).setVisible(atMeCount > 0);
 						mPopupMenu.getMenu().findItem(R.id.action_clear_comments).setVisible(cmmCount > 0);
 
-						com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
+						if(feeback) {
+							Utils.showShortToast(App.Instance, String.format(getString(R.string.msg_update_my_info),
+									atMeCount, cmmCount));
+							com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
+						}
 					} else {
 						mClearListV.setVisibility(View.INVISIBLE);
 
@@ -251,6 +254,12 @@ public final class MyInfoFragment extends BaseFragment {
 				}
 			}
 		});
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		getMyInformation(false);
 	}
 
 	/**

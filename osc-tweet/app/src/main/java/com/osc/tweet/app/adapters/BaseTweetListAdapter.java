@@ -23,7 +23,6 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -37,6 +36,7 @@ import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowTweetCommentListEvent;
+import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.URLImageParser;
 import com.osc4j.OscApi;
 import com.osc4j.ds.common.StatusResult;
@@ -108,9 +108,9 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 			holder.mSmallImgIv.setVisibility(View.GONE);
 		}
 
-		holder.mSmallImgIv.setOnClickListener(new OnClickListener() {
+		holder.mSmallImgIv.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(   ) {
 				EventBus.getDefault().post(new ShowBigImageEvent(item));
 			}
 		});
@@ -192,9 +192,9 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 
 		holder.mCommentsTv.setText(item.getCommentCount() + "");
 		holder.mCommentsBtn.setVisibility(View.VISIBLE);
-		holder.mCommentsBtn.setOnClickListener(new OnClickListener() {
+		holder.mCommentsBtn.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(   ) {
 				EventBus.getDefault().post(new ShowTweetCommentListEvent(item));
 			}
 		});
