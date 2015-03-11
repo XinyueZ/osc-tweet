@@ -40,6 +40,13 @@
                     android:background="@color/common_transparent"
                     android:src="@drawable/ic_refresh" />
 
+                <ImageButton
+                    android:id="@+id/settings_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/common_transparent"
+                    android:src="@drawable/ic_settings" />
+
                 <FrameLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
@@ -62,12 +69,7 @@
                         android:layout_gravity="center" />
                 </FrameLayout>
 
-                <ImageButton
-                    android:id="@+id/settings_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/common_transparent"
-                    android:src="@drawable/ic_settings" />
+
             </LinearLayout>
         </FrameLayout>
 
@@ -81,7 +83,8 @@
                 style="@style/Style_My_Information_Label" />
 
             <TextView
-                android:id="@+id/user_name_tv" android:textColor="@color/common_white"
+                android:id="@+id/user_name_tv"
+                android:textColor="@color/common_white"
                 style="@style/Style_User_Information_Value" />
         </LinearLayout>
 

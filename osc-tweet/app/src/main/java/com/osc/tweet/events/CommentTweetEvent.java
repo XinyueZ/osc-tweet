@@ -6,7 +6,7 @@ import com.osc4j.ds.comment.Comment;
 import com.osc4j.ds.tweet.TweetListItem;
 
 /**
- * Comment on a tweet object {@link com.osc4j.ds.tweet.TweetListItem} or write comment to a {@link com.osc4j.ds.comment.Comment}.
+ * Comment on   {@link com.osc4j.ds.tweet.TweetListItem} or write comment to a {@link com.osc4j.ds.comment.Comment}(reply).
  *
  * @author Xinyue Zhao
  */
@@ -21,13 +21,6 @@ public final class CommentTweetEvent {
 	private @Nullable
 	Comment mComment;
 
-	/**
-	 * Constructor of {@link CommentTweetEvent}.
-	 * @param tweetListItem A tweet object {@link com.osc4j.ds.tweet.TweetListItem}.
-	 */
-	public CommentTweetEvent(TweetListItem tweetListItem) {
-		mTweetListItem = tweetListItem;
-	}
 
 	/**
 	 *  Constructor of {@link CommentTweetEvent}. To comment directly.

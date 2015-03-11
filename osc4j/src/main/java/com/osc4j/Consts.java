@@ -59,6 +59,10 @@ public final class Consts {
 	 */
 	static final String TWEET_PUB_URL = OSC_HOST + "tweetPub";
 	/**
+	 * Reply someone on tweet.
+	 */
+	static final String TWEET_REPLY_URL = OSC_HOST + "tweetReply";
+	/**
 	 * Publish comment on tweet.
 	 */
 	static final String TWEET_COMMENT_PUB_URL = OSC_HOST + "tweetCommentPub?id=%d";

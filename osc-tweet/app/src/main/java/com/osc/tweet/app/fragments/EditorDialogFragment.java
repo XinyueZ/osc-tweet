@@ -91,7 +91,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 *
 	 * @return An instance of {@link EditorDialogFragment}.
 	 */
-	public static DialogFragment newInstance(Context context, @Nullable String defaultText, boolean isDefaultFixed ) {
+	public static DialogFragment newInstance(Context context, @Nullable String defaultText, boolean isDefaultFixed) {
 		Bundle args = new Bundle();
 		args.putBoolean(EXTRAS_IS_COMMENT, false);
 		args.putString(EXTRAS_DEFAULT_TEXT, defaultText);
@@ -114,10 +114,11 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 *
 	 * @return An instance of {@link EditorDialogFragment}.
 	 */
-	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem, @Nullable Comment comment ) {
+	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem, @Nullable Comment comment) {
 		Bundle args = new Bundle();
 		args.putBoolean(EXTRAS_IS_COMMENT, true);
-		args.putString(EXTRAS_DEFAULT_TEXT, comment != null ? "@" + comment.getCommentAuthor() : null);
+		args.putString(EXTRAS_DEFAULT_TEXT, comment != null ? context.getString(R.string.action_reply_comment) + " @" +
+				comment.getCommentAuthor() + ": ": null);
 		args.putBoolean(EXTRAS_DEFAULT_FIXED, comment != null);
 		args.putSerializable(EXTRAS_TWEET_ITEM, tweetListItem);
 		args.putSerializable(EXTRAS_COMMENT, comment);
@@ -274,7 +275,11 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 						if (getTweetItem() == null) {
 							return OscApi.tweetPub(App.Instance, Utils.encode(msg));
 						} else {
-							return OscApi.tweetCommentPub(App.Instance, getTweetItem(), Utils.encode(msg));
+							if (getComment() == null) {
+								return OscApi.tweetCommentPub(App.Instance, getTweetItem(), Utils.encode(msg));
+							} else {
+								return OscApi.tweetReply(App.Instance, getTweetItem(), Utils.encode(msg), getComment());
+							}
 						}
 					} catch (IOException | OscTweetException e) {
 						return null;

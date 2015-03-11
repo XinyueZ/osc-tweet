@@ -17,6 +17,7 @@ import android.util.Log;
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
 import com.osc4j.ds.Login;
+import com.osc4j.ds.comment.Comment;
 import com.osc4j.ds.comment.Comments;
 import com.osc4j.ds.common.NoticeType;
 import com.osc4j.ds.common.Status;
@@ -218,6 +219,32 @@ public final class OscApi {
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
 		Request request = new Request.Builder().url(Consts.TWEET_PUB_URL).get().header("Cookie",
 				sessionInCookie + ";" + tokenInCookie + ";msg=" + msg).build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= Status.STATUS_ERR) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), StatusResult.class);
+		}
+
+		return ret;
+	}
+
+	public static StatusResult tweetReply(Context context, TweetListItem tweet, String content, Comment comment) throws IOException, OscTweetException {
+		StatusResult ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+		int uid = prefs.getInt(Consts.KEY_UID, 0);
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+		Request request = new Request.Builder().url(Consts.TWEET_REPLY_URL).get().header("Cookie",
+				sessionInCookie + ";" + tokenInCookie + ";tId=" + tweet.getId() + ";cnt=" + content + ";redId=" +
+						comment.getCommentAuthorId() + ";auId=" + uid + ";repId=" + comment.getId()).build();
 		OkHttpClient client = new OkHttpClient();
 		client.networkInterceptors().add(new StethoInterceptor());
 		Response response = client.newCall(request).execute();
@@ -492,14 +519,18 @@ public final class OscApi {
 
 	/**
 	 * Clear different notice.
-	 * @param context {@link android.content.Context}.
-	 * @param type {@link com.osc4j.ds.common.NoticeType}.
+	 *
+	 * @param context
+	 * 		{@link android.content.Context}.
+	 * @param type
+	 * 		{@link com.osc4j.ds.common.NoticeType}.
+	 *
 	 * @return The result of clear action.
+	 *
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static StatusResult clearNotice(Context context, NoticeType type) throws
-			IOException, OscTweetException {
+	public static StatusResult clearNotice(Context context, NoticeType type) throws IOException, OscTweetException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -509,12 +540,12 @@ public final class OscApi {
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
 		String url = null;
 		switch (type) {
-			case AtMe:
-				url = Consts.CLEAR_AT_NOTICE_URL;
-				break;
-			case Comments:
-				url = Consts.CLEAR_COMMENTS_NOTICE_URL;
-				break;
+		case AtMe:
+			url = Consts.CLEAR_AT_NOTICE_URL;
+			break;
+		case Comments:
+			url = Consts.CLEAR_COMMENTS_NOTICE_URL;
+			break;
 		}
 		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
 				.build();

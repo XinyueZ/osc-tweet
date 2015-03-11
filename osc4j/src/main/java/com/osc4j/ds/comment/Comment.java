@@ -10,7 +10,7 @@ public final class Comment implements Serializable {
 	@SerializedName("content")
 	private String mContent  ;
 	@SerializedName("id")
-	private int mId       ;
+	private long mId       ;
 	@SerializedName("pubDate")
 	private String mPubDate;
 	@SerializedName("client_type")
@@ -18,7 +18,7 @@ public final class Comment implements Serializable {
 	@SerializedName("commentAuthor")
 	private String mCommentAuthor;
 	@SerializedName("commentAuthorId")
-	private int mCommentAuthorId  ;
+	private long mCommentAuthorId  ;
 	@SerializedName("commentPortrait")
 	private String mCommentPortrait;
 	@SerializedName("refers")
@@ -27,8 +27,8 @@ public final class Comment implements Serializable {
 	private List<CommentListReply> mReplies;
 
 
-	public Comment(String content, int id, String pubDate, int clientType, String commentAuthor,
-			int commentAuthorId, String commentPortrait, List<CommentListRefer> refers,
+	public Comment(String content, long id, String pubDate, int clientType, String commentAuthor,
+			long commentAuthorId, String commentPortrait, List<CommentListRefer> refers,
 			List<CommentListReply> replies) {
 		mContent = content;
 		mId = id;
@@ -46,7 +46,7 @@ public final class Comment implements Serializable {
 		return mContent;
 	}
 
-	public int getId() {
+	public long getId() {
 		return mId;
 	}
 
@@ -62,7 +62,7 @@ public final class Comment implements Serializable {
 		return mCommentAuthor;
 	}
 
-	public int getCommentAuthorId() {
+	public long getCommentAuthorId() {
 		return mCommentAuthorId;
 	}
 
