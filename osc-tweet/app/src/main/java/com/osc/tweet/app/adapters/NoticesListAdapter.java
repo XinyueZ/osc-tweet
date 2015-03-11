@@ -22,6 +22,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
+import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowTweetCommentListEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
@@ -116,6 +117,40 @@ public final class NoticesListAdapter extends RecyclerView.Adapter<NoticesListAd
 
 		Context cxt = holder.itemView.getContext();
 		holder.mReplyBtn.setText(cxt.getString(R.string.action_reply_comment) + " " + item.getAuthor());
+		holder.mReplyBtn.setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				holder.mReplyPb.setVisibility(View.VISIBLE);
+				AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, TweetDetail>() {
+					@Override
+					protected TweetDetail doInBackground(Object... params) {
+						try {
+							return OscApi.tweetDetail(App.Instance, item.getObjectId());
+						} catch (IOException e) {
+							return null;
+						} catch (OscTweetException e) {
+							return null;
+						}
+					}
+
+					@Override
+					protected void onPostExecute(TweetDetail detail) {
+						super.onPostExecute(detail);
+						try {
+							holder.mReplyPb.setVisibility(View.GONE);
+							if (item != null) {
+								EventBus.getDefault().post(new CommentTweetEvent(detail.getTweet(), item ));
+							} else {
+								EventBus.getDefault().post(new OperatingEvent(false));
+							}
+						} catch (IllegalStateException e) {
+							//Activity has been destroyed
+						}
+					}
+				});
+			}
+		});
+
 
 		holder.mOpenBtn.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override

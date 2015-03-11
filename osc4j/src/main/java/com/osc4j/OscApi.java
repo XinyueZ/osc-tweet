@@ -24,6 +24,7 @@ import com.osc4j.ds.common.Status;
 import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.FriendsList;
 import com.osc4j.ds.personal.MyInformation;
+import com.osc4j.ds.personal.Notice;
 import com.osc4j.ds.personal.UserInformation;
 import com.osc4j.ds.tweet.TweetDetail;
 import com.osc4j.ds.tweet.TweetList;
@@ -234,6 +235,14 @@ public final class OscApi {
 	}
 
 	public static StatusResult tweetReply(Context context, TweetListItem tweet, String content, Comment comment) throws IOException, OscTweetException {
+		return tweetReply(context, tweet.getId(), content, comment.getCommentAuthorId(), comment.getId());
+	}
+
+	public static StatusResult tweetReply(Context context, String content, Notice notice) throws IOException, OscTweetException {
+		return tweetReply(context, notice.getObjectId(), content, notice.getAuthorId(), notice.getId());
+	}
+
+	private static StatusResult tweetReply(Context context, long tweetId, String content, long commentAuthorId, long repliedId) throws IOException, OscTweetException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -243,8 +252,8 @@ public final class OscApi {
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
 		Request request = new Request.Builder().url(Consts.TWEET_REPLY_URL).get().header("Cookie",
-				sessionInCookie + ";" + tokenInCookie + ";tId=" + tweet.getId() + ";cnt=" + content + ";redId=" +
-						comment.getCommentAuthorId() + ";auId=" + uid + ";repId=" + comment.getId()).build();
+				sessionInCookie + ";" + tokenInCookie + ";tId=" + tweetId + ";cnt=" + content + ";recId=" +
+						commentAuthorId + ";auId=" + uid + ";repId=" + repliedId).build();
 		OkHttpClient client = new OkHttpClient();
 		client.networkInterceptors().add(new StethoInterceptor());
 		Response response = client.newCall(request).execute();

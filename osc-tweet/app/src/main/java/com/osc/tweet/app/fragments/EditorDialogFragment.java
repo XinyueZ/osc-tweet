@@ -34,6 +34,7 @@ import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.OscApi;
 import com.osc4j.ds.comment.Comment;
 import com.osc4j.ds.common.StatusResult;
+import com.osc4j.ds.personal.Notice;
 import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.exceptions.OscTweetException;
 
@@ -50,9 +51,9 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressDrawable;
 public final class EditorDialogFragment extends DialogFragment implements OnMenuItemClickListener {
 	private static final String EXTRAS_DEFAULT_TEXT = EditorDialogFragment.class.getName() + ".EXTRAS.defaultText";
 	private static final String EXTRAS_DEFAULT_FIXED = EditorDialogFragment.class.getName() + ".EXTRAS.defaultFixed";
-	private static final String EXTRAS_IS_COMMENT = EditorDialogFragment.class.getName() + ".EXTRAS.isComment";
 	private static final String EXTRAS_TWEET_ITEM = EditorDialogFragment.class.getName() + ".EXTRAS.tweetItem";
 	private static final String EXTRAS_COMMENT = EditorDialogFragment.class.getName() + ".EXTRAS.comment";
+	private static final String EXTRAS_NOTICE = EditorDialogFragment.class.getName() + ".EXTRAS.notice";
 	/**
 	 * Main layout for this component.
 	 */
@@ -93,35 +94,59 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 */
 	public static DialogFragment newInstance(Context context, @Nullable String defaultText, boolean isDefaultFixed) {
 		Bundle args = new Bundle();
-		args.putBoolean(EXTRAS_IS_COMMENT, false);
 		args.putString(EXTRAS_DEFAULT_TEXT, defaultText);
 		args.putBoolean(EXTRAS_DEFAULT_FIXED, isDefaultFixed);
 		args.putSerializable(EXTRAS_TWEET_ITEM, null);
 		args.putSerializable(EXTRAS_COMMENT, null);
+		args.putSerializable(EXTRAS_NOTICE, null);
 		return (DialogFragment) Fragment.instantiate(context, EditorDialogFragment.class.getName(), args);
 	}
 
 	/**
-	 * Initialize an {@link  EditorDialogFragment} for writing comment for a {@link com.osc4j.ds.comment.Comment} of a
-	 * {@link com.osc4j.ds.tweet.TweetListItem}.
+	 * Initialize an {@link  EditorDialogFragment} for writing comment for a {@link com.osc4j.ds.comment.Comment}(reply)
+	 * of a {@link com.osc4j.ds.tweet.TweetListItem}.
 	 *
 	 * @param context
 	 * 		A {@link android.content.Context} object.
 	 * @param tweetListItem
 	 * 		{@link com.osc4j.ds.tweet.TweetListItem}.
 	 * @param comment
-	 * 		The {@code comment} will be replied. Comment the {@code comment} or reply the {@code comment}.
+	 * 		The {@code comment} will be replied. Reply the {@code comment}.
 	 *
 	 * @return An instance of {@link EditorDialogFragment}.
 	 */
 	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem, @Nullable Comment comment) {
 		Bundle args = new Bundle();
-		args.putBoolean(EXTRAS_IS_COMMENT, true);
 		args.putString(EXTRAS_DEFAULT_TEXT, comment != null ? context.getString(R.string.action_reply_comment) + " @" +
-				comment.getCommentAuthor() + ": ": null);
+				comment.getCommentAuthor() + ": " : null);
 		args.putBoolean(EXTRAS_DEFAULT_FIXED, comment != null);
 		args.putSerializable(EXTRAS_TWEET_ITEM, tweetListItem);
 		args.putSerializable(EXTRAS_COMMENT, comment);
+		args.putSerializable(EXTRAS_NOTICE, null);
+		return (DialogFragment) Fragment.instantiate(context, EditorDialogFragment.class.getName(), args);
+	}
+
+	/**
+	 * Initialize an {@link  EditorDialogFragment} for writing comment for a {@link com.osc4j.ds.comment.Comment}(reply)
+	 * of a {@link com.osc4j.ds.tweet.TweetListItem}.
+	 *
+	 * @param context
+	 * 		A {@link android.content.Context} object.
+	 * @param tweetListItem
+	 * 		{@link com.osc4j.ds.tweet.TweetListItem}.
+	 * @param notice
+	 * 		The {@code notice} will be replied. Reply the {@code notice}.
+	 *
+	 * @return An instance of {@link EditorDialogFragment}.
+	 */
+	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem, Notice notice) {
+		Bundle args = new Bundle();
+		args.putString(EXTRAS_DEFAULT_TEXT, context.getString(R.string.action_reply_comment) + " @" +
+				notice.getAuthor() + ": ");
+		args.putBoolean(EXTRAS_DEFAULT_FIXED, true);
+		args.putSerializable(EXTRAS_TWEET_ITEM, tweetListItem);
+		args.putSerializable(EXTRAS_COMMENT, null);
+		args.putSerializable(EXTRAS_NOTICE, notice);
 		return (DialogFragment) Fragment.instantiate(context, EditorDialogFragment.class.getName(), args);
 	}
 
@@ -200,6 +225,26 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 				});
 			}
 
+			//Show notice of a comment of tweet which will be commented further.
+			Notice notice = getNotice();
+			if (notice != null) {
+				view.findViewById(R.id.comment_rl).setVisibility(View.VISIBLE);
+
+				TextView commentTv = (TextView) view.findViewById(R.id.comment_tv);
+				com.osc.tweet.utils.Utils.showNotice(App.Instance, commentTv, notice);
+
+				photoIv = (NetworkImageView) view.findViewById(R.id.portrait_comment_iv);
+				photoIv.setDefaultImageResId(R.drawable.ic_not_loaded);
+				photoIv.setImageUrl(notice.getPortrait(), TaskHelper.getImageLoader());
+				photoIv.setOnClickListener(new OnViewAnimatedClickedListener() {
+					@Override
+					public void onClick() {
+						Notice notice = getNotice();
+						EventBus.getDefault().post(new ShowUserInformationEvent(notice.getAuthorId()));
+					}
+				});
+			}
+
 			mToolbar.setTitle(R.string.action_reply_comment);
 		}
 	}
@@ -221,20 +266,33 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 		return getArguments().getBoolean(EXTRAS_DEFAULT_FIXED);
 	}
 
-	/**
-	 * @return {@code true} if the dialog is for writing a comment.
-	 */
-	private boolean isComment() {
-		return getArguments().getBoolean(EXTRAS_IS_COMMENT);
-	}
-
 
 	/**
-	 * @return Some text to comment
+	 * @return The comment of tweet.
 	 */
-	private Comment getComment() {
-		return (Comment) getArguments().getSerializable(EXTRAS_COMMENT);
+	private
+	@Nullable
+	Comment getComment() {
+		if (getArguments().getSerializable(EXTRAS_COMMENT) instanceof Comment) {
+			return (Comment) getArguments().getSerializable(EXTRAS_COMMENT);
+		} else {
+			return null;
+		}
 	}
+
+	/**
+	 * @return The notice of a comment of tweet.
+	 */
+	private
+	@Nullable
+	Notice getNotice() {
+		if (getArguments().getSerializable(EXTRAS_NOTICE) instanceof Notice) {
+			return (Notice) getArguments().getSerializable(EXTRAS_NOTICE);
+		} else {
+			return null;
+		}
+	}
+
 
 	/**
 	 * @return {@link com.osc4j.ds.tweet.TweetListItem} which will be written with a comment.
@@ -264,10 +322,10 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 				protected void onPreExecute() {
 					super.onPreExecute();
 					mSendMi.setEnabled(false);
+					mEditText.setEnabled(false);
 					mSendingIndicatorV.setVisibility(View.VISIBLE);
 				}
 
-				//				EventBus.getDefault().post(new SentQuickReplyEvent());
 				@Override
 				protected StatusResult doInBackground(String... params) {
 					String msg = params[0];
@@ -275,10 +333,15 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 						if (getTweetItem() == null) {
 							return OscApi.tweetPub(App.Instance, Utils.encode(msg));
 						} else {
-							if (getComment() == null) {
+							if (getComment() == null && getNotice() == null) {
 								return OscApi.tweetCommentPub(App.Instance, getTweetItem(), Utils.encode(msg));
 							} else {
-								return OscApi.tweetReply(App.Instance, getTweetItem(), Utils.encode(msg), getComment());
+								if (getComment() != null) {
+									return OscApi.tweetReply(App.Instance, getTweetItem(), Utils.encode(msg),
+											getComment());
+								} else {
+									return OscApi.tweetReply(App.Instance, Utils.encode(msg), getNotice());
+								}
 							}
 						}
 					} catch (IOException | OscTweetException e) {
@@ -292,6 +355,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 					if (s != null && Integer.valueOf(s.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK) {
 						if (isVisible() && mSendMi != null) {
 							mSendMi.setEnabled(true);
+							mEditText.setEnabled(true);
 							mSendingIndicatorV.setVisibility(View.INVISIBLE);
 							mSendingIndicatorV.progressiveStop();
 						}

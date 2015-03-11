@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.osc.tweet.R;
 import com.osc.tweet.views.URLImageParser;
 import com.osc4j.ds.comment.Comment;
+import com.osc4j.ds.personal.Notice;
 import com.osc4j.ds.tweet.TweetListItem;
 
 /**
@@ -70,7 +71,7 @@ public final class Utils {
 	 * Show a {@link com.osc4j.ds.comment.Comment} on {@link android.widget.TextView}.
 	 * @param cxt {@link android.content.Context}.
 	 * @param tweetItemContentTv {@link android.widget.TextView} to show item.
-	 * @param item {@link com.osc4j.ds.tweet.TweetListItem}.
+	 * @param item {@link Comment}
 	 */
 	public static void showComment(Context cxt, TextView tweetItemContentTv, Comment item) {
 		Spanned htmlSpan = Html.fromHtml(item.getContent(), new URLImageParser(cxt, tweetItemContentTv), null);
@@ -78,6 +79,20 @@ public final class Utils {
 		tweetItemContentTv.setMovementMethod(LinkMovementMethod.getInstance());
 		tweetItemContentTv.setVisibility(View.VISIBLE);
 	}
+
+	/**
+	 * Show a {@link com.osc4j.ds.comment.Comment} on {@link android.widget.TextView}.
+	 * @param cxt {@link android.content.Context}.
+	 * @param tweetItemContentTv {@link android.widget.TextView} to show item.
+	 * @param item {@link com.osc4j.ds.personal.Notice}
+	 */
+	public static void showNotice(Context cxt, TextView tweetItemContentTv, Notice item) {
+		Spanned htmlSpan = Html.fromHtml(item.getMessage(), new URLImageParser(cxt, tweetItemContentTv), null);
+		tweetItemContentTv.setText(htmlSpan);
+		tweetItemContentTv.setMovementMethod(LinkMovementMethod.getInstance());
+		tweetItemContentTv.setVisibility(View.VISIBLE);
+	}
+
 
 	/**
 	 * Action or operation feedback with vibration

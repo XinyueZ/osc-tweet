@@ -251,8 +251,15 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.CommentTweetEvent}.
 	 */
 	public void onEvent(CommentTweetEvent e) {
-		showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getTweetListItem(),
-				e.getComment()), "comment-editor");
+		if (e.getComment() != null) {
+			showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getTweetListItem(),
+					e.getComment()), "comment-editor");
+		} else {
+			if (e.getNotice() != null) {
+				showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getTweetListItem(),
+						e.getNotice()), "comment-editor");
+			}
+		}
 	}
 
 
@@ -512,7 +519,7 @@ public class MainActivity extends BaseActivity {
 		super.onAppConfigLoaded();
 		showAppList();
 		checkAndInit();
-		if(mConfigDlg!= null && mConfigDlg.isShowing()) {
+		if (mConfigDlg != null && mConfigDlg.isShowing()) {
 			mConfigDlg.dismiss();
 		}
 	}
@@ -522,7 +529,7 @@ public class MainActivity extends BaseActivity {
 		super.onAppConfigIgnored();
 		showAppList();
 		checkAndInit();
-		if(mConfigDlg!= null && mConfigDlg.isShowing()) {
+		if (mConfigDlg != null && mConfigDlg.isShowing()) {
 			mConfigDlg.dismiss();
 		}
 	}

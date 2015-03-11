@@ -220,7 +220,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 		toolbar.getMenu().findItem(R.id.action_reply).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				EventBus.getDefault().post(new CommentTweetEvent(getTweetItem(), null));
+				EventBus.getDefault().post(new CommentTweetEvent(getTweetItem()));
 				return true;
 			}
 		});
@@ -269,7 +269,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 			protected void onPostExecute(Comments comments) {
 				super.onPostExecute(comments);
 				try {
-					if(comments != null) {
+					if (comments != null) {
 						mAdp.setData(getTweetItem(), comments.getComments());
 					} else {
 						mAdp.setData(getTweetItem(), null);
