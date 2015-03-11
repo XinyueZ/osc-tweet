@@ -64,10 +64,10 @@
                             android:layout_height="35dp" />
 
                         <ProgressBar
-                            android:indeterminateDrawable="@drawable/progress_custom_small"
+                            android:indeterminateDrawable="@drawable/progress_white_custom_small"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="invisible"
+                            android:visibility="invisible" android:layout_marginBottom="3dp"
                             android:id="@+id/change_relation_pb"
                             android:layout_gravity="center" />
                     </FrameLayout>
@@ -174,7 +174,7 @@
     </FrameLayout>
 
     <ProgressBar
-        android:indeterminateDrawable="@drawable/progress_custom_small"
+        android:indeterminateDrawable="@drawable/progress_green_custom_small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/load_user_info_pb"

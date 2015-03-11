@@ -40,7 +40,7 @@
             style="@style/Actives_List_Item" />
 
         <ProgressBar
-            android:indeterminateDrawable="@drawable/progress_custom_small"
+            android:indeterminateDrawable="@drawable/progress_green_custom_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/reply_pb" android:visibility="gone"
@@ -52,7 +52,7 @@
             style="@style/Actives_List_Item" />
 
         <ProgressBar
-            android:indeterminateDrawable="@drawable/progress_custom_small"
+            android:indeterminateDrawable="@drawable/progress_green_custom_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/open_pb" android:visibility="gone"
