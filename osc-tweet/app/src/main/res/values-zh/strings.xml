@@ -62,6 +62,13 @@
     <string name="lbl_at_me">\@我</string>
     <string name="lbl_new_comments">新评论</string>
     <string name="lbl_hello">你好</string>
+    <string name="lbl_settings">设置</string>
 
     <string name="quick_reply_list">quick_reply_zh</string>
+
+    <!--Settings-->
+    <string name="setting_on">开</string>
+    <string name="setting_off">关</string>
+    <string name="setting_category_operation">操作</string>
+    <string name="setting_vibrate_feedback_title">动作并震动回应</string>
 </resources>

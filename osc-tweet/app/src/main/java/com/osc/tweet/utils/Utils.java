@@ -2,6 +2,7 @@ package com.osc.tweet.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Vibrator;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -76,5 +77,15 @@ public final class Utils {
 		tweetItemContentTv.setText(htmlSpan);
 		tweetItemContentTv.setMovementMethod(LinkMovementMethod.getInstance());
 		tweetItemContentTv.setVisibility(View.VISIBLE);
+	}
+
+	/**
+	 * Action or operation feedback with vibration
+	 * @param cxt {@link Context}.
+	 */
+	public static void vibrationFeedback(Context cxt) {
+		if(Prefs.getInstance().settingVibrationFeedback()) {
+			((Vibrator) cxt.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(300);
+		}
 	}
 }

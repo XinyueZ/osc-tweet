@@ -58,5 +58,11 @@
         <item name="android:src">@drawable/ic_overflow_toolbar</item>
     </style>
 
-
+    <style name="SettingsTheme" parent="AppTheme">
+        <item name="android:windowBackground">@color/common_white</item>
+        <item name="android:textColorPrimary">@color/common_blue_grey_50</item>
+        <item name="android:textColorSecondary">@color/common_blue_grey_50</item>
+        <item name="android:colorAccent">@color/primary_accent</item>
+        <item name="colorAccent">@color/primary_accent</item>
+    </style>
 </resources>

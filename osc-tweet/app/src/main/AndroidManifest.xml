@@ -30,6 +30,13 @@
             android:name=".app.activities.PhotoViewActivity"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".app.activities.SettingActivity"
+            android:label="@string/lbl_settings"
+            android:screenOrientation="portrait"
+            android:theme="@style/SettingsTheme" />
+
+
         <!--Event handler for changing system packages, for external links-->
         <receiver
             android:name="com.chopping.application.InstalledAppReceiver"

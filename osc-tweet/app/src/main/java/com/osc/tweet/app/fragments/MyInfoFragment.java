@@ -5,7 +5,6 @@ import java.io.IOException;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.view.ViewPager;
@@ -25,6 +24,7 @@ import com.chopping.utils.Utils;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
+import com.osc.tweet.app.activities.SettingActivity;
 import com.osc.tweet.app.adapters.NoticesListsViewPagerAdapter;
 import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.events.OperatingEvent;
@@ -171,6 +171,13 @@ public final class MyInfoFragment extends BaseFragment {
 		});
 
 		mClearPb = view.findViewById(R.id.clear_pb);
+
+		view.findViewById(R.id.settings_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				SettingActivity.showInstance(getActivity());
+			}
+		});
 	}
 
 
@@ -218,9 +225,6 @@ public final class MyInfoFragment extends BaseFragment {
 								getChildFragmentManager(), myInfo));
 						mTabs.setViewPager(mViewPager);
 
-
-						((Vibrator) App.Instance.getSystemService(App.VIBRATOR_SERVICE)).vibrate(300);
-
 						int atMeCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
 						int cmmCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
 						Utils.showShortToast(App.Instance, String.format(getString(R.string.msg_update_my_info),
@@ -230,6 +234,8 @@ public final class MyInfoFragment extends BaseFragment {
 						mClearListV.setVisibility(atMeCount == 0 && cmmCount == 0 ? View.INVISIBLE : View.VISIBLE);
 						mPopupMenu.getMenu().findItem(R.id.action_clear_at_me).setVisible(atMeCount > 0);
 						mPopupMenu.getMenu().findItem(R.id.action_clear_comments).setVisible(cmmCount > 0);
+
+						com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
 					} else {
 						mClearListV.setVisibility(View.INVISIBLE);
 

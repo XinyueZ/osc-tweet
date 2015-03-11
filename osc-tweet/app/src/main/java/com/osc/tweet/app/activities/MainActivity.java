@@ -11,7 +11,6 @@ import android.content.IntentFilter;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -40,6 +39,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
+import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.MainViewPagerAdapter;
 import com.osc.tweet.app.fragments.AboutDialogFragment;
 import com.osc.tweet.app.fragments.AboutDialogFragment.EulaConfirmationDialog;
@@ -276,7 +276,7 @@ public class MainActivity extends BaseActivity {
 	public void onEvent(OperatingEvent e) {
 		Utils.showLongToast(getApplicationContext(), e.isSuccess() ? getString(R.string.msg_operating_successfully) :
 				getString(R.string.msg_operating_failed));
-		((Vibrator) getSystemService(VIBRATOR_SERVICE)).vibrate(300);
+		com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
 	}
 	//------------------------------------------------
 
@@ -467,6 +467,9 @@ public class MainActivity extends BaseActivity {
 		switch (item.getItemId()) {
 		case R.id.action_about:
 			showDialogFragment(AboutDialogFragment.newInstance(this), null);
+			break;
+		case R.id.action_settings:
+			SettingActivity.showInstance(this);
 			break;
 		}
 		return super.onOptionsItemSelected(item);

@@ -5,7 +5,6 @@ import java.io.IOException;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
@@ -181,13 +180,14 @@ public final class UserInformationDialogFragment extends DialogFragment {
 										user.getName()));
 
 							}
-							((Vibrator) App.Instance.getSystemService(App.VIBRATOR_SERVICE)).vibrate(300);
 							//New relation.
 							user.setRelation(res.getResult().getRelation());
 							mChangeRelationPb.setVisibility(View.INVISIBLE);
 							mUserRelationBtn.setEnabled(true);
 							EventBus.getDefault().post(new LoadFriendsListEvent());
 							updateFocusButton();
+
+							com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
 						}
 					}
 				});

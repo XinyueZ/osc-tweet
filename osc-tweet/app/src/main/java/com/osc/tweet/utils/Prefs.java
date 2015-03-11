@@ -23,6 +23,14 @@ public final class Prefs extends BasicPrefs {
 	 * {@code true} if EULA has been shown and agreed.
 	 */
 	private static final String KEY_EULA_SHOWN = "key_eula_shown";
+	/**
+	 * Default in config for setting feedback with vibration on/off when operating is succeed.
+	 */
+	private static final String DEFAULT_SETTING_VIBRATION_FEEDBACK = "default_setting_vibration_feedback";
+	/**
+	 * A feedback with vibration  on/off when operating is succeed.
+	 */
+	public static final String SETTING_VIBRATION_FEEDBACK = "setting.vibration.feedback";
 
 	private Prefs() {
 		super(null);
@@ -98,5 +106,21 @@ public final class Prefs extends BasicPrefs {
 
 		String[] messages = original.split(";");
 		return messages;
+	}
+
+	/**
+	 * A feedback with vibration  on/off when operating is succeed.
+	 * @param on {@code true} if set on.
+	 */
+	public void settingVibrationFeedback( boolean on) {
+		setBoolean(SETTING_VIBRATION_FEEDBACK, on);
+	}
+
+	/**
+	 *
+	 * @return  {@code true} if set on that a feedback with vibration  on/off when operating is succeed.
+	 */
+	public boolean settingVibrationFeedback() {
+		return getBoolean(SETTING_VIBRATION_FEEDBACK, getBoolean(DEFAULT_SETTING_VIBRATION_FEEDBACK, false));
 	}
 }

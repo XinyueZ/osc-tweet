@@ -12,6 +12,7 @@
     <color name="common_half_grey">#809E9E9E</color>
     <color name="common_blue">#2196F3</color>
     <color name="common_yellow">#fff9c9</color>
+    <color name="common_blue_grey_50">#607D8B</color>
 
     <color name="text_common_black">@color/common_black</color>
     <color name="text_common_white">@color/common_white</color>
