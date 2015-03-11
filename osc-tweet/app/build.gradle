@@ -36,6 +36,7 @@ dependencies {
     compile 'com.github.castorflex.smoothprogressbar:library:1.0.0'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.github.mrengineer13:snackbar:0.4.0'
+    compile 'com.github.chrisbanes.photoview:library:1.2.3'
     compile project(':volley_cz')
     compile project(':ChoppingBootstrap')
     compile project(':osc4j')

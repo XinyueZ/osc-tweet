@@ -10,6 +10,7 @@
     <string name="action_quick_reply">快速回复</string>
     <string name="action_clear_at_me">清除@我</string>
     <string name="action_clear_comments">清除新的评论</string>
+    <string name="action_undo">重置</string>
 
     <string name="msg_move_to_top">回到顶部</string>
     <string name="msg_focus">您已经对 %s 添加关注。</string>

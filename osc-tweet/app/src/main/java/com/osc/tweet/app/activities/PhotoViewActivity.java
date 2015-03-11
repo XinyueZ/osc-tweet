@@ -11,7 +11,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.android.volley.VolleyError;
@@ -20,18 +19,23 @@ import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
 import com.chopping.net.TaskHelper;
+import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.utils.Prefs;
-import com.osc.tweet.views.touch.ScalableView;
+import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.ds.tweet.TweetListItem;
+
+import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
+
 
 /**
  * Show big image as photo.
  *
  * @author Xinyue Zhao
  */
-public final class PhotoViewActivity extends BaseActivity implements ImageListener {
+public final class PhotoViewActivity extends BaseActivity implements ImageListener, OnPhotoTapListener {
 	private static final String EXTRAS_TWEET = "com.osc.tweet.app.extras.TWEET";
 	/**
 	 * Menu on "actionbar".
@@ -49,6 +53,30 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 	 * Support actionbar.
 	 */
 	private Toolbar mToolbar;
+	/**
+	 * Operation on the photo.
+	 */
+	private PhotoView mPhotoView;
+	/**
+	 * A control for rotation of the photo.
+	 */
+	private View mRotationLl;
+	/**
+	 * Original position of the control for rotation of the photo, the {@link #mRotationLl}.
+	 */
+	private float mRotationCtrlY;
+	/**
+	 * {@code true} if the photo has been loaded.
+	 */
+	private boolean mLoaded;
+	/**
+	 * Handling rotating photo automatically.
+	 */
+	private final Handler mRotateHandler = new Handler();
+	/**
+	 * Flag when rotating is processing automatically.
+	 */
+	private boolean mRotating = false;
 
 	/**
 	 * Show single instance of {@link PhotoViewActivity}
@@ -69,6 +97,7 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(LAYOUT);
+		calcActionBarHeight();
 		if (savedInstanceState != null) {
 			mTweetListItem = (TweetListItem) savedInstanceState.getSerializable(EXTRAS_TWEET);
 		} else {
@@ -79,8 +108,83 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 		getSupportActionBar().setTitle(null);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		calcActionBarHeight();
+
+		mPhotoView = (PhotoView) findViewById(R.id.big_img_iv);
+		mPhotoView.setOnPhotoTapListener(this);
+		mPhotoView.setZoomable(true);
+
+		mRotationLl = findViewById(R.id.rotation_ll);
+		mRotationCtrlY = ViewHelper.getTranslationY(mRotationLl);
+		mRotationLl.findViewById(R.id.rotate_right_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				if (mLoaded) {
+					mPhotoView.setRotationBy(90);
+				}
+			}
+		});
+		mRotationLl.findViewById(R.id.rotate_down_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				if (mLoaded) {
+					mPhotoView.setRotationBy(90);
+				}
+			}
+		});
+		mRotationLl.findViewById(R.id.rotate_left_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				if (mLoaded) {
+					mPhotoView.setRotationBy(-90);
+				}
+			}
+		});
+		mRotationLl.findViewById(R.id.rotate_up_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				if (mLoaded) {
+					mPhotoView.setRotationBy(-90);
+				}
+			}
+		});
+
+		mRotationLl.findViewById(R.id.rotate_auto_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				if (mLoaded) {
+					toggleRotationAutomatically();
+				}
+			}
+		});
+
 		showImage();
 	}
+
+	/**
+	 * Rotating photo automatically.
+	 */
+	private void toggleRotationAutomatically() {
+		if (mRotating) {
+			mRotateHandler.removeCallbacksAndMessages(null);
+		} else {
+			rotateLoop();
+		}
+		mRotating = !mRotating;
+	}
+
+	/**
+	 * Run rotating photo automatically.
+	 */
+	private void rotateLoop() {
+		mRotateHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				mPhotoView.setRotationBy(-1);
+				rotateLoop();
+			}
+		}, 20);
+	}
+
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -112,12 +216,12 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 
 	@Override
 	public void onResponse(ImageContainer response, boolean isImmediate) {
-		ScalableView iv = (ScalableView) findViewById(R.id.big_img_v);
 		if (response != null && response.getBitmap() != null) {
-			iv.setImageBitmap(response.getBitmap());
+			mPhotoView.setImageBitmap(response.getBitmap());
 			animToolActionBar(-getActionBarHeight() * 4);
+			animRotationControl(99999999);
+			mLoaded = true;
 		}
-		findViewById(R.id.load_user_info_pb).setVisibility(View.GONE);
 	}
 
 	@Override
@@ -148,28 +252,32 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 		case android.R.id.home:
 			ActivityCompat.finishAfterTransition(this);
 			break;
+		case R.id.action_undo:
+			if(mLoaded) {
+				if (mRotating) {
+					mRotateHandler.removeCallbacksAndMessages(null);
+					mRotating = false;
+				}
+				mPhotoView.setRotationTo(0);
+			}
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		animToolActionBar(0);
-		mHandler.postDelayed(mActionBarAnimTask, 5000); return super.onTouchEvent(event);
-	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if (mHandler != null) {
-			mHandler.removeCallbacks(mActionBarAnimTask);
+		if (mUIHandler != null) {
+			mUIHandler.removeCallbacks(mActionBarAnimTask);
 		}
 	}
 
 	/**
 	 * Timer for animation on action-bar.
 	 */
-	private Handler mHandler = new Handler();
+	private Handler mUIHandler = new Handler();
 	/**
 	 * The  animation on action-bar.
 	 */
@@ -177,6 +285,7 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 		@Override
 		public void run() {
 			animToolActionBar(-getActionBarHeight() * 4);
+			animRotationControl(99999999);
 		}
 	};
 
@@ -188,6 +297,17 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 	 */
 	private void animToolActionBar(float value) {
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mToolbar);
+		animator.translationY(value).setDuration(400);
+	}
+
+	/**
+	 * Animation and moving rotation control.
+	 *
+	 * @param value
+	 * 		The property value of animation.
+	 */
+	private void animRotationControl(float value) {
+		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mRotationLl);
 		animator.translationY(value).setDuration(400);
 	}
 
@@ -217,5 +337,14 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 	 */
 	private int getActionBarHeight() {
 		return mActionBarHeight;
+	}
+
+
+
+	@Override
+	public void onPhotoTap(View view, float v, float v1) {
+		animToolActionBar(0);
+		animRotationControl(mRotationCtrlY);
+		mUIHandler.postDelayed(mActionBarAnimTask, 5000);
 	}
 }
