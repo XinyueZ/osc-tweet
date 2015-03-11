@@ -242,7 +242,7 @@ public final class OscApi {
 		return tweetReply(context, notice.getObjectId(), content, notice.getAuthorId(), notice.getId());
 	}
 
-	private static StatusResult tweetReply(Context context, long tweetId, String content, long commentAuthorId, long repliedId) throws IOException, OscTweetException {
+	public static StatusResult tweetReply(Context context, long tweetId, String content, long commentAuthorId, long repliedId) throws IOException, OscTweetException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);

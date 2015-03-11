@@ -75,7 +75,8 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 	/**
 	 * Constructor of {@link com.osc.tweet.app.adapters.CommentListAdapter}.
 	 *
-	 * @param tweetListItem The original tweet that hosts comments.
+	 * @param tweetListItem
+	 * 		The original tweet that hosts comments.
 	 * @param data
 	 * 		Data-source.
 	 */
@@ -86,7 +87,8 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 	/**
 	 * Set data-source for list-view.
 	 *
-	 * @param tweetListItem The original tweet that hosts comments.
+	 * @param tweetListItem
+	 * 		The original tweet that hosts comments.
 	 * @param data
 	 * 		Data-source.
 	 */
@@ -176,6 +178,7 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 
 		MenuItem qReplayMi = menu.findItem(R.id.action_quick_reply);
 		SubMenu subMenu = qReplayMi.getSubMenu();
+
 		for (int i = 0, size = subMenu.size(); i < size; i++) {
 			subMenu.getItem(i).setOnMenuItemClickListener(new OnMenuItemClickListener() {
 				@Override
@@ -184,8 +187,12 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 						@Override
 						protected StatusResult doInBackground(MenuItem... params) {
 							try {
-								return OscApi.tweetCommentPub(App.Instance, mTweetListItem, com.chopping.utils.Utils.encode(
-										"@" + item.getCommentAuthor() + " " + params[0].getTitle().toString()));
+								String content = com.chopping.utils.Utils.encode(App.Instance.getString(
+										R.string.action_reply_comment) + " @" + item.getCommentAuthor() + ": " +
+										params[0].getTitle().toString());
+
+								return OscApi.tweetReply(App.Instance, mTweetListItem.getId(), content,
+										item.getCommentAuthorId(), item.getId());
 							} catch (IOException | OscTweetException e) {
 								return null;
 							}
@@ -194,8 +201,9 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 						@Override
 						protected void onPostExecute(StatusResult s) {
 							super.onPostExecute(s);
-							EventBus.getDefault().post(new OperatingEvent(s != null && s.getResult() != null && Integer.valueOf(
-									s.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK));
+							EventBus.getDefault().post(new OperatingEvent(
+									s != null && s.getResult() != null && Integer.valueOf(s.getResult().getCode()) ==
+											com.osc4j.ds.common.Status.STATUS_OK));
 
 							EventBus.getDefault().post(new LoadEvent());
 						}
