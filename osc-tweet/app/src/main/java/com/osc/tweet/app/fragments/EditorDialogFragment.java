@@ -108,6 +108,28 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 *
 	 * @param context
 	 * 		A {@link android.content.Context} object.
+	 *
+	 * @param tweetListItem
+	 * 		{@link com.osc4j.ds.tweet.TweetListItem}.
+	 * @return An instance of {@link EditorDialogFragment}.
+	 */
+	public static DialogFragment newInstance(Context context,  TweetListItem tweetListItem ) {
+		Bundle args = new Bundle();
+		args.putString(EXTRAS_DEFAULT_TEXT, null);
+		args.putBoolean(EXTRAS_DEFAULT_FIXED, false);
+		args.putSerializable(EXTRAS_TWEET_ITEM, tweetListItem);
+		args.putSerializable(EXTRAS_COMMENT, null);
+		args.putSerializable(EXTRAS_NOTICE, null);
+		return (DialogFragment) Fragment.instantiate(context, EditorDialogFragment.class.getName(), args);
+	}
+
+
+	/**
+	 * Initialize an {@link  EditorDialogFragment} for writing comment for a {@link com.osc4j.ds.comment.Comment}(reply)
+	 * of a {@link com.osc4j.ds.tweet.TweetListItem}.
+	 *
+	 * @param context
+	 * 		A {@link android.content.Context} object.
 	 * @param tweetListItem
 	 * 		{@link com.osc4j.ds.tweet.TweetListItem}.
 	 * @param comment

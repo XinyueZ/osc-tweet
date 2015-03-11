@@ -256,11 +256,7 @@ public final class MyInfoFragment extends BaseFragment {
 		});
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		getMyInformation(false);
-	}
+
 
 	/**
 	 * Clear all new "@me".

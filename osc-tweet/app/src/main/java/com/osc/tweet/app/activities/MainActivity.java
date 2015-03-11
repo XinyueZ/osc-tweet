@@ -254,11 +254,12 @@ public class MainActivity extends BaseActivity {
 		if (e.getComment() != null) {
 			showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getTweetListItem(),
 					e.getComment()), "comment-editor");
+		} else if (e.getNotice() != null) {
+			showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getTweetListItem(),
+					e.getNotice()), "comment-editor");
 		} else {
-			if (e.getNotice() != null) {
-				showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getTweetListItem(),
-						e.getNotice()), "comment-editor");
-			}
+			showDialogFragment(EditorDialogFragment.newInstance(getApplicationContext(), e.getTweetListItem()),
+					"comment-editor");
 		}
 	}
 
