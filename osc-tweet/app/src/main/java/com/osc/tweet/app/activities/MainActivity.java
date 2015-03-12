@@ -56,7 +56,7 @@ import com.osc.tweet.events.OpenMyNoticesDrawerEvent;
 import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
-import com.osc.tweet.events.ShowTweetCommentListEvent;
+import com.osc.tweet.events.ShowTweetCommentsListEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.events.SnackMessageEvent;
@@ -275,12 +275,12 @@ public class MainActivity extends BaseActivity {
 
 
 	/**
-	 * Handler for {@link com.osc.tweet.events.ShowTweetCommentListEvent}.
+	 * Handler for {@link ShowTweetCommentsListEvent}.
 	 *
 	 * @param e
-	 * 		Event {@link com.osc.tweet.events.ShowTweetCommentListEvent}.
+	 * 		Event {@link ShowTweetCommentsListEvent}.
 	 */
-	public void onEvent(final ShowTweetCommentListEvent e) {
+	public void onEvent(final ShowTweetCommentsListEvent e) {
 		showDialogFragment(TweetCommentListDialogFragment.newInstance(getApplicationContext(), e.getTweetItem()),
 				"comment-list");
 	}
@@ -372,7 +372,6 @@ public class MainActivity extends BaseActivity {
 
 	@Override
 	protected void onDestroy() {
-		mPagesInit = false;
 		mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
 		super.onDestroy();
 	}
@@ -545,7 +544,6 @@ public class MainActivity extends BaseActivity {
 		}
 	}
 
-	private boolean mPagesInit = false;
 
 
 	/**
@@ -553,10 +551,9 @@ public class MainActivity extends BaseActivity {
 	 */
 	private void checkAndInit() {
 		checkPlayService();
-		if (Prefs.getInstance().isEULAOnceConfirmed() && !mPagesInit) {
+		if (Prefs.getInstance().isEULAOnceConfirmed() &&mViewPager == null) {
 			initViewPager();
 			mSmoothProgressBar.setVisibility(View.VISIBLE);
-			mPagesInit = true;
 		}
 	}
 

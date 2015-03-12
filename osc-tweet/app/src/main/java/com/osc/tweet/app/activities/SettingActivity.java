@@ -9,6 +9,9 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
@@ -45,10 +48,6 @@ public final class SettingActivity extends PreferenceActivity {
 	 * Progress indicator.
 	 */
 	private ProgressDialog mPb;
-	/**
-	 * Flag for any change of push.
-	 */
-	private boolean mChangedPushStatus;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -93,8 +92,8 @@ public final class SettingActivity extends PreferenceActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Prefs prefs = Prefs.getInstance();
 		addPreferencesFromResource(R.xml.settings);
+
 		mPb = ProgressDialog.show(this, null, getString(R.string.msg_load_config));
 		mPb.setCancelable(true);
 
@@ -109,8 +108,6 @@ public final class SettingActivity extends PreferenceActivity {
 			}
 		});
 
-		CheckBoxPreference vibration = (CheckBoxPreference) findPreference(Prefs.SETTING_VIBRATION_FEEDBACK);
-		vibration.setChecked(prefs.settingVibrationFeedback());
 
 		((MarginLayoutParams) findViewById(android.R.id.list).getLayoutParams()).topMargin = getActionBarHeight(this);
 	}
@@ -193,10 +190,39 @@ public final class SettingActivity extends PreferenceActivity {
 
 	private void onAppConfigLoaded() {
 		dismissPb();
+		init();
 	}
 
 	private void onAppConfigIgnored() {
 		dismissPb();
+		init();
+	}
+
+	/**
+	 * Init the settings.
+	 */
+	private void init() {
+		Prefs prefs = Prefs.getInstance();
+		CheckBoxPreference vibration = (CheckBoxPreference) findPreference(Prefs.SETTING_VIBRATION_FEEDBACK);
+		vibration.setChecked(prefs.settingVibrationFeedback());
+
+		CheckBoxPreference openClear = (CheckBoxPreference) findPreference(Prefs.SETTING_NOTICES_OPEN_TO_CLEAR);
+		openClear.setChecked(prefs.settingNoticesOpenToClear());
+
+		ListPreference photoRotate = (ListPreference) findPreference(Prefs.SETTING_PHOTO_ROTATE_SLOW_OR_FAST);
+		String[] types = getResources().getStringArray(R.array.setting_photo_rotate_types);
+		int index = prefs.settingPhotoRotateSlowOrFast();
+		photoRotate.setSummary(types[index]);
+		photoRotate.setValue(String.valueOf(prefs.settingPhotoRotateSlowOrFast()));
+		photoRotate.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int index = Integer.valueOf(newValue.toString());
+				String[] types = getResources().getStringArray(R.array.setting_photo_rotate_types);
+				preference.setSummary(types[index]);
+				return true;
+			}
+		});
 	}
 
 	private void backPressed() {

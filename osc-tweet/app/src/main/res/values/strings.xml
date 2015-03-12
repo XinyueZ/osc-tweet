@@ -81,6 +81,19 @@
     <!--Settings-->
     <string name="setting_on">On</string>
     <string name="setting_off">Off</string>
+    <string name="setting_yes">Yes</string>
+    <string name="setting_no">No</string>
     <string name="setting_category_operation">Operation</string>
     <string name="setting_vibrate_feedback_title">Action feedback with vibration.</string>
+    <string name="setting_notices_open_to_clear_title">Open one new notice(not the reply) then clear all of them.</string>
+    <string name="setting_category_image">Image</string>
+    <string name="setting_photo_rotate_slow_or_fast_title">Rotate photo slow or fast.</string>
+    <string-array name="setting_photo_rotate_types">
+        <item>Slow</item>
+        <item>Medium</item>
+    </string-array>
+    <string-array name="setting_photo_rotate_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
 </resources>

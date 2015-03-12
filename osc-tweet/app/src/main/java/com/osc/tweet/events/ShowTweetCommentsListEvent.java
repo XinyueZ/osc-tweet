@@ -7,19 +7,19 @@ import com.osc4j.ds.tweet.TweetListItem;
  *
  * @author Xinyue Zhao
  */
-public final class ShowTweetCommentListEvent {
+public final class ShowTweetCommentsListEvent {
 	/**
 	 * The tweet that provides comments.
 	 */
 	private TweetListItem mItem;
 
 	/**
-	 * Constructor {@link ShowTweetCommentListEvent}
+	 * Constructor {@link ShowTweetCommentsListEvent}
 	 *
 	 * @param item
 	 * 		{@link com.osc4j.ds.tweet.TweetListItem}  that provides comments.
 	 */
-	public ShowTweetCommentListEvent(TweetListItem item) {
+	public ShowTweetCommentsListEvent(TweetListItem item) {
 		mItem = item;
 	}
 

@@ -182,7 +182,7 @@ public final class PhotoViewActivity extends BaseActivity implements ImageListen
 				mPhotoView.setRotationBy(-1);
 				rotateLoop();
 			}
-		}, 20);
+		}, Prefs.getInstance().settingPhotoRotateSlowOrFast() == 0 ? 80 : 15 );
 	}
 
 

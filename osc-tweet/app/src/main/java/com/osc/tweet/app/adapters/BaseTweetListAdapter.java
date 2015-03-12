@@ -35,7 +35,7 @@ import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
-import com.osc.tweet.events.ShowTweetCommentListEvent;
+import com.osc.tweet.events.ShowTweetCommentsListEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.URLImageParser;
 import com.osc4j.OscApi;
@@ -195,7 +195,7 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 		holder.mCommentsBtn.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick(   ) {
-				EventBus.getDefault().post(new ShowTweetCommentListEvent(item));
+				EventBus.getDefault().post(new ShowTweetCommentsListEvent(item));
 			}
 		});
 	}

@@ -22,13 +22,17 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
+import com.osc.tweet.events.ClearAtMeNoticesEvent;
+import com.osc.tweet.events.ClearCommentsEvent;
 import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.OperatingEvent;
-import com.osc.tweet.events.ShowTweetCommentListEvent;
+import com.osc.tweet.events.ShowTweetCommentsListEvent;
 import com.osc.tweet.events.ShowUserInformationEvent;
+import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.URLImageParser;
 import com.osc4j.OscApi;
+import com.osc4j.ds.common.NoticeType;
 import com.osc4j.ds.personal.Notice;
 import com.osc4j.ds.tweet.TweetDetail;
 import com.osc4j.exceptions.OscTweetException;
@@ -49,15 +53,21 @@ public final class NoticesListAdapter extends RecyclerView.Adapter<NoticesListAd
 	 * Data-source.
 	 */
 	private List<Notice> mData;
+	/**
+	 * {@link NoticeType} Who uses me.
+	 */
+	private NoticeType mNoticeType;
 
 	/**
 	 * Constructor of {@link NoticesListAdapter}.
 	 *
 	 * @param data
 	 * 		Data-source.
+	 * 	@param type 	 {@link NoticeType} Who uses me.
 	 */
-	public NoticesListAdapter(List<Notice> data) {
+	public NoticesListAdapter(List<Notice> data, NoticeType type) {
 		setData(data);
+		mNoticeType = type;
 	}
 
 	/**
@@ -174,7 +184,17 @@ public final class NoticesListAdapter extends RecyclerView.Adapter<NoticesListAd
 						try {
 							holder.mOpenPb.setVisibility(View.GONE);
 							if(item != null) {
-								EventBus.getDefault().post(new ShowTweetCommentListEvent(item.getTweet()));
+								EventBus.getDefault().post(new ShowTweetCommentsListEvent(item.getTweet()));
+								if(Prefs.getInstance().settingNoticesOpenToClear()) {
+									switch (mNoticeType) {
+									case AtMe:
+										EventBus.getDefault().post(new ClearAtMeNoticesEvent());
+										break;
+									case Comments:
+										EventBus.getDefault().post(new ClearCommentsEvent());
+										break;
+									}
+								}
 							} else {
 								EventBus.getDefault().post(new OperatingEvent(false));
 							}

@@ -120,7 +120,7 @@
         android:layout_height="match_parent">
 
         <fragment
-            android:name="com.osc.tweet.app.fragments.MyNoticesFragment"
+            android:name="com.osc.tweet.app.fragments.NoticesListPagesFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>

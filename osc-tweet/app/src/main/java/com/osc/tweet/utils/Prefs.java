@@ -28,9 +28,25 @@ public final class Prefs extends BasicPrefs {
 	 */
 	private static final String DEFAULT_SETTING_VIBRATION_FEEDBACK = "default_setting_vibration_feedback";
 	/**
+	 * Default in config for setting that opens one notice (not reply) then clear all of them.
+	 */
+	private static final String DEFAULT_SETTING_NOTICES_OPEN_TO_CLEAR = "default_setting_notices_open_to_clear";
+	/**
+	 * Default in config for setting that rotates photo slow or medium(fast).
+	 */
+	private static final String DEFAULT_SETTING_PHOTO_ROTATE_SLOW_OR_FAST = "default_setting_photo_rotate_slow_or_fast";
+	/**
 	 * A feedback with vibration  on/off when operating is succeed.
 	 */
 	public static final String SETTING_VIBRATION_FEEDBACK = "setting.vibration.feedback";
+	/**
+	 * Open one notice (not reply) then clear all of them.
+	 */
+	public static final String SETTING_NOTICES_OPEN_TO_CLEAR = "setting.notices.open.to.clear";
+	/**
+	 * Rotate photo slow or medium(fast).
+	 */
+	public static final String SETTING_PHOTO_ROTATE_SLOW_OR_FAST = "setting.photo.rotate.slow.or.fast";
 
 	private Prefs() {
 		super(null);
@@ -122,5 +138,38 @@ public final class Prefs extends BasicPrefs {
 	 */
 	public boolean settingVibrationFeedback() {
 		return getBoolean(SETTING_VIBRATION_FEEDBACK, getBoolean(DEFAULT_SETTING_VIBRATION_FEEDBACK, false));
+	}
+
+	/**
+	 * Open one notice (not reply) then clear all of them.
+	 * @param yesNo Default {@code false} if not clear.
+	 */
+	public void settingNoticesOpenToClear( boolean yesNo) {
+		setBoolean(SETTING_NOTICES_OPEN_TO_CLEAR, yesNo);
+	}
+
+	/**
+	 * Open one notice (not reply) then clear all of them.
+	 * @return Default {@code false} if not clear.
+	 */
+	public boolean settingNoticesOpenToClear() {
+		return getBoolean(SETTING_NOTICES_OPEN_TO_CLEAR, getBoolean(DEFAULT_SETTING_NOTICES_OPEN_TO_CLEAR, false));
+	}
+
+	/**
+	 *  Rotate photo slow or medium(fast).
+	 * @param slowFast {@code 0} slow, {@code >0} medium(fast).
+	 */
+	public void settingPhotoRotateSlowOrFast(int slowFast ) {
+		setString(SETTING_PHOTO_ROTATE_SLOW_OR_FAST, String.valueOf(slowFast));
+	}
+
+	/**
+	 *  Rotate photo slow or medium(fast).
+	 * @return slowFast {@code 0} slow, {@code >0} medium(fast).
+	 */
+	public int settingPhotoRotateSlowOrFast() {
+		return Integer.valueOf(getString(SETTING_PHOTO_ROTATE_SLOW_OR_FAST, String.valueOf(getInt(
+				DEFAULT_SETTING_PHOTO_ROTATE_SLOW_OR_FAST, 0))));
 	}
 }

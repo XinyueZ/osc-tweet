@@ -28,13 +28,13 @@ import com.osc4j.ds.personal.Notices;
 /**
  * Show list of notice.
  */
-public final class NoticesListFragment extends BaseFragment {
-	private static final String EXTRAS_NOTICES = NoticesListFragment.class.getName() + ".EXTRAS.notices";
-	private static final String EXTRAS_TYPE = NoticesListFragment.class.getName() + ".EXTRAS.type";
+public final class NoticesListPageFragment extends BaseFragment {
+	private static final String EXTRAS_NOTICES = NoticesListPageFragment.class.getName() + ".EXTRAS.notices";
+	private static final String EXTRAS_TYPE = NoticesListPageFragment.class.getName() + ".EXTRAS.type";
 	/**
 	 * Main layout for this component.
 	 */
-	private static final int LAYOUT = R.layout.fragment_notices_list;
+	private static final int LAYOUT = R.layout.fragment_notices_list_page;
 	/**
 	 * Adapter for {@link #mRv} to show all notices.
 	 */
@@ -64,7 +64,7 @@ public final class NoticesListFragment extends BaseFragment {
 	//------------------------------------------------
 
 	/**
-	 * Init a {@link NoticesListFragment}.
+	 * Init a {@link NoticesListPageFragment}.
 	 *
 	 * @param context
 	 * 		{@link android.content.Context}.
@@ -73,13 +73,13 @@ public final class NoticesListFragment extends BaseFragment {
 	 * @param type
 	 * 		{@link NoticeType}, type of notices.
 	 *
-	 * @return {@link NoticesListFragment}.
+	 * @return {@link NoticesListPageFragment}.
 	 */
 	public static Fragment newInstance(Context context, @Nullable Notices notices, NoticeType type) {
 		Bundle args = new Bundle();
 		args.putSerializable(EXTRAS_NOTICES, notices);
 		args.putSerializable(EXTRAS_TYPE, type);
-		return NoticesListFragment.instantiate(context, NoticesListFragment.class.getName(), args);
+		return NoticesListPageFragment.instantiate(context, NoticesListPageFragment.class.getName(), args);
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public final class NoticesListFragment extends BaseFragment {
 		} else {
 			List<Notice> notices = getNotices().getNotices();
 			if (notices != null && notices.size() > 0) {
-				mRv.setAdapter(mAdp = new NoticesListAdapter(notices));
+				mRv.setAdapter(mAdp = new NoticesListAdapter(notices, getType()));
 				mRv.setVisibility(View.VISIBLE);
 				mEmptyV.setVisibility(View.INVISIBLE);
 			} else {

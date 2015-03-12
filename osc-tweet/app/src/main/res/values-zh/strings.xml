@@ -72,6 +72,15 @@
     <!--Settings-->
     <string name="setting_on">开</string>
     <string name="setting_off">关</string>
+    <string name="setting_yes">对</string>
+    <string name="setting_no">不</string>
     <string name="setting_category_operation">操作</string>
     <string name="setting_vibrate_feedback_title">动作并震动回应</string>
+    <string name="setting_notices_open_to_clear_title">打开一条关于我的新消息后（不包括回复），就清除所有消息。</string>
+    <string name="setting_category_image">图片</string>
+    <string name="setting_photo_rotate_slow_or_fast_title">旋转图片的速度。</string>
+    <string-array name="setting_photo_rotate_types">
+        <item>慢</item>
+        <item>中等</item>
+    </string-array>
 </resources>

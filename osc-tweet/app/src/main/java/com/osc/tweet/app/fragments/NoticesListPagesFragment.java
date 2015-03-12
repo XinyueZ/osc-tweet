@@ -21,7 +21,9 @@ import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
-import com.osc.tweet.app.adapters.NoticesListsViewPagerAdapter;
+import com.osc.tweet.app.adapters.NoticesListViewPagerAdapter;
+import com.osc.tweet.events.ClearAtMeNoticesEvent;
+import com.osc.tweet.events.ClearCommentsEvent;
 import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.events.GetMyInformationEvent;
 import com.osc.tweet.events.OperatingEvent;
@@ -45,11 +47,11 @@ import static com.osc4j.ds.common.NoticeType.Comments;
  *
  * @author Xinyue Zhao
  */
-public final class MyNoticesFragment extends BaseFragment {
+public final class NoticesListPagesFragment extends BaseFragment {
 	/**
 	 * Main layout for this component.
 	 */
-	private static final int LAYOUT = R.layout.fragment_my_notices;
+	private static final int LAYOUT = R.layout.fragment_notices_list_pages;
 	/**
 	 * Tabs.
 	 */
@@ -97,20 +99,39 @@ public final class MyNoticesFragment extends BaseFragment {
 		showMyNotices();
 	}
 
+	/**
+	 * Handler for {@link com.osc.tweet.events.ClearAtMeNoticesEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.ClearAtMeNoticesEvent}.
+	 */
+	public void onEvent(ClearAtMeNoticesEvent e) {
+		clearAtMe();
+	}
 
+
+	/**
+	 * Handler for {@link com.osc.tweet.events.ClearCommentsEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.ClearCommentsEvent}.
+	 */
+	public void onEvent(ClearCommentsEvent e) {
+		clearNewComments();
+	}
 	//------------------------------------------------
 
 
 	/**
-	 * Initialize an {@link  MyNoticesFragment}.
+	 * Initialize an {@link  NoticesListPagesFragment}.
 	 *
 	 * @param context
 	 * 		A {@link android.content.Context} object.
 	 *
-	 * @return An instance of {@link MyNoticesFragment}.
+	 * @return An instance of {@link NoticesListPagesFragment}.
 	 */
-	public static MyNoticesFragment newInstance(Context context) {
-		return (MyNoticesFragment) Fragment.instantiate(context, MyNoticesFragment.class.getName());
+	public static NoticesListPagesFragment newInstance(Context context) {
+		return (NoticesListPagesFragment) Fragment.instantiate(context, NoticesListPagesFragment.class.getName());
 	}
 
 
@@ -138,8 +159,8 @@ public final class MyNoticesFragment extends BaseFragment {
 		}
 		mPbV = (SmoothProgressBar) view.findViewById(R.id.clear_pb);
 		mPbV.setSmoothProgressDrawableBackgroundDrawable(SmoothProgressBarUtils.generateDrawableWithColors(
-						getResources().getIntArray(R.array.pocket_background_colors),
-						((SmoothProgressDrawable) mPbV.getIndeterminateDrawable()).getStrokeWidth()));
+				getResources().getIntArray(R.array.pocket_background_colors),
+				((SmoothProgressDrawable) mPbV.getIndeterminateDrawable()).getStrokeWidth()));
 		mPbV.progressiveStart();
 
 
@@ -174,7 +195,7 @@ public final class MyNoticesFragment extends BaseFragment {
 	 */
 	private void showMyNotices() {
 		if (myInfo != null && myInfo.getAm() != null) {
-			mViewPager.setAdapter(new NoticesListsViewPagerAdapter(App.Instance, getChildFragmentManager(), myInfo));
+			mViewPager.setAdapter(new NoticesListViewPagerAdapter(App.Instance, getChildFragmentManager(), myInfo));
 			mTabs.setViewPager(mViewPager);
 
 
@@ -185,8 +206,12 @@ public final class MyNoticesFragment extends BaseFragment {
 			mClearMi.setVisible(atMeCount != 0 || cmmCount != 0);
 			mClearAtMi.setVisible(atMeCount > 0);
 			mClearCommentsMi.setVisible(cmmCount > 0);
+
+			if (atMeCount < cmmCount) {
+				mViewPager.setCurrentItem(1);
+			}
 		} else {
-			mViewPager.setAdapter(new NoticesListsViewPagerAdapter(App.Instance, getChildFragmentManager(), null));
+			mViewPager.setAdapter(new NoticesListViewPagerAdapter(App.Instance, getChildFragmentManager(), null));
 			mTabs.setViewPager(mViewPager);
 
 

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.chopping.application.BasicPrefs;
+import com.chopping.bus.CloseDrawerEvent;
 import com.chopping.fragments.BaseFragment;
 import com.chopping.net.TaskHelper;
 import com.chopping.utils.Utils;
@@ -20,6 +21,7 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.activities.SettingActivity;
+import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.events.GetMyInformationEvent;
 import com.osc.tweet.events.OpenMyNoticesDrawerEvent;
 import com.osc.tweet.utils.Prefs;
@@ -69,7 +71,32 @@ public final class MyInfoFragment extends BaseFragment {
 	/**
 	 * Give count of all notices.
 	 */
- 	private TextView mNoticesTv;
+	private TextView mNoticesTv;
+
+	private int mAtCount;
+	private int mCommentsCount;
+	//------------------------------------------------
+	//Subscribes, event-handlers
+	//------------------------------------------------
+
+	/**
+	 * Handler for {@link ClearNoticeEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link ClearNoticeEvent}.
+	 */
+	public void onEvent(ClearNoticeEvent e) {
+		switch (e.getType()) {
+		case AtMe:
+			mAtCount = 0;
+			break;
+		case Comments:
+			mCommentsCount = 0;
+			break;
+		}
+		mNoticesTv.setText(String.format(getString(R.string.msg_update_my_info), mAtCount, mCommentsCount));
+	}
+	//------------------------------------------------
 
 	/**
 	 * Initialize an {@link  MyInfoFragment}.
@@ -108,12 +135,12 @@ public final class MyInfoFragment extends BaseFragment {
 			@Override
 			public void onClick() {
 				SettingActivity.showInstance(getActivity());
+				EventBus.getDefault().post(new CloseDrawerEvent());
 			}
 		});
 
 		mNoticesTv = (TextView) view.findViewById(R.id.notices_count_tv);
-		String count = String.format(getString(R.string.msg_update_my_info),
-				0, 0);
+		String count = String.format(getString(R.string.msg_update_my_info), 0, 0);
 		mNoticesTv.setText(count);
 		mNoticesTv.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
@@ -166,19 +193,20 @@ public final class MyInfoFragment extends BaseFragment {
 						mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 						mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
 						mUserNameTv.setText(am.getName());
-						int atMeCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
-						int cmmCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
+						mAtCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
+						mCommentsCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
 
-						String count = String.format(getString(R.string.msg_update_my_info),
-								atMeCount, cmmCount);
+						String count = String.format(getString(R.string.msg_update_my_info), mAtCount, mCommentsCount);
 						if (feedback) {
 							Utils.showShortToast(App.Instance, count);
 							com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
 						}
 						mNoticesTv.setText(count);
+						if (mAtCount != 0 || mCommentsCount != 0) {
+							EventBus.getDefault().post(new OpenMyNoticesDrawerEvent());
+						}
 					} else {
-						String count = String.format(getString(R.string.msg_update_my_info),
-								0, 0);
+						String count = String.format(getString(R.string.msg_update_my_info), 0, 0);
 						mNoticesTv.setText(count);
 					}
 					EventBus.getDefault().post(new GetMyInformationEvent(myInfo));

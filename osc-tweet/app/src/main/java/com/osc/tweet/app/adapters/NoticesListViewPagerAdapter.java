@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
-import com.osc.tweet.app.fragments.NoticesListFragment;
+import com.osc.tweet.app.fragments.NoticesListPageFragment;
 import com.osc4j.ds.common.NoticeType;
 import com.osc4j.ds.personal.MyInformation;
 import com.osc4j.ds.personal.Notices;
@@ -17,7 +17,7 @@ import com.osc4j.ds.personal.Notices;
  *
  * @author Xinyue Zhao
  */
-public final class NoticesListsViewPagerAdapter extends FragmentStatePagerAdapter {
+public final class NoticesListViewPagerAdapter extends FragmentStatePagerAdapter {
 	/**
 	 * {@link Context}
 	 */
@@ -32,7 +32,7 @@ public final class NoticesListsViewPagerAdapter extends FragmentStatePagerAdapte
 	private MyInformation myInformation;
 
 	/**
-	 * Constructor of {@link NoticesListsViewPagerAdapter}
+	 * Constructor of {@link NoticesListViewPagerAdapter}
 	 *
 	 * @param cxt
 	 * 		{@link Context}
@@ -41,7 +41,7 @@ public final class NoticesListsViewPagerAdapter extends FragmentStatePagerAdapte
 	 * @param myInformation
 	 * 		The whole data source for each page.
 	 */
-	public NoticesListsViewPagerAdapter(Context cxt, FragmentManager fm, MyInformation myInformation) {
+	public NoticesListViewPagerAdapter(Context cxt, FragmentManager fm, MyInformation myInformation) {
 		super(fm);
 		mContext = cxt;
 		this.myInformation = myInformation;
@@ -51,7 +51,7 @@ public final class NoticesListsViewPagerAdapter extends FragmentStatePagerAdapte
 	public Fragment getItem(int position) {
 		Fragment f = null;
 		if (myInformation == null) {
-			f = NoticesListFragment.newInstance(App.Instance, null, NoticeType.Null);
+			f = NoticesListPageFragment.newInstance(App.Instance, null, NoticeType.Null);
 		} else {
 			Notices notices;
 			switch (position) {
@@ -60,14 +60,14 @@ public final class NoticesListsViewPagerAdapter extends FragmentStatePagerAdapte
 				if (myInformation.getNotices() != null) {
 					notices.setNotices(myInformation.getNotices());
 				}
-				f = NoticesListFragment.newInstance(App.Instance, notices, NoticeType.AtMe);
+				f = NoticesListPageFragment.newInstance(App.Instance, notices, NoticeType.AtMe);
 				break;
 			case 1:
 				notices = new Notices(com.osc4j.ds.common.Status.STATUS_OK, null);
 				if (myInformation.getComments() != null) {
 					notices.setNotices(myInformation.getComments());
 				}
-				f = NoticesListFragment.newInstance(App.Instance, notices, NoticeType.Comments);
+				f = NoticesListPageFragment.newInstance(App.Instance, notices, NoticeType.Comments);
 			default:
 				break;
 			}

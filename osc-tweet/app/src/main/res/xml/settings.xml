@@ -12,56 +12,24 @@
             android:layout="@layout/setting_item"
             android:defaultValue="false" />
 
+
+        <CheckBoxPreference
+            android:key="setting.notices.open.to.clear"
+            android:title="@string/setting_notices_open_to_clear_title"
+            android:summaryOn="@string/setting_yes"
+            android:summaryOff="@string/setting_no"
+            android:layout="@layout/setting_item"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
-
-    <!--<PreferenceCategory-->
-        <!--android:title="@string/setting_push_properties_cat"-->
-        <!--android:layout="@layout/setting_entry">-->
-        <!--<CheckBoxPreference-->
-            <!--android:key="key.only.full.text"-->
-            <!--android:title="@string/setting_only_full_text"-->
-            <!--android:summaryOn="@string/lbl_yes"-->
-            <!--android:summaryOff="@string/lbl_no"-->
-            <!--android:layout="@layout/setting_item"-->
-            <!--android:defaultValue="@bool/default_accept_full_text" />-->
-        <!--<CheckBoxPreference-->
-            <!--android:key="key.allow.empty.url"-->
-            <!--android:title="@string/setting_allow_empty_url"-->
-            <!--android:summaryOn="@string/lbl_yes"-->
-            <!--android:summaryOff="@string/lbl_no"-->
-            <!--android:layout="@layout/setting_item"-->
-            <!--android:defaultValue="@bool/default_allow_empty_url" />-->
-        <!--<EditTextPreference-->
-            <!--android:key="key.msg.count"-->
-            <!--android:title="@string/setting_count"-->
-            <!--android:summary="@string/setting_messages_count"-->
-            <!--android:layout="@layout/setting_item"-->
-            <!--android:inputType="number"/>-->
-    <!--</PreferenceCategory>-->
-
-    <!--<PreferenceCategory-->
-        <!--android:title="@string/setting_view"-->
-        <!--android:layout="@layout/setting_entry">-->
-        <!--<ListPreference-->
-            <!--android:key="key.sort.type"-->
-            <!--android:title="@string/setting_sort"-->
-            <!--android:layout="@layout/setting_item"-->
-            <!--android:entries="@array/setting_sort_types"-->
-            <!--android:entryValues="@array/setting_sort_values" />-->
-    <!--</PreferenceCategory>-->
-
-
-
-    <!--<PreferenceCategory-->
-        <!--android:title="@string/setting_others"-->
-        <!--android:layout="@layout/setting_entry">-->
-        <!--<ListPreference-->
-            <!--android:key="key.sound.type"-->
-            <!--android:title="@string/setting_sound"-->
-            <!--android:layout="@layout/setting_item"-->
-            <!--android:entries="@array/setting_sound_types"-->
-            <!--android:entryValues="@array/setting_sound_values"-->
-             <!--/>-->
-    <!--</PreferenceCategory>-->
-
+    <PreferenceCategory
+        android:title="@string/setting_category_image"
+        android:layout="@layout/setting_entry">
+        <ListPreference
+            android:key="setting.photo.rotate.slow.or.fast"
+            android:title="@string/setting_photo_rotate_slow_or_fast_title"
+            android:layout="@layout/setting_item"
+            android:entries="@array/setting_photo_rotate_types"
+            android:entryValues="@array/setting_photo_rotate_values" />
+    </PreferenceCategory>
 </PreferenceScreen>
