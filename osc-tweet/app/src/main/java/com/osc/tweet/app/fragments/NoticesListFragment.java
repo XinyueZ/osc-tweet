@@ -90,19 +90,23 @@ public final class NoticesListFragment extends BaseFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		mRv = (RecyclerView) view.findViewById(R.id.child_view);
+		mEmptyV = view.findViewById(R.id.empty_notices_iv);
+		View errorV = view.findViewById(R.id.errors_iv);
+
+
+		mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
+		mRv.addItemDecoration(new SpacesItemDecoration((int) com.osc4j.utils.Utils.convertPixelsToDp(App.Instance,
+				5)));
+		mRv.setItemAnimator(new DefaultItemAnimator());
+		mRv.setHasFixedSize(false);
+
+
 		if(getType() == NoticeType.Null || getNotices() == null) {
-			View errorV = view.findViewById(R.id.errors_iv);
 			errorV.setVisibility(View.VISIBLE);
 			mRv.setVisibility(View.INVISIBLE);
 			mEmptyV.setVisibility(View.INVISIBLE);
 		} else {
-			mRv = (RecyclerView) view.findViewById(R.id.child_view);
-			mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
-			mRv.addItemDecoration(new SpacesItemDecoration((int) com.osc4j.utils.Utils.convertPixelsToDp(App.Instance,
-					5)));
-			mRv.setItemAnimator(new DefaultItemAnimator());
-			mRv.setHasFixedSize(false);
-			mEmptyV = view.findViewById(R.id.empty_notices_iv);
 			List<Notice> notices = getNotices().getNotices();
 			if (notices != null && notices.size() > 0) {
 				mRv.setAdapter(mAdp = new NoticesListAdapter(notices));
@@ -144,7 +148,11 @@ public final class NoticesListFragment extends BaseFragment {
 	 * @return {@link Notice}s to show.
 	 */
 	private @Nullable Notices getNotices() {
-		return (Notices) getArguments().getSerializable(EXTRAS_NOTICES);
+		if ( getArguments().getSerializable(EXTRAS_NOTICES) instanceof Notices ) {
+			return (Notices) getArguments().getSerializable(EXTRAS_NOTICES);
+		} else {
+			return null;
+		}
 	}
 
 	@Override

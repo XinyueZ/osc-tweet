@@ -59,7 +59,7 @@
                         <Button
                             android:id="@+id/relation_btn"
                             android:background="@drawable/rectangle_white_border"
-                            android:text="@string/lbl_user_focus"
+                            android:text="@string/lbl_user_follow"
                             android:layout_width="90dp"
                             android:layout_height="35dp" />
 

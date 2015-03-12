@@ -171,12 +171,12 @@ public final class UserInformationDialogFragment extends DialogFragment {
 							if (user.isRelated()) {
 								//								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
 								//										R.string.msg_focus_cancel), user.getName())));
-								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_focus_cancel),
+								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_follow_cancel),
 										user.getName()));
 							} else {
 								//								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
 								//										R.string.msg_focus), user.getName())));
-								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_focus),
+								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_follow),
 										user.getName()));
 
 							}
@@ -245,7 +245,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 						mUserPlatformTv.setText(user.getPlatforms());
 						mUserGenderTv.setText(getString(
 								user.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
-										R.string.lbl_user_gender_famle));
+										R.string.lbl_user_gender_female));
 						updateFocusButton();
 						mUserLocationTv.setText(String.format("%s, %s", user.getCity(), user.getProvince()));
 						mLoadUserInfoPb.setVisibility(View.INVISIBLE);
@@ -266,7 +266,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	 */
 	private void updateFocusButton() {
 		mUserRelationBtn.setText(getString(
-				mUserInfo.getUser().isRelated() ? R.string.lbl_user_cancle_focus : R.string.lbl_user_focus));
+				mUserInfo.getUser().isRelated() ? R.string.lbl_user_cancel_follow : R.string.lbl_user_follow));
 	}
 
 	@Override

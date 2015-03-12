@@ -13,8 +13,8 @@
     <string name="action_undo">重置</string>
 
     <string name="msg_move_to_top">回到顶部</string>
-    <string name="msg_focus">您已经对 %s 添加关注。</string>
-    <string name="msg_focus_cancel">您已经撤销了对 %s 添加关注。</string>
+    <string name="msg_follow">您已经对 %s 添加关注。</string>
+    <string name="msg_follow_cancel">您已经撤销了对 %s 添加关注。</string>
     <string name="msg_operating_successfully">操作成功。</string>
     <string name="msg_operating_failed">操作失败。</string>
     <string name="msg_message_input">不能发送空信息。</string>
@@ -48,12 +48,12 @@
     <string name="lbl_user_nickname">昵称：</string>
     <string name="lbl_user_gender">性别：</string>
     <string name="lbl_user_gender_male">男</string>
-    <string name="lbl_user_gender_famle">女</string>
+    <string name="lbl_user_gender_female">女</string>
     <string name="lbl_user_location">来自：</string>
     <string name="lbl_user_skill">技术能力：</string>
     <string name="lbl_user_platform">擅长平台：</string>
-    <string name="lbl_user_cancle_focus">取消关注</string>
-    <string name="lbl_user_focus">关注</string>
+    <string name="lbl_user_cancel_follow">取消关注</string>
+    <string name="lbl_user_follow">关注</string>
     <string name="lbl_editor_title">编辑消息</string>
     <string name="lbl_comments">所有回复</string>
     <string name="lbl_all">最新</string>

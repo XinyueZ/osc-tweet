@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.astuetz.PagerSlidingTabStrip;
 import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
 import com.chopping.net.TaskHelper;
@@ -25,8 +23,8 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.activities.SettingActivity;
-import com.osc.tweet.app.adapters.NoticesListsViewPagerAdapter;
 import com.osc.tweet.events.ClearNoticeEvent;
+import com.osc.tweet.events.GetMyInformationEvent;
 import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
@@ -66,25 +64,15 @@ public final class MyInfoFragment extends BaseFragment {
 	 */
 	private TextView mUserNameTv;
 	/**
-	 * My information personal.
+	 * My personal information .
 	 */
 	private MyInformation myInfo;
 	/**
 	 * Click to refresh my-info.
 	 */
 	private View mRefreshV;
-	/**
-	 * The pagers
-	 */
-	private ViewPager mViewPager;
-	/**
-	 * The adapter to {@link #mViewPager}.
-	 */
-	private NoticesListsViewPagerAdapter mAdp;
-	/**
-	 * Tabs.
-	 */
-	private PagerSlidingTabStrip mTabs;
+
+
 	/**
 	 * Root of all views of this {@link Fragment}.
 	 */
@@ -136,13 +124,6 @@ public final class MyInfoFragment extends BaseFragment {
 				getMyInformation(false);
 			}
 		});
-
-
-		mViewPager = (ViewPager) view.findViewById(R.id.vp);
-		// Bind the tabs to the ViewPager
-		mTabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs);
-		mTabs.setIndicatorColorResource(R.color.common_white);
-
 
 		mClearListV = view.findViewById(R.id.clean_list_btn);
 		mPopupMenu = new PopupMenu(getActivity(), mClearListV);
@@ -221,11 +202,6 @@ public final class MyInfoFragment extends BaseFragment {
 						mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 						mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
 						mUserNameTv.setText(am.getName());
-
-						mViewPager.setAdapter(mAdp = new NoticesListsViewPagerAdapter(App.Instance,
-								getChildFragmentManager(), myInfo));
-						mTabs.setViewPager(mViewPager);
-
 						int atMeCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
 						int cmmCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
 
@@ -241,11 +217,8 @@ public final class MyInfoFragment extends BaseFragment {
 						}
 					} else {
 						mClearListV.setVisibility(View.INVISIBLE);
-
-						mViewPager.setAdapter(mAdp = new NoticesListsViewPagerAdapter(App.Instance,
-								getChildFragmentManager(), null));
-						mTabs.setViewPager(mViewPager);
 					}
+					EventBus.getDefault().post(new GetMyInformationEvent(myInfo));
 					mRootV.setVisibility(View.VISIBLE);
 					objectAnimator.cancel();
 					mRefreshV.setEnabled(true);
@@ -305,10 +278,7 @@ public final class MyInfoFragment extends BaseFragment {
 							res.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK);
 					EventBus.getDefault().post(event);
 					if (event.isSuccess()) {
-						if (mAdp != null) {
-							EventBus.getDefault().post(new ClearNoticeEvent(mNoticeType));
-						}
-
+						EventBus.getDefault().post(new ClearNoticeEvent(mNoticeType));
 						MenuItem atMi = mPopupMenu.getMenu().findItem(R.id.action_clear_at_me);
 						MenuItem cmmMi =  mPopupMenu.getMenu().findItem(R.id.action_clear_comments);
 						switch (mNoticeType) {
