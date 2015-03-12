@@ -8,9 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -23,23 +21,16 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.activities.SettingActivity;
-import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.events.GetMyInformationEvent;
-import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
-import com.osc4j.ds.common.NoticeType;
-import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.Am;
 import com.osc4j.ds.personal.MyInformation;
 import com.osc4j.exceptions.OscTweetException;
 
 import de.greenrobot.event.EventBus;
-
-import static com.osc4j.ds.common.NoticeType.AtMe;
-import static com.osc4j.ds.common.NoticeType.Comments;
 
 /**
  * Show my information.
@@ -51,10 +42,7 @@ public final class MyInfoFragment extends BaseFragment {
 	 * Main layout for this component.
 	 */
 	private static final int LAYOUT = R.layout.fragment_my_info;
-	/**
-	 * Menu-resource of the popup.
-	 */
-	private static final int MENU_RES = R.menu.menu_my_info;
+
 	/**
 	 * My photo.
 	 */
@@ -82,15 +70,6 @@ public final class MyInfoFragment extends BaseFragment {
 	 * The popup-menu to clear all list.
 	 */
 	private PopupMenu mPopupMenu;
-	/**
-	 * Progress indicator for clearing.
-	 */
-	private View mClearPb;
-
-	/**
-	 * Open the popup of clearing lists.
-	 */
-	private View mClearListV;
 
 	/**
 	 * Initialize an {@link  MyInfoFragment}.
@@ -125,34 +104,6 @@ public final class MyInfoFragment extends BaseFragment {
 			}
 		});
 
-		mClearListV = view.findViewById(R.id.clean_list_btn);
-		mPopupMenu = new PopupMenu(getActivity(), mClearListV);
-		mPopupMenu.inflate(MENU_RES);
-		mClearListV.setOnClickListener(new OnViewAnimatedClickedListener() {
-			@Override
-			public void onClick() {
-				mPopupMenu.show();
-			}
-		});
-		mPopupMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem menuItem) {
-				mClearListV.setVisibility(View.INVISIBLE);
-				mClearPb.setVisibility(View.VISIBLE);
-				switch (menuItem.getItemId()) {
-				case R.id.action_clear_at_me:
-					clearAtMe();
-					break;
-				case R.id.action_clear_comments:
-					clearNewComments();
-					break;
-				}
-				return true;
-			}
-		});
-
-		mClearPb = view.findViewById(R.id.clear_pb);
-
 		view.findViewById(R.id.settings_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
@@ -164,9 +115,11 @@ public final class MyInfoFragment extends BaseFragment {
 
 	/**
 	 * Get my personal information.
-	 * @param feeback  Show some feedback when loaded if {@code true}.
+	 *
+	 * @param feedback
+	 * 		Show some feedback when loaded if {@code true}.
 	 */
-	private void getMyInformation(final boolean feeback) {
+	private void getMyInformation(final boolean feedback) {
 		AsyncTaskCompat.executeParallel(new AsyncTask<Object, MyInformation, MyInformation>() {
 			ObjectAnimator objectAnimator;
 
@@ -205,18 +158,11 @@ public final class MyInfoFragment extends BaseFragment {
 						int atMeCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
 						int cmmCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
 
-						//Menu shows dynamically according to the count of list-items.
-						mClearListV.setVisibility(atMeCount == 0 && cmmCount == 0 ? View.INVISIBLE : View.VISIBLE);
-						mPopupMenu.getMenu().findItem(R.id.action_clear_at_me).setVisible(atMeCount > 0);
-						mPopupMenu.getMenu().findItem(R.id.action_clear_comments).setVisible(cmmCount > 0);
-
-						if(feeback) {
+						if (feedback) {
 							Utils.showShortToast(App.Instance, String.format(getString(R.string.msg_update_my_info),
 									atMeCount, cmmCount));
 							com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
 						}
-					} else {
-						mClearListV.setVisibility(View.INVISIBLE);
 					}
 					EventBus.getDefault().post(new GetMyInformationEvent(myInfo));
 					mRootV.setVisibility(View.VISIBLE);
@@ -229,76 +175,6 @@ public final class MyInfoFragment extends BaseFragment {
 		});
 	}
 
-
-
-	/**
-	 * Clear all new "@me".
-	 */
-	private void clearAtMe() {
-		clear(AtMe);
-	}
-
-	/**
-	 * Clear all new comments.
-	 */
-	private void clearNewComments() {
-		clear(Comments);
-	}
-
-	/**
-	 * Clear different notices.
-	 *
-	 * @param type
-	 * 		{@link NoticeType} The type of notice.
-	 */
-	private void clear(NoticeType type) {
-		AsyncTaskCompat.executeParallel(new AsyncTask<NoticeType, Void, StatusResult>() {
-			NoticeType mNoticeType;
-
-			@Override
-			protected StatusResult doInBackground(NoticeType... params) {
-				mNoticeType = params[0];
-				try {
-					return OscApi.clearNotice(App.Instance, mNoticeType);
-				} catch (IOException e) {
-					return null;
-				} catch (OscTweetException e) {
-					return null;
-				}
-			}
-
-			@Override
-			protected void onPostExecute(StatusResult res) {
-				super.onPostExecute(res);
-				try {
-					mClearPb.setVisibility(View.GONE);
-					mClearListV.setVisibility(View.VISIBLE);
-
-					OperatingEvent event = new OperatingEvent(res != null && res.getResult() != null && Integer.valueOf(
-							res.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK);
-					EventBus.getDefault().post(event);
-					if (event.isSuccess()) {
-						EventBus.getDefault().post(new ClearNoticeEvent(mNoticeType));
-						MenuItem atMi = mPopupMenu.getMenu().findItem(R.id.action_clear_at_me);
-						MenuItem cmmMi =  mPopupMenu.getMenu().findItem(R.id.action_clear_comments);
-						switch (mNoticeType) {
-						case AtMe:
-							atMi.setVisible(false);
-							break;
-						case Comments:
-							cmmMi.setVisible(false);
-							break;
-						}
-						if(!atMi.isVisible() && !cmmMi.isVisible()) {
-							mClearListV.setVisibility(View.INVISIBLE);
-						}
-					}
-				} catch (IllegalStateException e) {
-					//Activity has been destroyed
-				}
-			}
-		}, type);
-	}
 
 	@Override
 	protected BasicPrefs getPrefs() {

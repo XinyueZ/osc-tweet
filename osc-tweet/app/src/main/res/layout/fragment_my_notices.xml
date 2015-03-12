@@ -2,16 +2,38 @@
 
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="com.osc.tweet.app.fragments.MyNoticesFragment">
 
-    <com.astuetz.PagerSlidingTabStrip
-        android:id="@+id/my_notices_tabs"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/primary_color"
-        android:textColor="@color/common_white" />
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            style="@style/ActionBar_ToolBar" />
+
+        <com.astuetz.PagerSlidingTabStrip
+            android:id="@+id/my_notices_tabs"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary_color"
+            android:textColor="@color/common_white" />
+
+        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+            android:id="@+id/clear_pb"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/pb_height"
+            style="@style/PocketProgressBar"
+            android:layout_gravity="top"
+            android:visibility="gone"
+            android:indeterminate="true"
+            android:layout_marginTop="?attr/actionBarSize" />
+    </FrameLayout>
+
 
     <android.support.v4.view.ViewPager
         android:id="@+id/my_notices_vp"
