@@ -137,11 +137,9 @@ public final class MyNoticesFragment extends BaseFragment {
 			myInfo = (MyInformation) savedInstanceState.getSerializable("myinfo");
 		}
 		mPbV = (SmoothProgressBar) view.findViewById(R.id.clear_pb);
-		mPbV.setSmoothProgressDrawableBackgroundDrawable(
-				SmoothProgressBarUtils.generateDrawableWithColors(getResources().getIntArray(
-								R.array.pocket_background_colors),
-						((SmoothProgressDrawable) mPbV.getIndeterminateDrawable())
-								.getStrokeWidth()));
+		mPbV.setSmoothProgressDrawableBackgroundDrawable(SmoothProgressBarUtils.generateDrawableWithColors(
+						getResources().getIntArray(R.array.pocket_background_colors),
+						((SmoothProgressDrawable) mPbV.getIndeterminateDrawable()).getStrokeWidth()));
 		mPbV.progressiveStart();
 
 
@@ -184,7 +182,7 @@ public final class MyNoticesFragment extends BaseFragment {
 			int atMeCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
 			int cmmCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
 
-			mClearMi.setVisible(atMeCount != 0 && cmmCount != 0);
+			mClearMi.setVisible(atMeCount != 0 || cmmCount != 0);
 			mClearAtMi.setVisible(atMeCount > 0);
 			mClearCommentsMi.setVisible(cmmCount > 0);
 		} else {
@@ -248,7 +246,6 @@ public final class MyNoticesFragment extends BaseFragment {
 			protected void onPostExecute(StatusResult res) {
 				super.onPostExecute(res);
 				try {
-					mPbV.setVisibility(View.GONE);
 					OperatingEvent event = new OperatingEvent(res != null && res.getResult() != null && Integer.valueOf(
 							res.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK);
 					EventBus.getDefault().post(event);
@@ -269,8 +266,7 @@ public final class MyNoticesFragment extends BaseFragment {
 				} catch (IllegalStateException e) {
 					//Activity has been destroyed
 				}
-
-				mPbV.setVisibility(View.INVISIBLE);
+				mPbV.setVisibility(View.GONE);
 				mPbV.progressiveStop();
 			}
 		}, type);

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -25,7 +24,6 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.astuetz.PagerSlidingTabStrip;
@@ -344,23 +342,23 @@ public class MainActivity extends BaseActivity {
 		});
 		ViewHelper.setX(mOpenFriendsListV, 99999);
 		showFriendsListButton();
-		findViewById(R.id.parent_view).setOnTouchListener(new View.OnTouchListener() {
-			public boolean onTouch(View v, MotionEvent event) {
-				View childV = findViewById(R.id.child_view);
-				if (childV != null) {
-					int[] l = new int[2];
-					childV.getLocationOnScreen(l);
-					RectF rect = new RectF(l[0], l[1], l[0] + childV.getWidth(), l[1] + childV.getHeight());
-					if (rect.contains(event.getX(), event.getY())) {
-						childV.getParent().requestDisallowInterceptTouchEvent(false);
-						childV.onTouchEvent(event);
-						return true;
-					}
-					childV.getParent().requestDisallowInterceptTouchEvent(true);
-				}
-				return false;
-			}
-		});
+//		findViewById(R.id.parent_view).setOnTouchListener(new View.OnTouchListener() {
+//			public boolean onTouch(View v, MotionEvent event) {
+//				View childV = findViewById(R.id.child_view);
+//				if (childV != null) {
+//					int[] l = new int[2];
+//					childV.getLocationOnScreen(l);
+//					RectF rect = new RectF(l[0], l[1], l[0] + childV.getWidth(), l[1] + childV.getHeight());
+//					if (rect.contains(event.getX(), event.getY())) {
+//						childV.getParent().requestDisallowInterceptTouchEvent(false);
+//						childV.onTouchEvent(event);
+//						return true;
+//					}
+//					childV.getParent().requestDisallowInterceptTouchEvent(true);
+//				}
+//				return false;
+//			}
+//		});
 
 		mConfigDlg = ProgressDialog.show(this, null, getString(R.string.msg_load_config));
 		mConfigDlg.setCancelable(false);
