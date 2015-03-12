@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
-import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.activities.SettingActivity;
 import com.osc.tweet.events.GetMyInformationEvent;
+import com.osc.tweet.events.OpenMyNoticesDrawerEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.RoundedNetworkImageView;
@@ -67,9 +67,9 @@ public final class MyInfoFragment extends BaseFragment {
 	private View mRootV;
 
 	/**
-	 * The popup-menu to clear all list.
+	 * Give count of all notices.
 	 */
-	private PopupMenu mPopupMenu;
+ 	private TextView mNoticesTv;
 
 	/**
 	 * Initialize an {@link  MyInfoFragment}.
@@ -108,6 +108,17 @@ public final class MyInfoFragment extends BaseFragment {
 			@Override
 			public void onClick() {
 				SettingActivity.showInstance(getActivity());
+			}
+		});
+
+		mNoticesTv = (TextView) view.findViewById(R.id.notices_count_tv);
+		String count = String.format(getString(R.string.msg_update_my_info),
+				0, 0);
+		mNoticesTv.setText(count);
+		mNoticesTv.setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				EventBus.getDefault().post(new OpenMyNoticesDrawerEvent());
 			}
 		});
 	}
@@ -158,11 +169,17 @@ public final class MyInfoFragment extends BaseFragment {
 						int atMeCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
 						int cmmCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
 
+						String count = String.format(getString(R.string.msg_update_my_info),
+								atMeCount, cmmCount);
 						if (feedback) {
-							Utils.showShortToast(App.Instance, String.format(getString(R.string.msg_update_my_info),
-									atMeCount, cmmCount));
+							Utils.showShortToast(App.Instance, count);
 							com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
 						}
+						mNoticesTv.setText(count);
+					} else {
+						String count = String.format(getString(R.string.msg_update_my_info),
+								0, 0);
+						mNoticesTv.setText(count);
 					}
 					EventBus.getDefault().post(new GetMyInformationEvent(myInfo));
 					mRootV.setVisibility(View.VISIBLE);

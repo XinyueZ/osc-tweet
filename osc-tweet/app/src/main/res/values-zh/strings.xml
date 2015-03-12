@@ -65,6 +65,7 @@
     <string name="lbl_new_comments">新评论</string>
     <string name="lbl_hello">你好</string>
     <string name="lbl_settings">设置</string>
+    <string name="lbl_current">当前</string>
 
     <string name="quick_reply_list">quick_reply_zh</string>
 

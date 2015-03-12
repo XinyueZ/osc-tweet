@@ -22,6 +22,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -53,6 +54,7 @@ import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
+import com.osc.tweet.events.OpenMyNoticesDrawerEvent;
 import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
@@ -146,6 +148,16 @@ public class MainActivity extends BaseActivity {
 	//Subscribes, event-handlers
 	//------------------------------------------------
 
+	/**
+	 * Handler for {@link com.osc.tweet.events.OpenMyNoticesDrawerEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.OpenMyNoticesDrawerEvent}.
+	 */
+	public void onEvent(OpenMyNoticesDrawerEvent e) {
+		mDrawerLayout.closeDrawer(Gravity.LEFT);
+		mDrawerLayout.openDrawer(Gravity.RIGHT);
+	}
 	/**
 	 * Handler for {@link  EULARejectEvent}.
 	 *
