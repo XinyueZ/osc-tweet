@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
-import com.osc.tweet.events.ShowUserInformationEvent;
+import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.ds.personal.Friend;
 
@@ -78,7 +78,7 @@ public final class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAd
 		holder.mPortraitIv.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
-				EventBus.getDefault().post(new ShowUserInformationEvent(item.getUserId()));
+				EventBus.getDefault().post(new ShowEditorEvent("@" + item.getName() + ": "));
 			}
 		});
 

@@ -69,10 +69,6 @@ public final class MyInfoFragment extends BaseFragment {
 	 * Click to refresh my-info.
 	 */
 	private View mRefreshV;
-	/**
-	 * Root of all views of this {@link Fragment}.
-	 */
-	private View mRootV;
 
 	/**
 	 * Give count of all notices.
@@ -193,7 +189,7 @@ public final class MyInfoFragment extends BaseFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		mRootV = view.findViewById(R.id.root_fl);
+
 		mFriendsTv = (TextView) view.findViewById(R.id.friends_count_tv);
 		mHomeTv = (TextView) view.findViewById(R.id.hometown_tv);
 
@@ -320,8 +316,13 @@ public final class MyInfoFragment extends BaseFragment {
 						mHomeTv.setText(am.getCity() + "," + am.getProvince());
 						//						doAnimation();
 						//						Prefs.getInstance().setShowMyInfoAnim(false);
+						mEditMeV.setVisibility(View.VISIBLE);
+						meV.setVisibility(View.VISIBLE);
 					} else {
-						mEditMeV.setVisibility(View.INVISIBLE);
+						if(MyInfoFragment.this.myInfo  == null) {
+							meV.setVisibility(View.INVISIBLE);
+							mEditMeV.setVisibility(View.INVISIBLE);
+						}
 					}
 
 					EventBus.getDefault().post(new GetMyInformationEvent(myInfo));
@@ -351,6 +352,10 @@ public final class MyInfoFragment extends BaseFragment {
 		if (prefs.showMyInfoAnim() && e.getGravity() == Gravity.LEFT) {
 			doAnimation();
 			prefs.setShowMyInfoAnim(false);
+
+			if(	MyInfoFragment.this.myInfo == null) {
+				getMyInformation(false);
+			}
 		}
 	}
 

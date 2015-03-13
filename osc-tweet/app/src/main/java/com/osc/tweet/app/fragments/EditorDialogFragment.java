@@ -383,10 +383,11 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 						}
 						EventBus.getDefault().post(new LoadEvent());
 						EventBus.getDefault().post(new OperatingEvent(true));
+						dismiss();
 					} else {
 						EventBus.getDefault().post(new OperatingEvent(false));
+						mEditText.setEnabled(true);
 					}
-					dismiss();
 				}
 			}, msg);
 		} else {

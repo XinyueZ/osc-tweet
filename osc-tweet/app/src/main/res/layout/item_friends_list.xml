@@ -6,7 +6,7 @@
 
     <com.osc.tweet.views.RoundedNetworkImageView
         android:id="@+id/portrait_iv"
-        android:layout_width="@dimen/portrait_size"
+        android:layout_width="@dimen/portrait_size" android:src="@drawable/ic_portrait_preview"
         android:layout_gravity="center_horizontal"
         android:layout_height="@dimen/portrait_size" />
 </FrameLayout>
