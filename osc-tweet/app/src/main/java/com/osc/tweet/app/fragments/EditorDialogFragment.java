@@ -112,12 +112,12 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 *
 	 * @param context
 	 * 		A {@link android.content.Context} object.
-	 *
 	 * @param tweetListItem
 	 * 		{@link com.osc4j.ds.tweet.TweetListItem}.
+	 *
 	 * @return An instance of {@link EditorDialogFragment}.
 	 */
-	public static DialogFragment newInstance(Context context,  TweetListItem tweetListItem ) {
+	public static DialogFragment newInstance(Context context, TweetListItem tweetListItem) {
 		Bundle args = new Bundle();
 		args.putString(EXTRAS_DEFAULT_TEXT, null);
 		args.putBoolean(EXTRAS_DEFAULT_FIXED, false);
@@ -343,7 +343,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	private void sendMessage() {
 		String msg = mEditText.getText().toString();
 		if (!TextUtils.isEmpty(msg)) {
-			if(!mInProgress) {
+			if (!mInProgress) {
 				AsyncTaskCompat.executeParallel(new AsyncTask<String, Object, StatusResult>() {
 					@Override
 					protected void onPreExecute() {
@@ -380,19 +380,22 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 					@Override
 					protected void onPostExecute(StatusResult s) {
 						super.onPostExecute(s);
-						if (s != null && Integer.valueOf(s.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK) {
-							if (isVisible() && mSendMi != null) {
-								mSendMi.setEnabled(true);
-								mEditText.setEnabled(true);
-								mSendingIndicatorV.setVisibility(View.INVISIBLE);
-								mSendingIndicatorV.progressiveStop();
-							}
+
+						if (mSendMi != null) {
+							mSendMi.setEnabled(true);
+						}
+						mEditText.setEnabled(true);
+						mSendingIndicatorV.setVisibility(View.GONE);
+						mSendingIndicatorV.progressiveStop();
+
+						if (s != null && Integer.valueOf(s.getResult().getCode()) ==
+								com.osc4j.ds.common.Status.STATUS_OK) {
+
 							EventBus.getDefault().post(new LoadEvent());
 							EventBus.getDefault().post(new OperatingEvent(true));
 							dismiss();
 						} else {
 							EventBus.getDefault().post(new OperatingEvent(false));
-							mEditText.setEnabled(true);
 						}
 
 						mInProgress = false;
