@@ -20,7 +20,7 @@
     <string name="msg_operating_successfully">操作成功。</string>
     <string name="msg_operating_failed">操作失败。</string>
     <string name="msg_message_input">不能发送空信息。</string>
-    <string name="msg_update_my_info" formatted="false">(%d) \@我, (%d) 新评论。</string>
+    <string name="msg_update_my_info" formatted="false">(%d) \@我, (%d) 新评论</string>
     <string name="msg_load_config">读取应用配置…</string>
 
     <string name="btn_close">关闭</string>
@@ -67,6 +67,9 @@
     <string name="lbl_hello">你好</string>
     <string name="lbl_settings">设置</string>
     <string name="lbl_current">当前</string>
+    <string name="lbl_friends_count" formatted="false">粉丝%d位，关注%d几位</string>
+    <string name="lbl_hometown">来自</string>
+    <string name="lbl_no_home">无家可归</string>
 
     <string name="quick_reply_list">quick_reply_zh</string>
 

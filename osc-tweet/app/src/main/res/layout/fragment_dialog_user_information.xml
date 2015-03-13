@@ -143,7 +143,7 @@
                         style="@style/Style_User_Information_Label" />
 
                     <TextView
-                        android:id="@+id/user_location_tv"
+                        android:id="@+id/user_location_tv" android:text="@string/lbl_no_home"
                         style="@style/Style_User_Information_Value" />
                 </LinearLayout>
             </LinearLayout>

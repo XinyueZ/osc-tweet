@@ -1,81 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@color/primary_color"
-    android:padding="@dimen/common_padding">
+    android:layout_height="wrap_content">
 
-    <FrameLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/primary_color"
+        android:padding="@dimen/common_padding">
 
-
-        <com.osc.tweet.views.RoundedNetworkImageView
-            android:id="@+id/user_photo_iv"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_width="@dimen/portrait_large_size"
-            android:layout_height="@dimen/portrait_large_size" />
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:orientation="vertical"
-            android:layout_gravity="right|top"
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageButton
-                android:id="@+id/refresh_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/common_transparent"
-                android:src="@drawable/ic_refresh" />
 
-            <ImageButton
-                android:id="@+id/settings_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/common_transparent"
-                android:src="@drawable/ic_settings" />
+            <com.osc.tweet.views.RoundedNetworkImageView
+                android:id="@+id/user_photo_iv"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_width="@dimen/portrait_large_size"
+                android:layout_height="@dimen/portrait_large_size" />
 
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="right|top"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/refresh_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/common_transparent"
+                    android:src="@drawable/ic_refresh" />
+
+                <ImageButton
+                    android:id="@+id/settings_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/common_transparent"
+                    android:src="@drawable/ic_settings" />
+
+            </LinearLayout>
+        </FrameLayout>
+
+
+        <LinearLayout
+            android:id="@+id/my_notices_ll"
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/common_padding"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="@string/lbl_hello"
+                    style="@style/Style_My_Information_Label" />
+
+                <TextView
+                    android:id="@+id/user_name_tv"
+                    android:textColor="@color/common_white"
+                    style="@style/Style_User_Information_Value" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:text="@string/lbl_current"
+                    style="@style/Style_My_Information_Label" />
+
+                <TextView
+                    android:id="@+id/notices_count_tv"
+                    android:textColor="@color/common_white"
+                    style="@style/Style_User_Information_Value" />
+            </LinearLayout>
         </LinearLayout>
-    </FrameLayout>
+
+    </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/my_info_ll"
+        android:id="@+id/my_hometown_friends_ll"
         android:layout_width="wrap_content"
-        android:orientation="vertical" android:paddingTop="@dimen/common_padding"
-        android:layout_height="match_parent">
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="wrap_content" android:layout_marginLeft="@dimen/common_padding"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <TextView
-                android:text="@string/lbl_hello"
+                android:text="@string/lbl_hometown"
                 style="@style/Style_My_Information_Label" />
 
             <TextView
-                android:id="@+id/user_name_tv"
+                android:id="@+id/hometown_tv" android:text="@string/lbl_no_home"
                 android:textColor="@color/common_white"
                 style="@style/Style_User_Information_Value" />
         </LinearLayout>
 
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <TextView
-                android:text="@string/lbl_current"
-                style="@style/Style_My_Information_Label" />
-
-            <TextView
-                android:id="@+id/notices_count_tv"
-                android:textColor="@color/common_white"
-                style="@style/Style_User_Information_Value" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/friends_count_tv"
+            android:text="@string/lbl_friends_count"
+            android:textColor="@color/common_white"
+            style="@style/Style_User_Information_Value" />
     </LinearLayout>
-</LinearLayout>
+
+
+</FrameLayout>

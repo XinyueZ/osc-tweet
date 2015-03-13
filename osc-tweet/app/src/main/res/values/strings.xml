@@ -21,7 +21,7 @@
     <string name="msg_message_input">Please fill your content.</string>
     <string name="msg_follow">You have fallowed on %s</string>
     <string name="msg_follow_cancel">You have canceled relation on %s</string>
-    <string name="msg_update_my_info" formatted="false">(%d) \@me, (%d) new comments.</string>
+    <string name="msg_update_my_info" formatted="false">(%d) \@me, (%d) new comments</string>
     <string name="msg_load_config">Load application configuration…</string>
 
     <string name="btn_confirm">Confirm</string>
@@ -76,6 +76,9 @@
     <string name="lbl_hello">Hello</string>
     <string name="lbl_settings">Settings</string>
     <string name="lbl_current">Current:</string>
+    <string name="lbl_friends_count" formatted="false">Fans%d. Followed%d</string>
+    <string name="lbl_hometown">From</string>
+    <string name="lbl_no_home">no home</string>
 
     <string name="quick_reply_list">quick_reply_en</string>
 

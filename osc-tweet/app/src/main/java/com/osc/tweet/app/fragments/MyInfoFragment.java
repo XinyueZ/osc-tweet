@@ -11,8 +11,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.chopping.application.BasicPrefs;
@@ -30,9 +28,9 @@ import com.osc.tweet.app.App;
 import com.osc.tweet.app.activities.SettingActivity;
 import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.events.GetMyInformationEvent;
-import com.osc.tweet.events.RefreshMyInfoEvent;
 import com.osc.tweet.events.OpenMyNoticesDrawerEvent;
 import com.osc.tweet.events.OpenedDrawerEvent;
+import com.osc.tweet.events.RefreshMyInfoEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.RoundedNetworkImageView;
@@ -87,9 +85,30 @@ public final class MyInfoFragment extends BaseFragment {
 	 */
 	private int mCommentsCount;
 	/**
+	 * Count of fans.
+	 */
+	private int mFansCount;
+	/**
+	 * Count of followed.
+	 */
+	private int mFollowedCount;
+	/**
 	 * The view that contains hello, count of notices.
 	 */
-	private View myInfoLl;
+	private View myNoticesLl;
+	/**
+	 * The view that contains hometown, friends.
+	 */
+	private View myHomeFriendsLl;
+	/**
+	 * Show count of friends.
+	 */
+	private TextView mFriendsTv;
+	/**
+	 * Show hometown
+	 */
+	private TextView mHomeTv;
+
 	/*Init scale of photo.*/
 	private float mPhotoScX;
 	private float mPhotoScY;
@@ -161,6 +180,13 @@ public final class MyInfoFragment extends BaseFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		mRootV = view.findViewById(R.id.root_fl);
+		mFriendsTv = (TextView) view.findViewById(R.id.friends_count_tv);
+		mHomeTv = (TextView) view.findViewById(R.id.hometown_tv);
+
+		myNoticesLl = view.findViewById(R.id.my_notices_ll);
+		myHomeFriendsLl = view.findViewById(R.id.my_hometown_friends_ll);
+		ViewHelper.setAlpha(myHomeFriendsLl, 0f);
+
 		mUserPhotoIv = (RoundedNetworkImageView) view.findViewById(R.id.user_photo_iv);
 		mPhotoScX = ViewHelper.getScaleX(mUserPhotoIv);
 		mPhotoScY = ViewHelper.getScaleY(mUserPhotoIv);
@@ -189,7 +215,6 @@ public final class MyInfoFragment extends BaseFragment {
 		String count = String.format(getString(R.string.msg_update_my_info), 0, 0);
 		mNoticesTv.setText(count);
 
-		myInfoLl = view.findViewById(R.id.my_info_ll);
 	}
 
 
@@ -249,6 +274,10 @@ public final class MyInfoFragment extends BaseFragment {
 						if (mAtCount != 0 || mCommentsCount != 0) {
 							EventBus.getDefault().post(new OpenMyNoticesDrawerEvent());
 						}
+
+						mFansCount = am.getFansCount();
+						mFollowedCount = am.getFollowersCount();
+						mHomeTv.setText(am.getCity() + "," + am.getProvince());
 					} else {
 						String count = String.format(getString(R.string.msg_update_my_info), 0, 0);
 						mNoticesTv.setText(count);
@@ -257,7 +286,10 @@ public final class MyInfoFragment extends BaseFragment {
 					objectAnimator.cancel();
 					mRefreshV.setEnabled(true);
 
-					//animPhoto();
+					String friends = String.format(getString(R.string.lbl_friends_count), mFansCount, mFollowedCount);
+					mFriendsTv.setText(friends);
+
+					//doAnimation();
 				} catch (IllegalStateException e) {
 					//Activity has been destroyed
 				}
@@ -272,7 +304,7 @@ public final class MyInfoFragment extends BaseFragment {
 	private void transition(OpenedDrawerEvent e) {
 		Prefs prefs = Prefs.getInstance();
 		if(prefs.showMyInfoAnim() && e.getGravity() == Gravity.LEFT) {
-			animPhoto();
+			doAnimation();
 			prefs.setShowMyInfoAnim(false);
 		}
 	}
@@ -281,7 +313,7 @@ public final class MyInfoFragment extends BaseFragment {
 	/**
 	 * Animation for the photo.
 	 */
-	private void animPhoto( ) {
+	private void doAnimation() {
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mUserPhotoIv);
 		animator.x(0f).scaleX(mPhotoScX).scaleY(mPhotoScY).setDuration(getResources().getInteger(
 				R.integer.anim_super_fast_duration))
@@ -291,13 +323,15 @@ public final class MyInfoFragment extends BaseFragment {
 						super.onAnimationEnd(animation);
 						float x = ViewHelper.getX(mUserPhotoIv) + (mUserPhotoIv.getWidth() * 1.5f);
 						float y = ViewHelper.getY(mUserPhotoIv)  ;
-						ViewPropertyAnimator animator2 = ViewPropertyAnimator.animate(myInfoLl);
+						ViewPropertyAnimator animator2 = ViewPropertyAnimator.animate(myNoticesLl);
 						animator2.x(x).y(y).setDuration(getResources().getInteger(
 								R.integer.anim_super_fast_duration)).setListener(new AnimatorListenerAdapter() {
 							@Override
 							public void onAnimationEnd(Animator animation) {
 								super.onAnimationEnd(animation);
-								mRootV.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+								ViewPropertyAnimator animator3 = ViewPropertyAnimator.animate(myHomeFriendsLl);
+								animator3.alpha(1).setDuration(getResources().getInteger(
+										R.integer.anim_fast_duration)).start(); ;
 							}
 						}).start();
 

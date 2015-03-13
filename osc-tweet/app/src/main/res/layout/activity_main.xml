@@ -116,7 +116,7 @@
         android:id="@+id/notices_fl"
         android:orientation="vertical"
         android:layout_gravity="right"
-        android:layout_width="@dimen/drawer_right_width"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
         <fragment
