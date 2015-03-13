@@ -234,15 +234,18 @@ public final class OscApi {
 		return ret;
 	}
 
-	public static StatusResult tweetReply(Context context, TweetListItem tweet, String content, Comment comment) throws IOException, OscTweetException {
+	public static StatusResult tweetReply(Context context, TweetListItem tweet, String content, Comment comment) throws
+			IOException, OscTweetException {
 		return tweetReply(context, tweet.getId(), content, comment.getCommentAuthorId(), comment.getId());
 	}
 
-	public static StatusResult tweetReply(Context context, String content, Notice notice) throws IOException, OscTweetException {
+	public static StatusResult tweetReply(Context context, String content, Notice notice) throws IOException,
+			OscTweetException {
 		return tweetReply(context, notice.getObjectId(), content, notice.getAuthorId(), notice.getId());
 	}
 
-	public static StatusResult tweetReply(Context context, long tweetId, String content, long commentAuthorId, long repliedId) throws IOException, OscTweetException {
+	public static StatusResult tweetReply(Context context, long tweetId, String content, long commentAuthorId,
+			long repliedId) throws IOException, OscTweetException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -413,12 +416,17 @@ public final class OscApi {
 	/**
 	 * Get my personal information.
 	 *
+	 * @param context
+	 * 		{@link Context}.
+	 * @param showMe
+	 * 		{@code true} if I wanna see myself in notices-list.
+	 *
 	 * @return {@link com.osc4j.ds.personal.MyInformation}.
 	 *
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static MyInformation myInformation(Context context) throws IOException, OscTweetException {
+	public static MyInformation myInformation(Context context, boolean showMe) throws IOException, OscTweetException {
 		MyInformation ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -426,7 +434,8 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		Request request = new Request.Builder().url(Consts.MY_INFORMATION_URL).get().header("Cookie",
+		String url = String.format(Consts.MY_INFORMATION_URL, showMe ? 1 : 0);
+		Request request = new Request.Builder().url(url).get().header("Cookie",
 				sessionInCookie + ";" + tokenInCookie).build();
 		OkHttpClient client = new OkHttpClient();
 		client.networkInterceptors().add(new StethoInterceptor());

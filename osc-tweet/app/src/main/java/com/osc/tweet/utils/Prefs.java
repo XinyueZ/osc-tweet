@@ -24,6 +24,10 @@ public final class Prefs extends BasicPrefs {
 	 */
 	private static final String KEY_EULA_SHOWN = "key_eula_shown";
 	/**
+	 * Show animation for my-info.
+	 */
+	private static final String KEY_MY_INFO_ANIM = "key_my_info_anim";
+	/**
 	 * Default in config for setting feedback with vibration on/off when operating is succeed.
 	 */
 	private static final String DEFAULT_SETTING_VIBRATION_FEEDBACK = "default_setting_vibration_feedback";
@@ -35,6 +39,10 @@ public final class Prefs extends BasicPrefs {
 	 * Default in config for setting that rotates photo slow or medium(fast).
 	 */
 	private static final String DEFAULT_SETTING_PHOTO_ROTATE_SLOW_OR_FAST = "default_setting_photo_rotate_slow_or_fast";
+	/**
+	 * Default in config for showing "me" in notices.
+	 */
+	private static final String DEFAULT_SETTING_SHOW_ME_IN_NOTICES_LIST = "default_setting_show_me_in_notices_list";
 	/**
 	 * A feedback with vibration  on/off when operating is succeed.
 	 */
@@ -48,9 +56,9 @@ public final class Prefs extends BasicPrefs {
 	 */
 	public static final String SETTING_PHOTO_ROTATE_SLOW_OR_FAST = "setting.photo.rotate.slow.or.fast";
 	/**
-	 * Show animation for my-info.
+	 * Showing "me" in notices.
 	 */
-	private static final String KEY_MY_INFO_ANIM = "key_my_info_anim";
+	public static final String SETTING_SHOW_ME_IN_NOTICES_LIST = "setting.show.me.in.notices.list";
 
 	private Prefs() {
 		super(null);
@@ -118,11 +126,14 @@ public final class Prefs extends BasicPrefs {
 
 	/**
 	 * A list to quick reply message.
-	 * @param cxt {@link android.content.Context}.
+	 *
+	 * @param cxt
+	 * 		{@link android.content.Context}.
+	 *
 	 * @return Array of {@link java.lang.String}.
 	 */
 	public String[] getQuickReplyList(Context cxt) {
-		String original =  getString(cxt.getString(R.string.quick_reply_list), null);
+		String original = getString(cxt.getString(R.string.quick_reply_list), null);
 
 		String[] messages = original.split(";");
 		return messages;
@@ -130,15 +141,16 @@ public final class Prefs extends BasicPrefs {
 
 	/**
 	 * A feedback with vibration  on/off when operating is succeed.
-	 * @param on {@code true} if set on.
+	 *
+	 * @param on
+	 * 		{@code true} if set on.
 	 */
-	public void settingVibrationFeedback( boolean on) {
+	public void settingVibrationFeedback(boolean on) {
 		setBoolean(SETTING_VIBRATION_FEEDBACK, on);
 	}
 
 	/**
-	 *
-	 * @return  {@code true} if set on that a feedback with vibration  on/off when operating is succeed.
+	 * @return {@code true} if set on that a feedback with vibration  on/off when operating is succeed.
 	 */
 	public boolean settingVibrationFeedback() {
 		return getBoolean(SETTING_VIBRATION_FEEDBACK, getBoolean(DEFAULT_SETTING_VIBRATION_FEEDBACK, false));
@@ -146,14 +158,17 @@ public final class Prefs extends BasicPrefs {
 
 	/**
 	 * Open one notice (not reply) then clear all of them.
-	 * @param yesNo Default {@code false} if not clear.
+	 *
+	 * @param yesNo
+	 * 		Default {@code false} if not clear.
 	 */
-	public void settingNoticesOpenToClear( boolean yesNo) {
+	public void settingNoticesOpenToClear(boolean yesNo) {
 		setBoolean(SETTING_NOTICES_OPEN_TO_CLEAR, yesNo);
 	}
 
 	/**
 	 * Open one notice (not reply) then clear all of them.
+	 *
 	 * @return Default {@code false} if not clear.
 	 */
 	public boolean settingNoticesOpenToClear() {
@@ -161,15 +176,18 @@ public final class Prefs extends BasicPrefs {
 	}
 
 	/**
-	 *  Rotate photo slow or medium(fast).
-	 * @param slowFast {@code 0} slow, {@code >0} medium(fast).
+	 * Rotate photo slow or medium(fast).
+	 *
+	 * @param slowFast
+	 * 		{@code 0} slow, {@code >0} medium(fast).
 	 */
-	public void settingPhotoRotateSlowOrFast(int slowFast ) {
+	public void settingPhotoRotateSlowOrFast(int slowFast) {
 		setString(SETTING_PHOTO_ROTATE_SLOW_OR_FAST, String.valueOf(slowFast));
 	}
 
 	/**
-	 *  Rotate photo slow or medium(fast).
+	 * Rotate photo slow or medium(fast).
+	 *
 	 * @return slowFast {@code 0} slow, {@code >0} medium(fast).
 	 */
 	public int settingPhotoRotateSlowOrFast() {
@@ -178,15 +196,33 @@ public final class Prefs extends BasicPrefs {
 	}
 
 	/**
+	 * Show "me" in notices list.
+	 * @param show {@code true} if show.
+	 */
+	public void settingShowMeInNoticesList(boolean show) {
+		setBoolean(SETTING_SHOW_ME_IN_NOTICES_LIST, show);
+	}
+	/**
+	 * Show "me" in notices list.
+	 * @return    {@code true} if show.
+	 */
+	public boolean settingShowMeInNoticesList() {
+		return getBoolean(SETTING_SHOW_ME_IN_NOTICES_LIST, getBoolean(DEFAULT_SETTING_SHOW_ME_IN_NOTICES_LIST, false));
+	}
+
+	/**
 	 * Show animation on my-info or not.
-	 * @param showAnim {@code true} if show.
+	 *
+	 * @param showAnim
+	 * 		{@code true} if show.
 	 */
 	public void setShowMyInfoAnim(boolean showAnim) {
 		setBoolean(KEY_MY_INFO_ANIM, showAnim);
 	}
 
 	/**
-	 *  Show animation on my-info or not.
+	 * Show animation on my-info or not.
+	 *
 	 * @return {@code true} if show.
 	 */
 	public boolean showMyInfoAnim() {

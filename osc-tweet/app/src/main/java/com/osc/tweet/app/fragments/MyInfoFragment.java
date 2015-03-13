@@ -32,6 +32,7 @@ import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.events.GetMyInformationEvent;
 import com.osc.tweet.events.OpenMyNoticesDrawerEvent;
 import com.osc.tweet.events.OpenedDrawerEvent;
+import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.RefreshMyInfoEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
@@ -285,7 +286,7 @@ public final class MyInfoFragment extends BaseFragment {
 				@Override
 				protected MyInformation doInBackground(Object... params) {
 					try {
-						return OscApi.myInformation(App.Instance);
+						return OscApi.myInformation(App.Instance, Prefs.getInstance().settingShowMeInNoticesList());
 					} catch (IOException e) {
 						return null;
 					} catch (OscTweetException e) {
@@ -329,6 +330,7 @@ public final class MyInfoFragment extends BaseFragment {
 								meV.setVisibility(View.INVISIBLE);
 								mEditMeV.setVisibility(View.INVISIBLE);
 							}
+							EventBus.getDefault().post(new OperatingEvent(false));
 						}
 
 						EventBus.getDefault().post(new GetMyInformationEvent(myInfo));

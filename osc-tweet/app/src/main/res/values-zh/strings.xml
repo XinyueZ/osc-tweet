@@ -22,6 +22,7 @@
     <string name="msg_message_input">不能发送空信息。</string>
     <string name="msg_update_my_info" formatted="false">(%d) \@我, (%d) 新评论</string>
     <string name="msg_load_config">读取应用配置…</string>
+    <string name="msg_works_in_next_request">设置好后，再下次请求中有效。</string>
 
     <string name="btn_close">关闭</string>
     <string name="btn_confirm">确认</string>
@@ -81,6 +82,7 @@
     <string name="setting_category_operation">操作</string>
     <string name="setting_vibrate_feedback_title">动作并震动回应</string>
     <string name="setting_notices_open_to_clear_title">打开一条关于我的新消息后（不包括回复），就清除所有消息。</string>
+    <string name="setting_show_me_in_notices_title">在通知列表中显示我自己。\n也就是说，我会看到我自己@自己，我评论我自己的动弹内容。</string>
     <string name="setting_category_image">图片</string>
     <string name="setting_photo_rotate_slow_or_fast_title">旋转图片的速度。</string>
     <string-array name="setting_photo_rotate_types">

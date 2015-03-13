@@ -23,6 +23,7 @@
     <string name="msg_follow_cancel">You have canceled relation on %s</string>
     <string name="msg_update_my_info" formatted="false">(%d) \@me, (%d) new comments</string>
     <string name="msg_load_config">Load application configuration…</string>
+    <string name="msg_works_in_next_request">Works in next request.</string>
 
     <string name="btn_confirm">Confirm</string>
     <string name="btn_cancel">Cancel</string>
@@ -90,6 +91,7 @@
     <string name="setting_category_operation">Operation</string>
     <string name="setting_vibrate_feedback_title">Action feedback with vibration.</string>
     <string name="setting_notices_open_to_clear_title">Open one new notice(not the reply) then clear all of them.</string>
+    <string name="setting_show_me_in_notices_title">Show \"me\" in notices-lists.\nThat means I will see when I @me or I commented on my published item myself.</string>
     <string name="setting_category_image">Image</string>
     <string name="setting_photo_rotate_slow_or_fast_title">Rotate photo slow or fast.</string>
     <string-array name="setting_photo_rotate_types">

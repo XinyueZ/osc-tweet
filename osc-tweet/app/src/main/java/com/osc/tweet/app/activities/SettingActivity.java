@@ -27,6 +27,7 @@ import com.chopping.bus.ApplicationConfigurationLoadingIgnoredEvent;
 import com.chopping.exceptions.CanNotOpenOrFindAppPropertiesException;
 import com.chopping.exceptions.InvalidAppPropertiesException;
 import com.osc.tweet.R;
+import com.osc.tweet.app.App;
 import com.osc.tweet.utils.Prefs;
 
 import de.greenrobot.event.EventBus;
@@ -48,6 +49,7 @@ public final class SettingActivity extends PreferenceActivity {
 	 * Progress indicator.
 	 */
 	private ProgressDialog mPb;
+
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -203,8 +205,21 @@ public final class SettingActivity extends PreferenceActivity {
 	 */
 	private void init() {
 		Prefs prefs = Prefs.getInstance();
+
 		CheckBoxPreference vibration = (CheckBoxPreference) findPreference(Prefs.SETTING_VIBRATION_FEEDBACK);
 		vibration.setChecked(prefs.settingVibrationFeedback());
+
+
+		CheckBoxPreference showMe = (CheckBoxPreference) findPreference(Prefs.SETTING_SHOW_ME_IN_NOTICES_LIST);
+		showMe.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				com.chopping.utils.Utils.showLongToast(App.Instance, R.string.msg_works_in_next_request);
+				return true;
+			}
+		});
+		showMe.setChecked(prefs.settingShowMeInNoticesList());
+
 
 		CheckBoxPreference openClear = (CheckBoxPreference) findPreference(Prefs.SETTING_NOTICES_OPEN_TO_CLEAR);
 		openClear.setChecked(prefs.settingNoticesOpenToClear());

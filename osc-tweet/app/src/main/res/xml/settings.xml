@@ -21,6 +21,14 @@
             android:layout="@layout/setting_item"
             android:defaultValue="false" />
 
+        <CheckBoxPreference
+            android:key="setting.show.me.in.notices.list"
+            android:title="@string/setting_show_me_in_notices_title"
+            android:summaryOn="@string/setting_yes"
+            android:summaryOff="@string/setting_no"
+            android:layout="@layout/setting_item"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/setting_category_image"

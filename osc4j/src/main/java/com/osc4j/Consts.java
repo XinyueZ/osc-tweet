@@ -93,7 +93,7 @@ public final class Consts {
 	/**
 	 * My personal information.
 	 */
-	static final String MY_INFORMATION_URL = OSC_HOST + "myInformation";
+	static final String MY_INFORMATION_URL = OSC_HOST + "myInformation?me=%d";
 	/**
 	 * All comments of a tweet item.
 	 */
