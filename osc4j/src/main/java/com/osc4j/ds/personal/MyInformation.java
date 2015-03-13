@@ -6,23 +6,26 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class MyInformation implements Serializable{
+public final class MyInformation implements Serializable {
 	@SerializedName("status")
 	private int mStatus;
 	@SerializedName("am")
 	private Am mAm;
+	@SerializedName("url")
+	private Url mUrl;
 	@SerializedName("atMe")
 	private List<Notice> mNotices;
 	@SerializedName("comments")
 	private List<Notice> mComments;
 
-
-	public MyInformation(int status, Am am, List<Notice> notices, List<Notice> comments) {
+	public MyInformation(int status, Am am, Url url, List<Notice> notices, List<Notice> comments) {
 		mStatus = status;
 		mAm = am;
+		mUrl = url;
 		mNotices = notices;
 		mComments = comments;
 	}
+
 
 	public int getStatus() {
 		return mStatus;
@@ -30,6 +33,10 @@ public final class MyInformation implements Serializable{
 
 	public Am getAm() {
 		return mAm;
+	}
+
+	public Url getUrl() {
+		return mUrl;
 	}
 
 	public List<Notice> getNotices() {

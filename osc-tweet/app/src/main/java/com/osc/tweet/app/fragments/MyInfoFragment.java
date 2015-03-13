@@ -3,6 +3,8 @@ package com.osc.tweet.app.fragments;
 import java.io.IOException;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -108,6 +110,18 @@ public final class MyInfoFragment extends BaseFragment {
 	 * Show hometown
 	 */
 	private TextView mHomeTv;
+	/**
+	 * To open my info as API user in browser.
+	 */
+	private View meV;
+	/**
+	 * Container for user-photo and button to edit user.
+	 */
+	private View mUserPhotoFl;
+	/**
+	 * To edit me online in browser.
+	 */
+	private View mEditMeV;
 
 	/*Init scale of photo.*/
 	private float mPhotoScX;
@@ -187,11 +201,34 @@ public final class MyInfoFragment extends BaseFragment {
 		myHomeFriendsLl = view.findViewById(R.id.my_hometown_friends_ll);
 		ViewHelper.setAlpha(myHomeFriendsLl, 0f);
 
+		meV = view.findViewById(R.id.me_btn);
+		ViewHelper.setAlpha(meV, 0f);
+		meV.setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(myInfo.getUrl().getHome()));
+				startActivity(browserIntent);
+				EventBus.getDefault().post(new CloseDrawerEvent());
+			}
+		});
+
+		mUserPhotoFl = view.findViewById(R.id.user_photo_fl);
 		mUserPhotoIv = (RoundedNetworkImageView) view.findViewById(R.id.user_photo_iv);
-		mPhotoScX = ViewHelper.getScaleX(mUserPhotoIv);
-		mPhotoScY = ViewHelper.getScaleY(mUserPhotoIv);
-		ViewHelper.setScaleX(mUserPhotoIv, 0f);
-		ViewHelper.setScaleY(mUserPhotoIv, 0f);
+		mPhotoScX = ViewHelper.getScaleX(mUserPhotoFl);
+		mPhotoScY = ViewHelper.getScaleY(mUserPhotoFl);
+		ViewHelper.setScaleX(mUserPhotoFl, 0f);
+		ViewHelper.setScaleY(mUserPhotoFl, 0f);
+
+		mEditMeV = view.findViewById(R.id.edit_me_btn);
+		ViewHelper.setAlpha(mEditMeV, 0f);
+		mEditMeV.setOnClickListener(new OnViewAnimatedClickedListener() {
+			@Override
+			public void onClick() {
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(myInfo.getUrl().getEdit()));
+				startActivity(browserIntent);
+				EventBus.getDefault().post(new CloseDrawerEvent());
+			}
+		});
 
 		mUserNameTv = (TextView) view.findViewById(R.id.user_name_tv);
 		mRefreshV = view.findViewById(R.id.refresh_btn);
@@ -212,8 +249,11 @@ public final class MyInfoFragment extends BaseFragment {
 		});
 
 		mNoticesTv = (TextView) view.findViewById(R.id.notices_count_tv);
-		String count = String.format(getString(R.string.msg_update_my_info), 0, 0);
+		String count = String.format(getString(R.string.msg_update_my_info), mAtCount, mCommentsCount);
 		mNoticesTv.setText(count);
+
+		String friends = String.format(getString(R.string.lbl_friends_count), mFansCount, mFollowedCount);
+		mFriendsTv.setText(friends);
 
 	}
 
@@ -278,10 +318,12 @@ public final class MyInfoFragment extends BaseFragment {
 						mFansCount = am.getFansCount();
 						mFollowedCount = am.getFollowersCount();
 						mHomeTv.setText(am.getCity() + "," + am.getProvince());
+						//						doAnimation();
+						//						Prefs.getInstance().setShowMyInfoAnim(false);
 					} else {
-						String count = String.format(getString(R.string.msg_update_my_info), 0, 0);
-						mNoticesTv.setText(count);
+						mEditMeV.setVisibility(View.INVISIBLE);
 					}
+
 					EventBus.getDefault().post(new GetMyInformationEvent(myInfo));
 					objectAnimator.cancel();
 					mRefreshV.setEnabled(true);
@@ -289,7 +331,8 @@ public final class MyInfoFragment extends BaseFragment {
 					String friends = String.format(getString(R.string.lbl_friends_count), mFansCount, mFollowedCount);
 					mFriendsTv.setText(friends);
 
-					//doAnimation();
+					String count = String.format(getString(R.string.msg_update_my_info), mAtCount, mCommentsCount);
+					mNoticesTv.setText(count);
 				} catch (IllegalStateException e) {
 					//Activity has been destroyed
 				}
@@ -299,11 +342,13 @@ public final class MyInfoFragment extends BaseFragment {
 
 	/**
 	 * Make some animation when first time opening of this view.
-	 * @param e The view is seen when {@link OpenedDrawerEvent} comes.
+	 *
+	 * @param e
+	 * 		The view is seen when {@link OpenedDrawerEvent} comes.
 	 */
 	private void transition(OpenedDrawerEvent e) {
 		Prefs prefs = Prefs.getInstance();
-		if(prefs.showMyInfoAnim() && e.getGravity() == Gravity.LEFT) {
+		if (prefs.showMyInfoAnim() && e.getGravity() == Gravity.LEFT) {
 			doAnimation();
 			prefs.setShowMyInfoAnim(false);
 		}
@@ -314,29 +359,34 @@ public final class MyInfoFragment extends BaseFragment {
 	 * Animation for the photo.
 	 */
 	private void doAnimation() {
-		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mUserPhotoIv);
+		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mUserPhotoFl);
 		animator.x(0f).scaleX(mPhotoScX).scaleY(mPhotoScY).setDuration(getResources().getInteger(
-				R.integer.anim_super_fast_duration))
-				.setListener(new AnimatorListenerAdapter() {
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						super.onAnimationEnd(animation);
-						float x = ViewHelper.getX(mUserPhotoIv) + (mUserPhotoIv.getWidth() * 1.5f);
-						float y = ViewHelper.getY(mUserPhotoIv)  ;
-						ViewPropertyAnimator animator2 = ViewPropertyAnimator.animate(myNoticesLl);
-						animator2.x(x).y(y).setDuration(getResources().getInteger(
-								R.integer.anim_super_fast_duration)).setListener(new AnimatorListenerAdapter() {
+				R.integer.anim_super_fast_duration)).setListener(new AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				super.onAnimationEnd(animation);
+				float x = ViewHelper.getX(mUserPhotoFl) + (mUserPhotoFl.getWidth() * 1.5f);
+				float y = ViewHelper.getY(mUserPhotoFl);
+				ViewPropertyAnimator animator2 = ViewPropertyAnimator.animate(myNoticesLl);
+				animator2.x(x).y(y).setDuration(getResources().getInteger(R.integer.anim_super_fast_duration))
+						.setListener(new AnimatorListenerAdapter() {
 							@Override
 							public void onAnimationEnd(Animator animation) {
 								super.onAnimationEnd(animation);
 								ViewPropertyAnimator animator3 = ViewPropertyAnimator.animate(myHomeFriendsLl);
-								animator3.alpha(1).setDuration(getResources().getInteger(
-										R.integer.anim_fast_duration)).start(); ;
+								animator3.alpha(1).setDuration(getResources().getInteger(R.integer.anim_fast_duration))
+										.start();
+								ViewPropertyAnimator animator4 = ViewPropertyAnimator.animate(meV);
+								animator4.alpha(1).setDuration(getResources().getInteger(R.integer.anim_slow_duration))
+										.start();
+								ViewPropertyAnimator animator5 = ViewPropertyAnimator.animate(mEditMeV);
+								animator5.alpha(1).setDuration(getResources().getInteger(R.integer.anim_slow_duration))
+										.start();
 							}
 						}).start();
 
-					}
-				}).start();
+			}
+		}).start();
 	}
 
 	@Override

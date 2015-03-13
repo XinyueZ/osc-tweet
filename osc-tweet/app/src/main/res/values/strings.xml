@@ -76,7 +76,7 @@
     <string name="lbl_hello">Hello</string>
     <string name="lbl_settings">Settings</string>
     <string name="lbl_current">Current:</string>
-    <string name="lbl_friends_count" formatted="false">Fans%d. Followed%d</string>
+    <string name="lbl_friends_count" formatted="false">%d fans and %d followed</string>
     <string name="lbl_hometown">From</string>
     <string name="lbl_no_home">no home</string>
 

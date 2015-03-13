@@ -14,13 +14,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <FrameLayout
+                android:id="@+id/user_photo_fl"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-            <com.osc.tweet.views.RoundedNetworkImageView
-                android:id="@+id/user_photo_iv"
-                android:layout_gravity="center_horizontal|bottom"
-                android:layout_width="@dimen/portrait_large_size"
-                android:layout_height="@dimen/portrait_large_size" />
+                <com.osc.tweet.views.RoundedNetworkImageView
+                    android:id="@+id/user_photo_iv"
+                    android:layout_width="@dimen/portrait_large_size"
+                    android:layout_height="@dimen/portrait_large_size" />
 
+
+                <ImageButton
+                    android:id="@+id/edit_me_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="right|bottom"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/circle_small_white"
+                    android:src="@drawable/ic_edit_me" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -35,12 +48,21 @@
                     android:background="@color/common_transparent"
                     android:src="@drawable/ic_refresh" />
 
+
                 <ImageButton
                     android:id="@+id/settings_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/common_transparent"
                     android:src="@drawable/ic_settings" />
+
+
+                <ImageButton
+                    android:id="@+id/me_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/common_transparent"
+                    android:src="@drawable/ic_me" />
 
             </LinearLayout>
         </FrameLayout>
@@ -95,7 +117,8 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="wrap_content" android:layout_marginLeft="@dimen/common_padding"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="@dimen/common_padding"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
@@ -104,7 +127,8 @@
                 style="@style/Style_My_Information_Label" />
 
             <TextView
-                android:id="@+id/hometown_tv" android:text="@string/lbl_no_home"
+                android:id="@+id/hometown_tv"
+                android:text="@string/lbl_no_home"
                 android:textColor="@color/common_white"
                 style="@style/Style_User_Information_Value" />
         </LinearLayout>
