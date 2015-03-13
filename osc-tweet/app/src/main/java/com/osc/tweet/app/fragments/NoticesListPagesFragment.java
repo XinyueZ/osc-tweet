@@ -90,6 +90,10 @@ public final class NoticesListPagesFragment extends BaseFragment {
 	 */
 	private SmoothProgressBar mPbV;
 
+	/**
+	 * Network action in progress if {@code true}.
+	 */
+	private boolean mInProgress;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -181,6 +185,7 @@ public final class NoticesListPagesFragment extends BaseFragment {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				mPbV.setVisibility(View.VISIBLE);
+				mClearMi.setEnabled(false);
 				clearAtMe();
 				return true;
 			}
@@ -190,6 +195,7 @@ public final class NoticesListPagesFragment extends BaseFragment {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				mPbV.setVisibility(View.VISIBLE);
+				mClearMi.setEnabled(false);
 				clearNewComments();
 				return true;
 			}
@@ -199,6 +205,7 @@ public final class NoticesListPagesFragment extends BaseFragment {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				mPbV.setVisibility(View.VISIBLE);
+				mRefreshMi.setEnabled(false);
 				EventBus.getDefault().post(new RefreshMyInfoEvent());
 				return true;
 			}
@@ -241,6 +248,7 @@ public final class NoticesListPagesFragment extends BaseFragment {
 			mClearCommentsMi.setVisible(false);
 		}
 
+		mRefreshMi.setEnabled(true);
 
 	}
 
@@ -266,55 +274,61 @@ public final class NoticesListPagesFragment extends BaseFragment {
 	 * 		{@link NoticeType} The type of notice.
 	 */
 	private void clear(NoticeType type) {
-		AsyncTaskCompat.executeParallel(new AsyncTask<NoticeType, Void, StatusResult>() {
-			NoticeType mNoticeType;
+		if (!mInProgress) {
+			AsyncTaskCompat.executeParallel(new AsyncTask<NoticeType, Void, StatusResult>() {
+				NoticeType mNoticeType;
 
-			@Override
-			protected void onPreExecute() {
-				super.onPreExecute();
-				mPbV.setVisibility(View.VISIBLE);
-			}
-
-			@Override
-			protected StatusResult doInBackground(NoticeType... params) {
-				mNoticeType = params[0];
-				try {
-					return OscApi.clearNotice(App.Instance, mNoticeType);
-				} catch (IOException e) {
-					return null;
-				} catch (OscTweetException e) {
-					return null;
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					mInProgress = true;
+					mPbV.setVisibility(View.VISIBLE);
 				}
-			}
 
-			@Override
-			protected void onPostExecute(StatusResult res) {
-				super.onPostExecute(res);
-				try {
-					OperatingEvent event = new OperatingEvent(res != null && res.getResult() != null && Integer.valueOf(
-							res.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK);
-					EventBus.getDefault().post(event);
-					if (event.isSuccess()) {
-						EventBus.getDefault().post(new ClearNoticeEvent(mNoticeType));
-						switch (mNoticeType) {
-						case AtMe:
-							mClearAtMi.setVisible(false);
-							break;
-						case Comments:
-							mClearCommentsMi.setVisible(false);
-							break;
-						}
-						if (!mClearAtMi.isVisible() && !mClearCommentsMi.isVisible()) {
-							mClearMi.setVisible(false);
-						}
+				@Override
+				protected StatusResult doInBackground(NoticeType... params) {
+					mNoticeType = params[0];
+					try {
+						return OscApi.clearNotice(App.Instance, mNoticeType);
+					} catch (IOException e) {
+						return null;
+					} catch (OscTweetException e) {
+						return null;
 					}
-				} catch (IllegalStateException e) {
-					//Activity has been destroyed
 				}
-				mPbV.setVisibility(View.GONE);
-				mPbV.progressiveStop();
-			}
-		}, type);
+
+				@Override
+				protected void onPostExecute(StatusResult res) {
+					super.onPostExecute(res);
+					try {
+						OperatingEvent event = new OperatingEvent(
+								res != null && res.getResult() != null && Integer.valueOf(res.getResult().getCode()) ==
+										com.osc4j.ds.common.Status.STATUS_OK);
+						EventBus.getDefault().post(event);
+						if (event.isSuccess()) {
+							EventBus.getDefault().post(new ClearNoticeEvent(mNoticeType));
+							switch (mNoticeType) {
+							case AtMe:
+								mClearAtMi.setVisible(false);
+								break;
+							case Comments:
+								mClearCommentsMi.setVisible(false);
+								break;
+							}
+							if (!mClearAtMi.isVisible() && !mClearCommentsMi.isVisible()) {
+								mClearMi.setVisible(false);
+							}
+						}
+					} catch (IllegalStateException e) {
+						//Activity has been destroyed
+					}
+					mPbV.setVisibility(View.GONE);
+					mPbV.progressiveStop();
+					mClearMi.setEnabled(true);
+					mInProgress = false;
+				}
+			}, type);
+		}
 	}
 
 

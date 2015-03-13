@@ -69,6 +69,10 @@ public final class TweetListFragment extends BaseFragment {
 	 * On the bottom of all records.
 	 */
 	private boolean mBottom;
+	/**
+	 * Network action in progress if {@code true}.
+	 */
+	private boolean mInProgress;
 
 	//------------------------------------------------
 	//Subscribes, event-handlers
@@ -199,74 +203,92 @@ public final class TweetListFragment extends BaseFragment {
 	 * Get tweets data and showing on list.
 	 */
 	private void getTweetList() {
-		AsyncTaskCompat.executeParallel(new AsyncTask<Object, TweetList, TweetList>() {
-			@Override
-			protected TweetList doInBackground(Object... params) {
-				try {
-					return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
-							getArguments().getBoolean(EXTRAS_HOTSPOT, false));
-				} catch (IOException e) {
-					return null;
-				} catch (OscTweetException e) {
-					return null;
+		if(!mInProgress) {
+			AsyncTaskCompat.executeParallel(new AsyncTask<Object, TweetList, TweetList>() {
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					mInProgress = true;
 				}
-			}
 
-			@Override
-			protected void onPostExecute(TweetList tweetList) {
-				super.onPostExecute(tweetList);
-				try {
-					if (tweetList != null) {
-						mAdp.setData(tweetList.getTweets());
-						finishLoading();
-						mLayoutManager.scrollToPositionWithOffset(0, 0);
+				@Override
+				protected TweetList doInBackground(Object... params) {
+					try {
+						return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
+								getArguments().getBoolean(EXTRAS_HOTSPOT, false));
+					} catch (IOException e) {
+						return null;
+					} catch (OscTweetException e) {
+						return null;
 					}
-				} catch (IllegalStateException e) {
-					//Activity has been destroyed
 				}
-			}
-		});
+
+				@Override
+				protected void onPostExecute(TweetList tweetList) {
+					super.onPostExecute(tweetList);
+					try {
+						if (tweetList != null) {
+							mAdp.setData(tweetList.getTweets());
+							finishLoading();
+							mLayoutManager.scrollToPositionWithOffset(0, 0);
+						}
+					} catch (IllegalStateException e) {
+						//Activity has been destroyed
+					}
+					mInProgress = false;
+				}
+			});
+		}
 	}
 
 	/**
 	 * Load more and more tweets on to list.
 	 */
 	private void getMoreTweetList() {
-		AsyncTaskCompat.executeParallel(new AsyncTask<Object, TweetList, TweetList>() {
-			@Override
-			protected TweetList doInBackground(Object... params) {
-				try {
-					return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
-							getArguments().getBoolean(EXTRAS_HOTSPOT, false));
-				} catch (IOException e) {
-					return null;
-				} catch (OscTweetException e) {
-					return null;
+		if(!mInProgress) {
+			AsyncTaskCompat.executeParallel(new AsyncTask<Object, TweetList, TweetList>() {
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					mInProgress = true;
 				}
-			}
 
-			@Override
-			protected void onPostExecute(TweetList tweetList) {
-				super.onPostExecute(tweetList);
-				try {
-					if (tweetList != null && tweetList.getTweets() != null) {
-						mAdp.getData().addAll(tweetList.getTweets());
-					} else {
-						if (tweetList != null) {
-							mPage--;
-							if (mPage < 0) {
-								mPage = 0;
-							}
-						} else {
-							mBottom = true;
-						}
+				@Override
+				protected TweetList doInBackground(Object... params) {
+					try {
+						return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
+								getArguments().getBoolean(EXTRAS_HOTSPOT, false));
+					} catch (IOException e) {
+						return null;
+					} catch (OscTweetException e) {
+						return null;
 					}
-					finishLoading();
-				} catch (IllegalStateException e) {
-					//Activity has been destroyed
 				}
-			}
-		});
+
+				@Override
+				protected void onPostExecute(TweetList tweetList) {
+					super.onPostExecute(tweetList);
+					try {
+						if (tweetList != null && tweetList.getTweets() != null) {
+							mAdp.getData().addAll(tweetList.getTweets());
+						} else {
+							if (tweetList != null) {
+								mPage--;
+								if (mPage < 0) {
+									mPage = 0;
+								}
+							} else {
+								mBottom = true;
+							}
+						}
+						finishLoading();
+					} catch (IllegalStateException e) {
+						//Activity has been destroyed
+					}
+					mInProgress = false;
+				}
+			});
+		}
 	}
 
 	/**

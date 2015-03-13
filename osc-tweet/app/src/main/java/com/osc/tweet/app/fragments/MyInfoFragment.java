@@ -122,7 +122,10 @@ public final class MyInfoFragment extends BaseFragment {
 	/*Init scale of photo.*/
 	private float mPhotoScX;
 	private float mPhotoScY;
-
+	/**
+	 * Network action in progress if {@code true}.
+	 */
+	private boolean mInProgress;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -261,84 +264,90 @@ public final class MyInfoFragment extends BaseFragment {
 	 * 		Show some feedback when loaded if {@code true}.
 	 */
 	private void getMyInformation(final boolean feedback) {
-		AsyncTaskCompat.executeParallel(new AsyncTask<Object, MyInformation, MyInformation>() {
-			ObjectAnimator objectAnimator;
+		if (!mInProgress) {
+			AsyncTaskCompat.executeParallel(new AsyncTask<Object, MyInformation, MyInformation>() {
+				ObjectAnimator objectAnimator;
 
 
-			@Override
-			protected void onPreExecute() {
-				mUserPhotoIv.setDefaultImageResId(R.drawable.ic_not_loaded);
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					mInProgress = true;
+					mUserPhotoIv.setDefaultImageResId(R.drawable.ic_not_loaded);
 
-				mRefreshV.setEnabled(false);
-				objectAnimator = ObjectAnimator.ofFloat(mRefreshV, "rotation", 0, 360f);
-				objectAnimator.setDuration(800);
-				objectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-				objectAnimator.start();
-				super.onPreExecute();
-			}
-
-			@Override
-			protected MyInformation doInBackground(Object... params) {
-				try {
-					return OscApi.myInformation(App.Instance);
-				} catch (IOException e) {
-					return null;
-				} catch (OscTweetException e) {
-					return null;
+					mRefreshV.setEnabled(false);
+					objectAnimator = ObjectAnimator.ofFloat(mRefreshV, "rotation", 0, 360f);
+					objectAnimator.setDuration(800);
+					objectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+					objectAnimator.start();
 				}
-			}
 
-			@Override
-			protected void onPostExecute(MyInformation myInfo) {
-				super.onPostExecute(myInfo);
-				try {
-					if (myInfo != null && myInfo.getAm() != null) {
-						MyInfoFragment.this.myInfo = myInfo;
-						Am am = MyInfoFragment.this.myInfo.getAm();
-						mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
-						mUserNameTv.setText(am.getName());
-						mAtCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
-						mCommentsCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
+				@Override
+				protected MyInformation doInBackground(Object... params) {
+					try {
+						return OscApi.myInformation(App.Instance);
+					} catch (IOException e) {
+						return null;
+					} catch (OscTweetException e) {
+						return null;
+					}
+				}
+
+				@Override
+				protected void onPostExecute(MyInformation myInfo) {
+					super.onPostExecute(myInfo);
+					try {
+						if (myInfo != null && myInfo.getAm() != null) {
+							MyInfoFragment.this.myInfo = myInfo;
+							Am am = MyInfoFragment.this.myInfo.getAm();
+							mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
+							mUserNameTv.setText(am.getName());
+							mAtCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
+							mCommentsCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
+
+							String count = String.format(getString(R.string.msg_update_my_info), mAtCount,
+									mCommentsCount);
+							if (feedback) {
+								Utils.showShortToast(App.Instance, count);
+								com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
+							}
+							mNoticesTv.setText(count);
+
+							if (mAtCount != 0 || mCommentsCount != 0) {
+								EventBus.getDefault().post(new OpenMyNoticesDrawerEvent());
+							}
+
+							mFansCount = am.getFansCount();
+							mFollowedCount = am.getFollowersCount();
+							mHomeTv.setText(am.getCity() + "," + am.getProvince());
+							//						doAnimation();
+							//						Prefs.getInstance().setShowMyInfoAnim(false);
+							mEditMeV.setVisibility(View.VISIBLE);
+							meV.setVisibility(View.VISIBLE);
+						} else {
+							if (MyInfoFragment.this.myInfo == null) {
+								meV.setVisibility(View.INVISIBLE);
+								mEditMeV.setVisibility(View.INVISIBLE);
+							}
+						}
+
+						EventBus.getDefault().post(new GetMyInformationEvent(myInfo));
+						objectAnimator.cancel();
+						mRefreshV.setEnabled(true);
+
+						String friends = String.format(getString(R.string.lbl_friends_count), mFansCount,
+								mFollowedCount);
+						mFriendsTv.setText(friends);
 
 						String count = String.format(getString(R.string.msg_update_my_info), mAtCount, mCommentsCount);
-						if (feedback) {
-							Utils.showShortToast(App.Instance, count);
-							com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
-						}
 						mNoticesTv.setText(count);
-
-						if (mAtCount != 0 || mCommentsCount != 0) {
-							EventBus.getDefault().post(new OpenMyNoticesDrawerEvent());
-						}
-
-						mFansCount = am.getFansCount();
-						mFollowedCount = am.getFollowersCount();
-						mHomeTv.setText(am.getCity() + "," + am.getProvince());
-						//						doAnimation();
-						//						Prefs.getInstance().setShowMyInfoAnim(false);
-						mEditMeV.setVisibility(View.VISIBLE);
-						meV.setVisibility(View.VISIBLE);
-					} else {
-						if(MyInfoFragment.this.myInfo  == null) {
-							meV.setVisibility(View.INVISIBLE);
-							mEditMeV.setVisibility(View.INVISIBLE);
-						}
+					} catch (IllegalStateException e) {
+						//Activity has been destroyed
 					}
-
-					EventBus.getDefault().post(new GetMyInformationEvent(myInfo));
-					objectAnimator.cancel();
-					mRefreshV.setEnabled(true);
-
-					String friends = String.format(getString(R.string.lbl_friends_count), mFansCount, mFollowedCount);
-					mFriendsTv.setText(friends);
-
-					String count = String.format(getString(R.string.msg_update_my_info), mAtCount, mCommentsCount);
-					mNoticesTv.setText(count);
-				} catch (IllegalStateException e) {
-					//Activity has been destroyed
+					mInProgress = false;
 				}
-			}
-		});
+			});
+		}
 	}
 
 	/**
@@ -353,7 +362,7 @@ public final class MyInfoFragment extends BaseFragment {
 			doAnimation();
 			prefs.setShowMyInfoAnim(false);
 
-			if(	MyInfoFragment.this.myInfo == null) {
+			if (MyInfoFragment.this.myInfo == null) {
 				getMyInformation(false);
 			}
 		}

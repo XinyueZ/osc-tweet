@@ -78,7 +78,10 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	private SwipeRefreshLayout mSwipeRefreshLayout;
 
 	private LinearLayoutManager mLayoutManager;
-
+	/**
+	 * Network action in progress if {@code true}.
+	 */
+	private boolean mInProgress;
 	/**
 	 * The page of tweets to load.
 	 */
@@ -251,78 +254,92 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	 * Load all comments.
 	 */
 	private void getCommentsList() {
-		AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, Comments>() {
+		if (!mInProgress) {
+			AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, Comments>() {
 
-
-			@Override
-			protected Comments doInBackground(Object... params) {
-				try {
-					return OscApi.tweetCommentList(App.Instance, getTweetItem(), mPage);
-				} catch (IOException e) {
-					return null;
-				} catch (OscTweetException e) {
-					return null;
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					mInProgress = true;
 				}
-			}
-
-			@Override
-			protected void onPostExecute(Comments comments) {
-				super.onPostExecute(comments);
-				try {
-					if (comments != null) {
-						mAdp.setData(getTweetItem(), comments.getComments());
-					} else {
-						mAdp.setData(getTweetItem(), null);
+				@Override
+				protected Comments doInBackground(Object... params) {
+					try {
+						return OscApi.tweetCommentList(App.Instance, getTweetItem(), mPage);
+					} catch (IOException e) {
+						return null;
+					} catch (OscTweetException e) {
+						return null;
 					}
-					finishLoading();
-					mLayoutManager.scrollToPositionWithOffset(0, 0);
-				} catch (IllegalStateException e) {
-					//Activity has been destroyed
 				}
-			}
-		});
+
+				@Override
+				protected void onPostExecute(Comments comments) {
+					super.onPostExecute(comments);
+					try {
+						if (comments != null) {
+							mAdp.setData(getTweetItem(), comments.getComments());
+						} else {
+							mAdp.setData(getTweetItem(), null);
+						}
+						finishLoading();
+						mLayoutManager.scrollToPositionWithOffset(0, 0);
+					} catch (IllegalStateException e) {
+						//Activity has been destroyed
+					}
+					mInProgress = false;
+				}
+			});
+		}
 	}
 
 	/**
 	 * Load more comments.
 	 */
 	private void getMoreCommentsList() {
-		AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, Comments>() {
-
-
-			@Override
-			protected Comments doInBackground(Object... params) {
-				try {
-					return OscApi.tweetCommentList(App.Instance, getTweetItem(), mPage);
-				} catch (IOException e) {
-					return null;
-				} catch (OscTweetException e) {
-					return null;
+		if (!mInProgress) {
+			AsyncTaskCompat.executeParallel(new AsyncTask<Object, Object, Comments>() {
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					mInProgress = true;
 				}
-			}
 
-			@Override
-			protected void onPostExecute(Comments comments) {
-				super.onPostExecute(comments);
-				try {
-					if (comments != null && comments.getComments() != null) {
-						mAdp.getData().addAll(comments.getComments());
-					} else {
-						if (comments != null) {
-							mPage--;
-							if (mPage < 0) {
-								mPage = 0;
-							}
-						} else {
-							mBottom = true;
-						}
+				@Override
+				protected Comments doInBackground(Object... params) {
+					try {
+						return OscApi.tweetCommentList(App.Instance, getTweetItem(), mPage);
+					} catch (IOException e) {
+						return null;
+					} catch (OscTweetException e) {
+						return null;
 					}
-					finishLoading();
-				} catch (IllegalStateException e) {
-					//Activity has been destroyed
 				}
-			}
-		});
+
+				@Override
+				protected void onPostExecute(Comments comments) {
+					super.onPostExecute(comments);
+					try {
+						if (comments != null && comments.getComments() != null) {
+							mAdp.getData().addAll(comments.getComments());
+						} else {
+							if (comments != null) {
+								mPage--;
+								if (mPage < 0) {
+									mPage = 0;
+								}
+							} else {
+								mBottom = true;
+							}
+						}
+						finishLoading();
+					} catch (IllegalStateException e) {
+						//Activity has been destroyed
+					}
+					mInProgress = false;
+				}
+			});
+		}
 	}
 
 	/**

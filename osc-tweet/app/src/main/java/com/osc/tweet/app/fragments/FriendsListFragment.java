@@ -53,7 +53,10 @@ public final class FriendsListFragment extends BaseFragment {
 	 * Loading indicator.
 	 */
 	private View mPbV;
-
+	/**
+	 * Network action in progress if {@code true}.
+	 */
+	private boolean mInProgress;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -116,43 +119,52 @@ public final class FriendsListFragment extends BaseFragment {
 	 * Get tweets data and showing on list.
 	 */
 	private void getFriendsList() {
-		AsyncTaskCompat.executeParallel(new AsyncTask<Object, FriendsList, FriendsList>() {
-			@Override
-			protected FriendsList doInBackground(Object... params) {
-				try {
-					return OscApi.friendsList(App.Instance);
-				} catch (IOException e) {
-					return null;
-				} catch (OscTweetException e) {
-					return null;
+		if(!mInProgress) {
+			AsyncTaskCompat.executeParallel(new AsyncTask<Object, FriendsList, FriendsList>() {
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					mInProgress = true;
 				}
-			}
 
-			@Override
-			protected void onPostExecute(FriendsList friendsList) {
-				super.onPostExecute(friendsList);
-				try {
-					if (friendsList != null) {
-						Friends friends = friendsList.getFriends();
-						List<Friend> all = new ArrayList<>();
-						List<Friend> fansList = friends.getFansList();
-						if (fansList != null) {
-							all.addAll(fansList);
-						}
-
-						List<Friend> focusList = friends.getFocusList();
-						if (focusList != null) {
-							all.addAll(focusList);
-						}
-						mAdp.setData(all);
-						mAdp.notifyDataSetChanged();
-						mPbV.setVisibility(View.GONE);
+				@Override
+				protected FriendsList doInBackground(Object... params) {
+					try {
+						return OscApi.friendsList(App.Instance);
+					} catch (IOException e) {
+						return null;
+					} catch (OscTweetException e) {
+						return null;
 					}
-				} catch (IllegalStateException e) {
-					//Activity has been destroyed
 				}
-			}
-		});
+
+				@Override
+				protected void onPostExecute(FriendsList friendsList) {
+					super.onPostExecute(friendsList);
+					try {
+						if (friendsList != null) {
+							Friends friends = friendsList.getFriends();
+							List<Friend> all = new ArrayList<>();
+							List<Friend> fansList = friends.getFansList();
+							if (fansList != null) {
+								all.addAll(fansList);
+							}
+
+							List<Friend> focusList = friends.getFocusList();
+							if (focusList != null) {
+								all.addAll(focusList);
+							}
+							mAdp.setData(all);
+							mAdp.notifyDataSetChanged();
+							mPbV.setVisibility(View.GONE);
+						}
+					} catch (IllegalStateException e) {
+						//Activity has been destroyed
+					}
+					mInProgress = false;
+				}
+			});
+		}
 	}
 
 	@Override

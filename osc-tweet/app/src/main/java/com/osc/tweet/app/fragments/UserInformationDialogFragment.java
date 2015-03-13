@@ -88,6 +88,11 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	private float mBtnX;
 
 	/**
+	 * Network action in progress if {@code true}.
+	 */
+	private boolean mInProgress;
+
+	/**
 	 * Initialize an {@link  UserInformationDialogFragment}.
 	 *
 	 * @param context
@@ -211,54 +216,64 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	 * Get user-information.
 	 */
 	private void getUserInformation() {
-		AsyncTaskCompat.executeParallel(new AsyncTask<Object, UserInformation, UserInformation>() {
-			@Override
-			protected UserInformation doInBackground(Object... params) {
-				try {
-					long fri = getArguments().getLong(EXTRAS_FRIEND);
-					boolean nmsg = getArguments().getBoolean(EXTRAS_NEED_MESSAGES);
-					return OscApi.userInformation(App.Instance, fri, nmsg);
-				} catch (IOException e) {
-					return null;
-				} catch (OscTweetException e) {
-					return null;
+		if (!mInProgress) {
+			AsyncTaskCompat.executeParallel(new AsyncTask<Object, UserInformation, UserInformation>() {
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					mInProgress = true;
 				}
-			}
 
-			@Override
-			protected void onPostExecute(UserInformation userInformation) {
-				super.onPostExecute(userInformation);
-				try {
-					if (userInformation != null && userInformation.getUser() != null) {
-						mUserInfo = userInformation;
-						User user = userInformation.getUser();
-						mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
-						mUserPhotoIv.setImageUrl(user.getPortrait(), TaskHelper.getImageLoader());
-						ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mUserPhotoIv);
-						animator.y(mIvY).setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
-						animator = ViewPropertyAnimator.animate(mUserRelationBtn);
-						animator.translationX(mBtnX).setDuration(getResources().getInteger(
-								R.integer.anim_fast_duration)).start();
-						mUserNameTv.setText(user.getName());
-						mUserIdentTv.setText(user.getIdent());
-						mUserSkillTv.setText(user.getExpertise());
-						mUserPlatformTv.setText(user.getPlatforms());
-						mUserGenderTv.setText(getString(
-								user.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
-										R.string.lbl_user_gender_female));
-						updateFocusButton();
-						mUserLocationTv.setText(String.format("%s, %s", user.getCity(), user.getProvince()));
-						mLoadUserInfoPb.setVisibility(View.INVISIBLE);
-						mAllContainerV.setVisibility(View.VISIBLE);
-						mAdp.setData(userInformation.getTweets());
-						mAdp.notifyDataSetChanged();
-						mLoadTweetsPb.setVisibility(View.INVISIBLE);
+				@Override
+				protected UserInformation doInBackground(Object... params) {
+					try {
+						long fri = getArguments().getLong(EXTRAS_FRIEND);
+						boolean nmsg = getArguments().getBoolean(EXTRAS_NEED_MESSAGES);
+						return OscApi.userInformation(App.Instance, fri, nmsg);
+					} catch (IOException e) {
+						return null;
+					} catch (OscTweetException e) {
+						return null;
 					}
-				} catch (IllegalStateException e) {
-					//Activity has been destroyed
 				}
-			}
-		});
+
+				@Override
+				protected void onPostExecute(UserInformation userInformation) {
+					super.onPostExecute(userInformation);
+					try {
+						if (userInformation != null && userInformation.getUser() != null) {
+							mUserInfo = userInformation;
+							User user = userInformation.getUser();
+							mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
+							mUserPhotoIv.setImageUrl(user.getPortrait(), TaskHelper.getImageLoader());
+							ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mUserPhotoIv);
+							animator.y(mIvY).setDuration(getResources().getInteger(R.integer.anim_fast_duration))
+									.start();
+							animator = ViewPropertyAnimator.animate(mUserRelationBtn);
+							animator.translationX(mBtnX).setDuration(getResources().getInteger(
+									R.integer.anim_fast_duration)).start();
+							mUserNameTv.setText(user.getName());
+							mUserIdentTv.setText(user.getIdent());
+							mUserSkillTv.setText(user.getExpertise());
+							mUserPlatformTv.setText(user.getPlatforms());
+							mUserGenderTv.setText(getString(
+									user.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
+											R.string.lbl_user_gender_female));
+							updateFocusButton();
+							mUserLocationTv.setText(String.format("%s, %s", user.getCity(), user.getProvince()));
+							mLoadUserInfoPb.setVisibility(View.INVISIBLE);
+							mAllContainerV.setVisibility(View.VISIBLE);
+							mAdp.setData(userInformation.getTweets());
+							mAdp.notifyDataSetChanged();
+							mLoadTweetsPb.setVisibility(View.INVISIBLE);
+						}
+					} catch (IllegalStateException e) {
+						//Activity has been destroyed
+					}
+					mInProgress = false;
+				}
+			});
+		}
 	}
 
 	/**

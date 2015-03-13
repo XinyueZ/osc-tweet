@@ -78,6 +78,10 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 * An {@link android.view.View} to indicate that "sending" is in progress.
 	 */
 	private SmoothProgressBar mSendingIndicatorV;
+	/**
+	 * Network action in progress if {@code true}.
+	 */
+	private boolean mInProgress;
 
 	/**
 	 * Initialize an {@link  EditorDialogFragment} for a tweet publish.
@@ -339,57 +343,62 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	private void sendMessage() {
 		String msg = mEditText.getText().toString();
 		if (!TextUtils.isEmpty(msg)) {
-			AsyncTaskCompat.executeParallel(new AsyncTask<String, Object, StatusResult>() {
-				@Override
-				protected void onPreExecute() {
-					super.onPreExecute();
-					mSendMi.setEnabled(false);
-					mEditText.setEnabled(false);
-					mSendingIndicatorV.setVisibility(View.VISIBLE);
-				}
+			if(!mInProgress) {
+				AsyncTaskCompat.executeParallel(new AsyncTask<String, Object, StatusResult>() {
+					@Override
+					protected void onPreExecute() {
+						super.onPreExecute();
+						mInProgress = true;
+						mSendMi.setEnabled(false);
+						mEditText.setEnabled(false);
+						mSendingIndicatorV.setVisibility(View.VISIBLE);
+					}
 
-				@Override
-				protected StatusResult doInBackground(String... params) {
-					String msg = params[0];
-					try {
-						if (getTweetItem() == null) {
-							return OscApi.tweetPub(App.Instance, Utils.encode(msg));
-						} else {
-							if (getComment() == null && getNotice() == null) {
-								return OscApi.tweetCommentPub(App.Instance, getTweetItem(), Utils.encode(msg));
+					@Override
+					protected StatusResult doInBackground(String... params) {
+						String msg = params[0];
+						try {
+							if (getTweetItem() == null) {
+								return OscApi.tweetPub(App.Instance, Utils.encode(msg));
 							} else {
-								if (getComment() != null) {
-									return OscApi.tweetReply(App.Instance, getTweetItem(), Utils.encode(msg),
-											getComment());
+								if (getComment() == null && getNotice() == null) {
+									return OscApi.tweetCommentPub(App.Instance, getTweetItem(), Utils.encode(msg));
 								} else {
-									return OscApi.tweetReply(App.Instance, Utils.encode(msg), getNotice());
+									if (getComment() != null) {
+										return OscApi.tweetReply(App.Instance, getTweetItem(), Utils.encode(msg),
+												getComment());
+									} else {
+										return OscApi.tweetReply(App.Instance, Utils.encode(msg), getNotice());
+									}
 								}
 							}
+						} catch (IOException | OscTweetException e) {
+							return null;
 						}
-					} catch (IOException | OscTweetException e) {
-						return null;
 					}
-				}
 
-				@Override
-				protected void onPostExecute(StatusResult s) {
-					super.onPostExecute(s);
-					if (s != null && Integer.valueOf(s.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK) {
-						if (isVisible() && mSendMi != null) {
-							mSendMi.setEnabled(true);
+					@Override
+					protected void onPostExecute(StatusResult s) {
+						super.onPostExecute(s);
+						if (s != null && Integer.valueOf(s.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK) {
+							if (isVisible() && mSendMi != null) {
+								mSendMi.setEnabled(true);
+								mEditText.setEnabled(true);
+								mSendingIndicatorV.setVisibility(View.INVISIBLE);
+								mSendingIndicatorV.progressiveStop();
+							}
+							EventBus.getDefault().post(new LoadEvent());
+							EventBus.getDefault().post(new OperatingEvent(true));
+							dismiss();
+						} else {
+							EventBus.getDefault().post(new OperatingEvent(false));
 							mEditText.setEnabled(true);
-							mSendingIndicatorV.setVisibility(View.INVISIBLE);
-							mSendingIndicatorV.progressiveStop();
 						}
-						EventBus.getDefault().post(new LoadEvent());
-						EventBus.getDefault().post(new OperatingEvent(true));
-						dismiss();
-					} else {
-						EventBus.getDefault().post(new OperatingEvent(false));
-						mEditText.setEnabled(true);
+
+						mInProgress = false;
 					}
-				}
-			}, msg);
+				}, msg);
+			}
 		} else {
 			Utils.showShortToast(App.Instance, R.string.msg_message_input);
 		}
