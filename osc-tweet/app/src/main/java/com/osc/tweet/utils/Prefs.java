@@ -24,10 +24,6 @@ public final class Prefs extends BasicPrefs {
 	 */
 	private static final String KEY_EULA_SHOWN = "key_eula_shown";
 	/**
-	 * Show animation for my-info.
-	 */
-	private static final String KEY_MY_INFO_ANIM = "key_my_info_anim";
-	/**
 	 * Default in config for setting feedback with vibration on/off when operating is succeed.
 	 */
 	private static final String DEFAULT_SETTING_VIBRATION_FEEDBACK = "default_setting_vibration_feedback";
@@ -210,22 +206,4 @@ public final class Prefs extends BasicPrefs {
 		return getBoolean(SETTING_SHOW_ME_IN_NOTICES_LIST, getBoolean(DEFAULT_SETTING_SHOW_ME_IN_NOTICES_LIST, false));
 	}
 
-	/**
-	 * Show animation on my-info or not.
-	 *
-	 * @param showAnim
-	 * 		{@code true} if show.
-	 */
-	public void setShowMyInfoAnim(boolean showAnim) {
-		setBoolean(KEY_MY_INFO_ANIM, showAnim);
-	}
-
-	/**
-	 * Show animation on my-info or not.
-	 *
-	 * @return {@code true} if show.
-	 */
-	public boolean showMyInfoAnim() {
-		return getBoolean(KEY_MY_INFO_ANIM, true);
-	}
 }

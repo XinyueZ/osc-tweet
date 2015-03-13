@@ -376,7 +376,6 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onDestroy() {
 		mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
-		Prefs.getInstance().setShowMyInfoAnim(true);
 		super.onDestroy();
 	}
 

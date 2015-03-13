@@ -359,11 +359,8 @@ public final class MyInfoFragment extends BaseFragment {
 	 * 		The view is seen when {@link OpenedDrawerEvent} comes.
 	 */
 	private void transition(OpenedDrawerEvent e) {
-		Prefs prefs = Prefs.getInstance();
-		if (prefs.showMyInfoAnim() && e.getGravity() == Gravity.LEFT) {
+		if ( e.getGravity() == Gravity.LEFT) {
 			doAnimation();
-			prefs.setShowMyInfoAnim(false);
-
 			if (MyInfoFragment.this.myInfo == null) {
 				getMyInformation(false);
 			}
