@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,6 +28,7 @@ import com.osc.tweet.events.ClearCommentsEvent;
 import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.events.GetMyInformationEvent;
 import com.osc.tweet.events.OperatingEvent;
+import com.osc.tweet.events.RefreshMyInfoEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc4j.OscApi;
 import com.osc4j.ds.common.NoticeType;
@@ -80,6 +82,10 @@ public final class NoticesListPagesFragment extends BaseFragment {
 	 */
 	private MenuItem mClearCommentsMi;
 	/**
+	 * The {@link MenuItem} to get my newest personal information.
+	 */
+	private MenuItem mRefreshMi;
+	/**
 	 * Progress indicator.
 	 */
 	private SmoothProgressBar mPbV;
@@ -119,6 +125,8 @@ public final class NoticesListPagesFragment extends BaseFragment {
 	public void onEvent(ClearCommentsEvent e) {
 		clearNewComments();
 	}
+
+
 	//------------------------------------------------
 
 
@@ -165,7 +173,7 @@ public final class NoticesListPagesFragment extends BaseFragment {
 
 
 		Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-		toolbar.inflateMenu(R.menu.menu_my_notices);
+		toolbar.inflateMenu(R.menu.menu_notices);
 		Menu menu = toolbar.getMenu();
 		mClearMi = menu.findItem(R.id.action_clear_notices);
 		mClearAtMi = menu.findItem(R.id.action_clear_at_me);
@@ -186,6 +194,15 @@ public final class NoticesListPagesFragment extends BaseFragment {
 				return true;
 			}
 		});
+		mRefreshMi = menu.findItem(R.id.action_refresh);
+		mRefreshMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				mPbV.setVisibility(View.VISIBLE);
+				EventBus.getDefault().post(new RefreshMyInfoEvent());
+				return true;
+			}
+		});
 		showMyNotices();
 
 	}
@@ -194,6 +211,9 @@ public final class NoticesListPagesFragment extends BaseFragment {
 	 * Show all my current new notices.
 	 */
 	private void showMyNotices() {
+		mPbV.setVisibility(View.GONE);
+		mPbV.progressiveStop();
+
 		if (myInfo != null && myInfo.getAm() != null) {
 			mViewPager.setAdapter(new NoticesListViewPagerAdapter(App.Instance, getChildFragmentManager(), myInfo));
 			mTabs.setViewPager(mViewPager);

@@ -53,6 +53,7 @@ import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.OpenMyNoticesDrawerEvent;
+import com.osc.tweet.events.OpenedDrawerEvent;
 import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
@@ -153,8 +154,10 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.OpenMyNoticesDrawerEvent}.
 	 */
 	public void onEvent(OpenMyNoticesDrawerEvent e) {
-		mDrawerLayout.closeDrawer(Gravity.LEFT);
-		mDrawerLayout.openDrawer(Gravity.RIGHT);
+		if( !mDrawerLayout.isDrawerOpen(Gravity.LEFT)  &&  	!mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+			mDrawerLayout.closeDrawer(Gravity.LEFT);
+			mDrawerLayout.openDrawer(Gravity.RIGHT);
+		}
 	}
 	/**
 	 * Handler for {@link  EULARejectEvent}.
@@ -373,6 +376,7 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onDestroy() {
 		mLocalBroadcastManager.unregisterReceiver(mBroadcastReceiver);
+		Prefs.getInstance().setShowMyInfoAnim(true);
 		super.onDestroy();
 	}
 
@@ -517,7 +521,18 @@ public class MainActivity extends BaseActivity {
 			actionBar.setDisplayHomeAsUpEnabled(true);
 			mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 			mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.application_name,
-					R.string.app_name);
+					R.string.app_name) {
+				@Override
+				public void onDrawerOpened(View drawerView) {
+					super.onDrawerOpened(drawerView);
+
+					if(mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
+						EventBus.getDefault().post(new OpenedDrawerEvent(Gravity.LEFT));
+					} else if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+						EventBus.getDefault().post(new OpenedDrawerEvent(Gravity.RIGHT));
+					}
+				}
+			};
 			mDrawerLayout.setDrawerListener(mDrawerToggle);
 
 		}

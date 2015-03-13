@@ -78,14 +78,14 @@
             android:background="@color/common_transparent"
             android:layout_width="wrap_content"
             android:src="@drawable/ic_open_list"
-            android:layout_gravity="right|center_vertical"
+            android:layout_gravity="right|bottom"
             android:layout_height="wrap_content" />
     </FrameLayout>
 
 
     <ScrollView
         android:id="@id/parent_view"
-        android:layout_width="@dimen/drawer_width"
+        android:layout_width="@dimen/drawer_left_width"
         android:layout_gravity="left"
         android:scrollbars="none"
         android:background="@android:color/white"
@@ -116,7 +116,7 @@
         android:id="@+id/notices_fl"
         android:orientation="vertical"
         android:layout_gravity="right"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/drawer_right_width"
         android:layout_height="match_parent">
 
         <fragment

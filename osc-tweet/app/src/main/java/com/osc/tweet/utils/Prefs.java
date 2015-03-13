@@ -47,6 +47,10 @@ public final class Prefs extends BasicPrefs {
 	 * Rotate photo slow or medium(fast).
 	 */
 	public static final String SETTING_PHOTO_ROTATE_SLOW_OR_FAST = "setting.photo.rotate.slow.or.fast";
+	/**
+	 * Show animation for my-info.
+	 */
+	private static final String KEY_MY_INFO_ANIM = "key_my_info_anim";
 
 	private Prefs() {
 		super(null);
@@ -171,5 +175,21 @@ public final class Prefs extends BasicPrefs {
 	public int settingPhotoRotateSlowOrFast() {
 		return Integer.valueOf(getString(SETTING_PHOTO_ROTATE_SLOW_OR_FAST, String.valueOf(getInt(
 				DEFAULT_SETTING_PHOTO_ROTATE_SLOW_OR_FAST, 0))));
+	}
+
+	/**
+	 * Show animation on my-info or not.
+	 * @param showAnim {@code true} if show.
+	 */
+	public void setShowMyInfoAnim(boolean showAnim) {
+		setBoolean(KEY_MY_INFO_ANIM, showAnim);
+	}
+
+	/**
+	 *  Show animation on my-info or not.
+	 * @return {@code true} if show.
+	 */
+	public boolean showMyInfoAnim() {
+		return getBoolean(KEY_MY_INFO_ANIM, true);
 	}
 }

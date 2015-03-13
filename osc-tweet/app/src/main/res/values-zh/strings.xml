@@ -12,6 +12,7 @@
     <string name="action_clear_comments">清除新的评论</string>
     <string name="action_undo">重置</string>
     <string name="action_clear">清除</string>
+    <string name="action_refresh">刷新</string>
 
     <string name="msg_move_to_top">回到顶部</string>
     <string name="msg_follow">您已经对 %s 添加关注。</string>
