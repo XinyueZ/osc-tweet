@@ -37,7 +37,6 @@ import android.app.Application;
 import com.chopping.net.TaskHelper;
 import com.facebook.stetho.Stetho;
 import com.osc.tweet.utils.Prefs;
-import com.osc4j.ds.favorite.TweetFavoritesList;
 import com.osc4j.ds.tweet.TweetListItem;
 
 
@@ -54,7 +53,7 @@ public final class App extends Application {
 	/**
 	 * The list of all saved favorite tweets.
 	 */
-	private TweetFavoritesList mTweetFavoritesList;
+	private List<TweetListItem>  mTweetFavorites;
 
 	{
 		Instance = this;
@@ -79,11 +78,10 @@ public final class App extends Application {
 	 * @return {@code true} if the item has been favorite.
 	 */
 	public boolean isFavorite(TweetListItem item) {
-		if (mTweetFavoritesList != null && mTweetFavoritesList.getTweets() == null) {
+		if (mTweetFavorites == null) {
 			return false;
 		}
-		List<TweetListItem> tweets = mTweetFavoritesList.getTweets();
-		for (TweetListItem t : tweets) {
+		for (TweetListItem t : mTweetFavorites) {
 			if (t.getId() == item.getId()) {
 				return true;
 			}
@@ -96,7 +94,21 @@ public final class App extends Application {
 	 * @param item {@link TweetListItem}.
 	 */
 	public void addFavorite(TweetListItem item) {
-		mTweetFavoritesList.getTweets().add(item);
+		mTweetFavorites.add(item);
+	}
+
+
+	/**
+	 * Delete a {@link TweetListItem} to favorite-list.
+	 * @param item {@link TweetListItem}.
+	 */
+	public void deleteFavorite(TweetListItem item) {
+		for(TweetListItem fi : mTweetFavorites) {
+			if(fi.getId() == item.getId()) {
+				mTweetFavorites.remove(fi);
+				return;
+			}
+		}
 	}
 
 	/**
@@ -105,15 +117,15 @@ public final class App extends Application {
 	 * @param tweetFavoritesList
 	 * 		The list of all saved favorite tweets.
 	 */
-	public void setTweetFavoritesList(TweetFavoritesList tweetFavoritesList) {
-		mTweetFavoritesList = tweetFavoritesList;
+	public void setTweetFavoritesList(List<TweetListItem>  tweetFavoritesList) {
+		mTweetFavorites = tweetFavoritesList;
 	}
 
 	/**
 	 *
 	 * @return The list of all saved favorite tweets.
 	 */
-	public TweetFavoritesList getTweetFavoritesList() {
-		return mTweetFavoritesList;
+	public List<TweetListItem>  getTweetFavoritesList() {
+		return mTweetFavorites;
 	}
 }

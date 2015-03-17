@@ -70,7 +70,7 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 	/**
 	 * A menu on each line of list.
 	 */
-	private static final int MENU_LIST_ITEM = R.menu.menu_comment_list;
+	private static final int MENU_LIST_ITEM = R.menu.menu_comment_list_item;
 
 	/**
 	 * Constructor of {@link com.osc.tweet.app.adapters.CommentListAdapter}.

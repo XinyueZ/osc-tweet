@@ -24,6 +24,7 @@ import com.chopping.utils.Utils;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.TweetListAdapter;
+import com.osc.tweet.events.DeletedFavEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc4j.OscApi;
@@ -92,6 +93,18 @@ public final class TweetListFragment extends BaseFragment {
 		showLoadingIndicator();
 		mBottom = false;
 		getTweetList();
+	}
+
+	/**
+	 * Handler for {@link com.osc.tweet.events.DeletedFavEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.DeletedFavEvent}.
+	 */
+	public void onEvent(DeletedFavEvent e) {
+		if (getArguments().getBoolean(EXTRAS_FAV, false)) {
+			getTweetList();
+		}
 	}
 
 	//------------------------------------------------
@@ -222,7 +235,7 @@ public final class TweetListFragment extends BaseFragment {
 				protected List<TweetListItem> doInBackground(Object... params) {
 					try {
 						if (getArguments().getBoolean(EXTRAS_FAV, false)) {
-							return OscApi.tweetFavoritesList(App.Instance).getTweets();
+							return App.Instance.getTweetFavoritesList();
 						} else {
 							return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS,
 									false), getArguments().getBoolean(EXTRAS_HOTSPOT, false)).getTweets();
@@ -239,6 +252,9 @@ public final class TweetListFragment extends BaseFragment {
 					super.onPostExecute(tweetList);
 					try {
 						if (tweetList != null) {
+							if (getArguments().getBoolean(EXTRAS_FAV, false)) {
+								App.Instance.setTweetFavoritesList(tweetList);
+							}
 							mAdp.setData(tweetList);
 							finishLoading();
 							mLayoutManager.scrollToPositionWithOffset(0, 0);

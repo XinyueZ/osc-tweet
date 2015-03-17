@@ -22,13 +22,13 @@
 
 
             <FrameLayout
+                android:id="@+id/tabs_friends_fl" android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
 
                 <com.astuetz.PagerSlidingTabStrip
                     android:id="@+id/tabs"
-                    android:visibility="invisible"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     android:background="@color/primary_color"

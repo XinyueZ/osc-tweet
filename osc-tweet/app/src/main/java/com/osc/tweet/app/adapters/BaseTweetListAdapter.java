@@ -32,6 +32,7 @@ import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.CommentTweetEvent;
+import com.osc.tweet.events.DeletedFavEvent;
 import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
@@ -161,13 +162,14 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 			}
 		});
 
-		MenuItem favMi = menu.findItem(R.id.action_fav);
-		favMi.setVisible(!App.Instance.isFavorite(item));
-		favMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		MenuItem addFavMi = menu.findItem(R.id.action_add_fav);
+		addFavMi.setVisible(!App.Instance.isFavorite(item));
+		addFavMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem mi) {
 				AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, StatusResult, StatusResult>() {
 					MenuItem mi;
+
 					@Override
 					protected StatusResult doInBackground(MenuItem... params) {
 						mi = params[0];
@@ -183,9 +185,10 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 					@Override
 					protected void onPostExecute(StatusResult res) {
 						super.onPostExecute(res);
-						OperatingEvent event = new OperatingEvent(res!= null && res.getStatus() == com.osc4j.ds.common.Status.STATUS_OK);
+						OperatingEvent event = new OperatingEvent(
+								res != null && res.getStatus() == com.osc4j.ds.common.Status.STATUS_OK);
 						EventBus.getDefault().post(event);
-						if(event.isSuccess()) {
+						if (event.isSuccess()) {
 							App.Instance.addFavorite(item);
 							mi.setVisible(false);
 						}
@@ -194,6 +197,44 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 				return true;
 			}
 		});
+
+		MenuItem delFavMi = menu.findItem(R.id.action_del_fav);
+		delFavMi.setVisible(App.Instance.isFavorite(item));
+		delFavMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem mi) {
+				AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, StatusResult, StatusResult>() {
+					MenuItem mi;
+
+					@Override
+					protected StatusResult doInBackground(MenuItem... params) {
+						mi = params[0];
+						try {
+							return OscApi.delTweetFavorite(App.Instance, item);
+						} catch (IOException e) {
+							return null;
+						} catch (OscTweetException e) {
+							return null;
+						}
+					}
+
+					@Override
+					protected void onPostExecute(StatusResult res) {
+						super.onPostExecute(res);
+						OperatingEvent event = new OperatingEvent(
+								res != null && res.getStatus() == com.osc4j.ds.common.Status.STATUS_OK);
+						EventBus.getDefault().post(event);
+						if (event.isSuccess()) {
+							App.Instance.deleteFavorite(item);
+							EventBus.getDefault().post(new DeletedFavEvent());
+						}
+					}
+				}, mi);
+				return true;
+			}
+		});
+
+
 
 		MenuItem qReplayMi = menu.findItem(R.id.action_quick_reply);
 		SubMenu subMenu = qReplayMi.getSubMenu();

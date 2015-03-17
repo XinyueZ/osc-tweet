@@ -150,6 +150,10 @@ public class MainActivity extends BaseActivity {
 	 * Indicator when loading application config.
 	 */
 	private ProgressDialog mPbDlg;
+	/**
+	 * Container for {@link #mTabs} and {@link #mOpenFriendsListV}.
+	 */
+	private View mTabsFriV;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -351,7 +355,6 @@ public class MainActivity extends BaseActivity {
 			}
 		});
 		ViewHelper.setX(mOpenFriendsListV, 99999);
-		showFriendsListButton();
 
 		mPbDlg = ProgressDialog.show(this, null, getString(R.string.msg_load_config));
 		mPbDlg.setCancelable(false);
@@ -595,6 +598,8 @@ public class MainActivity extends BaseActivity {
 		} else {
 			if(App.Instance.getTweetFavoritesList() == null) {
 				AsyncTaskCompat.executeParallel(new LoadFavoriteAsyncTask());
+			} else {
+				buildViewPager();
 			}
 		}
 	}
@@ -606,9 +611,7 @@ public class MainActivity extends BaseActivity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			mOpenFriendsListV.setVisibility(View.INVISIBLE);
-			mSmoothProgressBar.setVisibility(View.INVISIBLE);
-
+			mSmoothProgressBar.setVisibility(View.VISIBLE);
 //			mPbDlg = ProgressDialog.show(MainActivity.this, null, getString(R.string.msg_load_favorite));
 //			mPbDlg.setCancelable(false);
 		}
@@ -632,23 +635,9 @@ public class MainActivity extends BaseActivity {
 //			}
 			if (tweetFavoritesList != null &&
 					tweetFavoritesList.getStatus() == com.osc4j.ds.common.Status.STATUS_OK) {
-				App.Instance.setTweetFavoritesList(tweetFavoritesList);
+				App.Instance.setTweetFavoritesList(tweetFavoritesList.getTweets());
 
-				mOpenFriendsListV.setVisibility(View.VISIBLE);
-				mSmoothProgressBar.setVisibility(View.VISIBLE);
-
-				mViewPager = (ViewPager) findViewById(R.id.vp);
-				mViewPager.setOffscreenPageLimit(3);
-				mPagerAdapter = new MainViewPagerAdapter(MainActivity.this, getSupportFragmentManager());
-				mViewPager.setAdapter(mPagerAdapter);
-				// Bind the tabs to the ViewPager
-				mTabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-				mTabs.setViewPager(mViewPager);
-				mTabs.setVisibility(View.VISIBLE);
-				mTabs.setIndicatorColorResource(R.color.common_white);
-				showInputEdit();
-				getSupportFragmentManager().beginTransaction().replace(R.id.my_info_fl,
-						MyInfoFragment.newInstance(MainActivity.this)).commit();
+				buildViewPager();
 			} else {
 				showDialogFragment(new DialogFragment() {
 					@Override
@@ -665,5 +654,27 @@ public class MainActivity extends BaseActivity {
 				} , null);
 			}
 		}
-	};
+	}
+
+	/**
+	 * Build main viewpager.
+	 */
+	private void buildViewPager() {
+		mTabsFriV = findViewById(R.id.tabs_friends_fl);
+		mViewPager = (ViewPager) findViewById(R.id.vp);
+		mViewPager.setOffscreenPageLimit(3);
+		mPagerAdapter = new MainViewPagerAdapter(MainActivity.this, getSupportFragmentManager());
+		mViewPager.setAdapter(mPagerAdapter);
+		// Bind the tabs to the ViewPager
+		mTabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+		mTabs.setViewPager(mViewPager);
+		mTabs.setIndicatorColorResource(R.color.common_white);
+		mTabsFriV.setVisibility(View.VISIBLE);
+		showInputEdit();
+		showFriendsListButton();
+		getSupportFragmentManager().beginTransaction().replace(R.id.my_info_fl,
+				MyInfoFragment.newInstance(MainActivity.this)).commit();
+	}
+
+	;
 }

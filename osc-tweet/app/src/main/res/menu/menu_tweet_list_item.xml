@@ -22,8 +22,13 @@
     </item>
 
     <item
-        android:id="@+id/action_fav"
-        android:title="@string/action_favorite"
+        android:id="@+id/action_add_fav"
+        android:title="@string/action_add_favorite"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_del_fav" android:visible="false"
+        android:title="@string/action_delete_favorite"
         app:showAsAction="never" />
 
     <item
