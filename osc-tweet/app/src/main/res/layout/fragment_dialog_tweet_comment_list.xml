@@ -59,5 +59,12 @@
             android:layout_gravity="top"
             android:indeterminate="true" />
 
+        <ImageView
+            android:id="@+id/no_data_loaded_iv" android:visibility="gone"
+            android:layout_width="wrap_content" android:layout_gravity="center"
+            android:background="@color/common_transparent"
+            android:src="@drawable/ic_not_loaded"
+            android:layout_height="wrap_content" />
     </FrameLayout>
+
 </LinearLayout>

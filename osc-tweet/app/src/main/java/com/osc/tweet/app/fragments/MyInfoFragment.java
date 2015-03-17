@@ -274,7 +274,7 @@ public final class MyInfoFragment extends BaseFragment {
 				protected void onPreExecute() {
 					super.onPreExecute();
 					mInProgress = true;
-					mUserPhotoIv.setDefaultImageResId(R.drawable.ic_not_loaded);
+					mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
 
 					mRefreshV.setEnabled(false);
 					objectAnimator = ObjectAnimator.ofFloat(mRefreshV, "rotation", 0, 360f);

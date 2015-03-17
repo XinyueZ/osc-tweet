@@ -16,19 +16,32 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 style="@style/ActionBar_ToolBar" />
 
-            <com.astuetz.PagerSlidingTabStrip
-                android:id="@+id/tabs"
-                android:visibility="invisible"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/primary_color"
-                android:textColor="@color/common_white" />
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <com.astuetz.PagerSlidingTabStrip
+                    android:id="@+id/tabs"
+                    android:visibility="invisible"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/primary_color"
+                    android:textColor="@color/common_white" />
+
+                <ImageButton
+                    android:id="@+id/friends_btn"
+                    android:background="@color/common_transparent"
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/ic_open_list"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_height="wrap_content" />
+            </FrameLayout>
 
             <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
                 android:id="@+id/loading_pb"
@@ -73,13 +86,6 @@
         </LinearLayout>
 
 
-        <ImageButton
-            android:id="@+id/friends_btn"
-            android:background="@color/common_transparent"
-            android:layout_width="wrap_content"
-            android:src="@drawable/ic_open_list"
-            android:layout_gravity="right|bottom"
-            android:layout_height="wrap_content" />
     </FrameLayout>
 
 

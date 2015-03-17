@@ -92,6 +92,10 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	 * On the bottom of all records.
 	 */
 	private boolean mBottom;
+	/**
+	 * Indicator for that no data is avaialble to load.
+	 */
+	private View mNoDataLoadedV;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -160,6 +164,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		EventBus.getDefault().register(this);
+		mNoDataLoadedV = view.findViewById(R.id.no_data_loaded_iv);
 		mLoadingIndicatorV = view.findViewById(R.id.loading_pb);
 
 		mRv = (RecyclerView) view.findViewById(R.id.comments_list_rv);
@@ -279,7 +284,9 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 					try {
 						if (comments != null) {
 							mAdp.setData(getTweetItem(), comments.getComments());
+							mNoDataLoadedV.setVisibility(View.GONE);
 						} else {
+							mNoDataLoadedV.setVisibility(View.VISIBLE);
 							mAdp.setData(getTweetItem(), null);
 						}
 						finishLoading();

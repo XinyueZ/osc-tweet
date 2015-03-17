@@ -6,13 +6,22 @@
     android:background="@color/common_yellow"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+
+
+    <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"
-        android:scrollbars="none"
-        android:background="@color/common_yellow"
-        android:id="@id/child_view"
-        android:visibility="invisible"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:id="@+id/content_srl">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:scrollbars="none"
+            android:background="@color/common_yellow"
+            android:id="@id/child_view"
+            android:layout_height="wrap_content" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
 
     <ImageView
         android:id="@+id/empty_notices_iv"

@@ -7,6 +7,8 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,10 +22,14 @@ import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.NoticesListAdapter;
 import com.osc.tweet.events.ClearNoticeEvent;
+import com.osc.tweet.events.GetMyInformationEvent;
+import com.osc.tweet.events.RefreshMyInfoEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc4j.ds.common.NoticeType;
 import com.osc4j.ds.personal.Notice;
 import com.osc4j.ds.personal.Notices;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Show list of notice.
@@ -47,6 +53,10 @@ public final class NoticesListPageFragment extends BaseFragment {
 	 * Show when list is empty.
 	 */
 	private View mEmptyV;
+	/**
+	 * Pull to load.
+	 */
+	private SwipeRefreshLayout mSwipeRefreshLayout;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -59,6 +69,16 @@ public final class NoticesListPageFragment extends BaseFragment {
 	 */
 	public void onEvent(ClearNoticeEvent e) {
 		clearList(e.getType());
+	}
+
+	/**
+	 * Handler for {@link com.osc.tweet.events.GetMyInformationEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.GetMyInformationEvent}.
+	 */
+	public void onEvent(GetMyInformationEvent e) {
+		mSwipeRefreshLayout.setRefreshing(false);
 	}
 
 	//------------------------------------------------
@@ -96,13 +116,23 @@ public final class NoticesListPageFragment extends BaseFragment {
 
 
 		mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
-		mRv.addItemDecoration(new SpacesItemDecoration((int) com.osc4j.utils.Utils.convertPixelsToDp(App.Instance,
-				5)));
+		mRv.addItemDecoration(new SpacesItemDecoration((int) com.osc4j.utils.Utils.convertPixelsToDp(App.Instance, 5)));
 		mRv.setItemAnimator(new DefaultItemAnimator());
 		mRv.setHasFixedSize(false);
 
 
-		if(getType() == NoticeType.Null || getNotices() == null) {
+		mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.content_srl);
+		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_pocket_1, R.color.color_pocket_2,
+				R.color.color_pocket_3, R.color.color_pocket_4);
+		mSwipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				EventBus.getDefault().post(new RefreshMyInfoEvent());
+			}
+		});
+
+
+		if (getType() == NoticeType.Null || getNotices() == null) {
 			errorV.setVisibility(View.VISIBLE);
 			mRv.setVisibility(View.INVISIBLE);
 			mEmptyV.setVisibility(View.INVISIBLE);
@@ -117,6 +147,8 @@ public final class NoticesListPageFragment extends BaseFragment {
 				mEmptyV.setVisibility(View.VISIBLE);
 			}
 		}
+
+
 	}
 
 	/**
@@ -147,8 +179,10 @@ public final class NoticesListPageFragment extends BaseFragment {
 	/**
 	 * @return {@link Notice}s to show.
 	 */
-	private @Nullable Notices getNotices() {
-		if ( getArguments().getSerializable(EXTRAS_NOTICES) instanceof Notices ) {
+	private
+	@Nullable
+	Notices getNotices() {
+		if (getArguments().getSerializable(EXTRAS_NOTICES) instanceof Notices) {
 			return (Notices) getArguments().getSerializable(EXTRAS_NOTICES);
 		} else {
 			return null;
