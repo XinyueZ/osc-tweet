@@ -388,7 +388,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 						mSendingIndicatorV.setVisibility(View.GONE);
 						mSendingIndicatorV.progressiveStop();
 
-						if (s != null && Integer.valueOf(s.getResult().getCode()) ==
+						if (s != null && s.getStatus() == com.osc4j.ds.common.Status.STATUS_OK && s.getStatus() == com.osc4j.ds.common.Status.STATUS_OK && Integer.valueOf(s.getResult().getCode()) ==
 								com.osc4j.ds.common.Status.STATUS_OK) {
 
 							EventBus.getDefault().post(new LoadEvent());

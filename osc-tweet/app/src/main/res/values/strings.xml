@@ -14,6 +14,7 @@
     <string name="action_undo">Undo</string>
     <string name="action_clear">Clear</string>
     <string name="action_refresh">Refresh</string>
+    <string name="action_favorite">Add to favorite</string>
 
     <string name="msg_move_to_top">Return top</string>
     <string name="msg_operating_successfully">Operating successfully.</string>
@@ -24,6 +25,8 @@
     <string name="msg_update_my_info" formatted="false">(%d) \@me, (%d) new comments</string>
     <string name="msg_load_config">Load application configuration…</string>
     <string name="msg_works_in_next_request">Works in next request.</string>
+    <string name="msg_load_favorite">Load favorite-list…</string>
+    <string name="msg_reload_favorite">Can not reload favorite-list, it must be reloaded…</string>
 
     <string name="btn_confirm">Confirm</string>
     <string name="btn_cancel">Cancel</string>
@@ -71,6 +74,7 @@
     <string name="lbl_all">All</string>
     <string name="lbl_hotspot">HOT</string>
     <string name="lbl_my">Mine</string>
+    <string name="lbl_favorite">Favorite</string>
     <string name="lbl_open">Open</string>
     <string name="lbl_at_me">\@me</string>
     <string name="lbl_new_comments">New comments</string>

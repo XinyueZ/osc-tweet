@@ -21,4 +21,14 @@
         </menu>
     </item>
 
+    <item
+        android:id="@+id/action_fav"
+        android:title="@string/action_favorite"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_share"
+        android:title="@string/action_share"
+        app:showAsAction="never" />
+
 </menu>

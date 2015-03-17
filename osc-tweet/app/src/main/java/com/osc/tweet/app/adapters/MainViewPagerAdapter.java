@@ -16,7 +16,7 @@ import com.osc.tweet.app.fragments.TweetListFragment;
  */
 public final class MainViewPagerAdapter extends FragmentPagerAdapter {
 	private Context mContext;
-	private final int[] TITLES = { R.string.lbl_all, R.string.lbl_hotspot, R.string.lbl_my };
+	private final int[] TITLES = { R.string.lbl_all, R.string.lbl_hotspot, R.string.lbl_my, R.string.lbl_favorite };
 	private int mScrollY;
 
 	public MainViewPagerAdapter(Context cxt, FragmentManager fm) {
@@ -29,13 +29,16 @@ public final class MainViewPagerAdapter extends FragmentPagerAdapter {
 		Fragment f = null;
 		switch (position) {
 		case 1:
-			f = TweetListFragment.newInstance(mContext, true, true);//hotspot.
+			f = TweetListFragment.newInstance(mContext, true, true, false);//hotspot.
 			break;
 		case 2:
-			f = TweetListFragment.newInstance(mContext, true, false);//my tweets.
+			f = TweetListFragment.newInstance(mContext, true, false, false);//my tweets.
+			break;
+		case 3:
+			f = TweetListFragment.newInstance(mContext, true, false, true);//my tweets.
 			break;
 		case 0:
-			f = TweetListFragment.newInstance(mContext, false, false);//all tweets.
+			f = TweetListFragment.newInstance(mContext, false, false, false);//all tweets.
 		default:
 			break;
 		}

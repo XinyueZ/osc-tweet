@@ -70,7 +70,7 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 	/**
 	 * A menu on each line of list.
 	 */
-	private static final int MENU_LIST_ITEM = R.menu.menu_list_item;
+	private static final int MENU_LIST_ITEM = R.menu.menu_comment_list;
 
 	/**
 	 * Constructor of {@link com.osc.tweet.app.adapters.CommentListAdapter}.
@@ -202,7 +202,7 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 						protected void onPostExecute(StatusResult s) {
 							super.onPostExecute(s);
 							EventBus.getDefault().post(new OperatingEvent(
-									s != null && s.getResult() != null && Integer.valueOf(s.getResult().getCode()) ==
+									s != null && s.getStatus() == com.osc4j.ds.common.Status.STATUS_OK && s.getResult() != null && Integer.valueOf(s.getResult().getCode()) ==
 											com.osc4j.ds.common.Status.STATUS_OK));
 
 							EventBus.getDefault().post(new LoadEvent());

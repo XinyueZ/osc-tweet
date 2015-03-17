@@ -13,6 +13,7 @@
     <string name="action_undo">重置</string>
     <string name="action_clear">清除</string>
     <string name="action_refresh">刷新</string>
+    <string name="action_favorite">收藏</string>
 
     <string name="msg_move_to_top">回到顶部</string>
     <string name="msg_follow">您已经对 %s 添加关注。</string>
@@ -23,6 +24,8 @@
     <string name="msg_update_my_info" formatted="false">(%d) \@我, (%d) 新评论</string>
     <string name="msg_load_config">读取应用配置…</string>
     <string name="msg_works_in_next_request">设置好后，再下次请求中有效。</string>
+    <string name="msg_load_favorite">提取收藏夹…</string>
+    <string name="msg_reload_favorite">提取收藏夹失败，必须重来…</string>
 
     <string name="btn_close">关闭</string>
     <string name="btn_confirm">确认</string>
@@ -61,6 +64,7 @@
     <string name="lbl_comments">所有回复</string>
     <string name="lbl_all">最新</string>
     <string name="lbl_hotspot">热门</string>
+    <string name="lbl_favorite">收藏</string>
     <string name="lbl_my">我的</string>
     <string name="lbl_open">打开</string>
     <string name="lbl_at_me">\@我</string>

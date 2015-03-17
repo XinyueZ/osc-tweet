@@ -1,6 +1,7 @@
 package com.osc.tweet.app.fragments;
 
 import java.io.IOException;
+import java.util.List;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -27,6 +28,7 @@ import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc4j.OscApi;
 import com.osc4j.ds.tweet.TweetList;
+import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.exceptions.OscTweetException;
 
 import de.greenrobot.event.EventBus;
@@ -37,6 +39,7 @@ import de.greenrobot.event.EventBus;
 public final class TweetListFragment extends BaseFragment {
 	private static final String EXTRAS_MY_TWEETS = "com.osc.tweet.app.fragments.MY_TWEETS";
 	private static final String EXTRAS_HOTSPOT = "com.osc.tweet.app.fragments.HOTSPOT";
+	private static final String EXTRAS_FAV = "com.osc.tweet.app.fragments.fav";
 	/**
 	 * Main layout for this component.
 	 */
@@ -88,7 +91,7 @@ public final class TweetListFragment extends BaseFragment {
 		mPage = DEFAULT_PAGE;
 		showLoadingIndicator();
 		mBottom = false;
-		getMoreTweetList();
+		getTweetList();
 	}
 
 	//------------------------------------------------
@@ -102,14 +105,17 @@ public final class TweetListFragment extends BaseFragment {
 	 * 		If <code>true</code> then show all my tweets, it works only when <code>hotspot</code> is <code>false</code>.
 	 * @param hotspot
 	 * 		If <code>true</code> then show all hotspot and ignore value of <code>myTweets</code>.
+	 * @param fav
+	 * 		If <code>true</code> then show all hotspot and ignore value of <code>myTweets</code>.
 	 * @param myTweets
 	 *
 	 * @return An instance of {@link com.osc.tweet.app.fragments.TweetListFragment}.
 	 */
-	public static Fragment newInstance(Context context, boolean myTweets, boolean hotspot) {
+	public static Fragment newInstance(Context context, boolean myTweets, boolean hotspot, boolean fav) {
 		Bundle args = new Bundle();
 		args.putBoolean(EXTRAS_MY_TWEETS, myTweets);
 		args.putBoolean(EXTRAS_HOTSPOT, hotspot);
+		args.putBoolean(EXTRAS_FAV, fav);
 		return TweetListFragment.instantiate(context, TweetListFragment.class.getName(), args);
 	}
 
@@ -148,26 +154,27 @@ public final class TweetListFragment extends BaseFragment {
 		mRv.setLayoutManager(mLayoutManager = new LinearLayoutManager(getActivity()));
 		mRv.setHasFixedSize(false);
 		mRv.setAdapter(mAdp = new TweetListAdapter(null));
+		if (!getArguments().getBoolean(EXTRAS_FAV, false)) {
+			mRv.setOnScrollListener(new RecyclerView.OnScrollListener() {
+				@Override
+				public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
-		mRv.setOnScrollListener(new RecyclerView.OnScrollListener() {
-			@Override
-			public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+					mVisibleItemCount = mLayoutManager.getChildCount();
+					mTotalItemCount = mLayoutManager.getItemCount();
+					mPastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
-				mVisibleItemCount = mLayoutManager.getChildCount();
-				mTotalItemCount = mLayoutManager.getItemCount();
-				mPastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
-
-				if (mLoading) {
-					if ((mVisibleItemCount + mPastVisibleItems) >= mTotalItemCount) {
-						mLoading = false;
-						if (!mBottom) {
-							showLoadingIndicator();
-							getMoreTweetList();
+					if (mLoading) {
+						if ((mVisibleItemCount + mPastVisibleItems) >= mTotalItemCount) {
+							mLoading = false;
+							if (!mBottom) {
+								showLoadingIndicator();
+								getMoreTweetList();
+							}
 						}
 					}
 				}
-			}
-		});
+			});
+		}
 
 		mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.content_srl);
 		mSwipeRefreshLayout.setColorSchemeResources(R.color.color_pocket_1, R.color.color_pocket_2,
@@ -203,8 +210,8 @@ public final class TweetListFragment extends BaseFragment {
 	 * Get tweets data and showing on list.
 	 */
 	private void getTweetList() {
-		if(!mInProgress) {
-			AsyncTaskCompat.executeParallel(new AsyncTask<Object, TweetList, TweetList>() {
+		if (!mInProgress) {
+			AsyncTaskCompat.executeParallel(new AsyncTask<Object, List<TweetListItem>, List<TweetListItem>>() {
 				@Override
 				protected void onPreExecute() {
 					super.onPreExecute();
@@ -212,10 +219,14 @@ public final class TweetListFragment extends BaseFragment {
 				}
 
 				@Override
-				protected TweetList doInBackground(Object... params) {
+				protected List<TweetListItem> doInBackground(Object... params) {
 					try {
-						return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
-								getArguments().getBoolean(EXTRAS_HOTSPOT, false));
+						if (getArguments().getBoolean(EXTRAS_FAV, false)) {
+							return OscApi.tweetFavoritesList(App.Instance).getTweets();
+						} else {
+							return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS,
+									false), getArguments().getBoolean(EXTRAS_HOTSPOT, false)).getTweets();
+						}
 					} catch (IOException e) {
 						return null;
 					} catch (OscTweetException e) {
@@ -224,11 +235,11 @@ public final class TweetListFragment extends BaseFragment {
 				}
 
 				@Override
-				protected void onPostExecute(TweetList tweetList) {
+				protected void onPostExecute(List<TweetListItem> tweetList) {
 					super.onPostExecute(tweetList);
 					try {
 						if (tweetList != null) {
-							mAdp.setData(tweetList.getTweets());
+							mAdp.setData(tweetList);
 							finishLoading();
 							mLayoutManager.scrollToPositionWithOffset(0, 0);
 						}
@@ -245,7 +256,7 @@ public final class TweetListFragment extends BaseFragment {
 	 * Load more and more tweets on to list.
 	 */
 	private void getMoreTweetList() {
-		if(!mInProgress) {
+		if (!mInProgress) {
 			AsyncTaskCompat.executeParallel(new AsyncTask<Object, TweetList, TweetList>() {
 				@Override
 				protected void onPreExecute() {

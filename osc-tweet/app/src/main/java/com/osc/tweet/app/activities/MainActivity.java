@@ -1,6 +1,10 @@
 package com.osc.tweet.app.activities;
 
+import java.io.IOException;
+
+import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -9,11 +13,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -65,6 +71,9 @@ import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.Consts;
 import com.osc4j.LoginDialog;
+import com.osc4j.OscApi;
+import com.osc4j.ds.favorite.TweetFavoritesList;
+import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.utils.AuthUtil;
 
 import de.greenrobot.event.EventBus;
@@ -117,9 +126,7 @@ public class MainActivity extends BaseActivity {
 	private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-
 			initViewPager();
-			mSmoothProgressBar.setVisibility(View.VISIBLE);
 
 		}
 	};
@@ -142,7 +149,7 @@ public class MainActivity extends BaseActivity {
 	/**
 	 * Indicator when loading application config.
 	 */
-	private ProgressDialog mConfigDlg;
+	private ProgressDialog mPbDlg;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -154,11 +161,12 @@ public class MainActivity extends BaseActivity {
 	 * 		Event {@link com.osc.tweet.events.OpenMyNoticesDrawerEvent}.
 	 */
 	public void onEvent(OpenMyNoticesDrawerEvent e) {
-		if( !mDrawerLayout.isDrawerOpen(Gravity.LEFT)  &&  	!mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+		if (!mDrawerLayout.isDrawerOpen(Gravity.LEFT) && !mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
 			mDrawerLayout.closeDrawer(Gravity.LEFT);
 			mDrawerLayout.openDrawer(Gravity.RIGHT);
 		}
 	}
+
 	/**
 	 * Handler for {@link  EULARejectEvent}.
 	 *
@@ -314,7 +322,6 @@ public class MainActivity extends BaseActivity {
 
 		//Button to open editing message.
 		mEditBtn = findViewById(R.id.edit_btn);
-		showInputEdit();
 		mEditBtn.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
@@ -345,26 +352,9 @@ public class MainActivity extends BaseActivity {
 		});
 		ViewHelper.setX(mOpenFriendsListV, 99999);
 		showFriendsListButton();
-//		findViewById(R.id.parent_view).setOnTouchListener(new View.OnTouchListener() {
-//			public boolean onTouch(View v, MotionEvent event) {
-//				View childV = findViewById(R.id.child_view);
-//				if (childV != null) {
-//					int[] l = new int[2];
-//					childV.getLocationOnScreen(l);
-//					RectF rect = new RectF(l[0], l[1], l[0] + childV.getWidth(), l[1] + childV.getHeight());
-//					if (rect.contains(event.getX(), event.getY())) {
-//						childV.getParent().requestDisallowInterceptTouchEvent(false);
-//						childV.onTouchEvent(event);
-//						return true;
-//					}
-//					childV.getParent().requestDisallowInterceptTouchEvent(true);
-//				}
-//				return false;
-//			}
-//		});
 
-		mConfigDlg = ProgressDialog.show(this, null, getString(R.string.msg_load_config));
-		mConfigDlg.setCancelable(false);
+		mPbDlg = ProgressDialog.show(this, null, getString(R.string.msg_load_config));
+		mPbDlg.setCancelable(false);
 	}
 
 	@Override
@@ -525,9 +515,9 @@ public class MainActivity extends BaseActivity {
 				public void onDrawerOpened(View drawerView) {
 					super.onDrawerOpened(drawerView);
 
-					if(mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
+					if (mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
 						EventBus.getDefault().post(new OpenedDrawerEvent(Gravity.LEFT));
-					} else if(mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
+					} else if (mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
 						EventBus.getDefault().post(new OpenedDrawerEvent(Gravity.RIGHT));
 					}
 				}
@@ -543,8 +533,8 @@ public class MainActivity extends BaseActivity {
 		super.onAppConfigLoaded();
 		showAppList();
 		checkAndInit();
-		if (mConfigDlg != null && mConfigDlg.isShowing()) {
-			mConfigDlg.dismiss();
+		if (mPbDlg != null && mPbDlg.isShowing()) {
+			mPbDlg.dismiss();
 		}
 	}
 
@@ -553,11 +543,10 @@ public class MainActivity extends BaseActivity {
 		super.onAppConfigIgnored();
 		showAppList();
 		checkAndInit();
-		if (mConfigDlg != null && mConfigDlg.isShowing()) {
-			mConfigDlg.dismiss();
+		if (mPbDlg != null && mPbDlg.isShowing()) {
+			mPbDlg.dismiss();
 		}
 	}
-
 
 
 	/**
@@ -565,9 +554,8 @@ public class MainActivity extends BaseActivity {
 	 */
 	private void checkAndInit() {
 		checkPlayService();
-		if (Prefs.getInstance().isEULAOnceConfirmed() &&mViewPager == null) {
+		if (Prefs.getInstance().isEULAOnceConfirmed() && mViewPager == null) {
 			initViewPager();
-			mSmoothProgressBar.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -588,12 +576,14 @@ public class MainActivity extends BaseActivity {
 	}
 
 	private void showInputEdit() {
+		mEditBtn.setVisibility(View.VISIBLE);
 		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
 		ViewHelper.setTranslationX(mEditBtn, -screenWidth);
 		ViewHelper.setRotation(mEditBtn, -360f * 4);
 		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mEditBtn);
 		animator.x(screenWidth - getResources().getDimensionPixelSize(R.dimen.float_button_anim_qua)).rotation(0)
 				.setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
+
 	}
 
 	/**
@@ -603,18 +593,77 @@ public class MainActivity extends BaseActivity {
 		if (!AuthUtil.isLegitimate(getApplicationContext())) {
 			showDialogFragment(LoginDialog.newInstance(getApplicationContext()), null);
 		} else {
-			mViewPager = (ViewPager) findViewById(R.id.vp);
-			mViewPager.setOffscreenPageLimit(2);
-			mPagerAdapter = new MainViewPagerAdapter(this, getSupportFragmentManager());
-			mViewPager.setAdapter(mPagerAdapter);
-			// Bind the tabs to the ViewPager
-			mTabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-			mTabs.setViewPager(mViewPager);
-			mTabs.setVisibility(View.VISIBLE);
-			mTabs.setIndicatorColorResource(R.color.common_white);
-
-			getSupportFragmentManager().beginTransaction().replace(R.id.my_info_fl, MyInfoFragment.newInstance(this))
-					.commit();
+			if(App.Instance.getTweetFavoritesList() == null) {
+				AsyncTaskCompat.executeParallel(new LoadFavoriteAsyncTask());
+			}
 		}
 	}
+
+	/**
+	 * Task to load favorite-list.
+	 */
+	class LoadFavoriteAsyncTask extends AsyncTask<Object, TweetFavoritesList, TweetFavoritesList> {
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			mOpenFriendsListV.setVisibility(View.INVISIBLE);
+			mSmoothProgressBar.setVisibility(View.INVISIBLE);
+
+//			mPbDlg = ProgressDialog.show(MainActivity.this, null, getString(R.string.msg_load_favorite));
+//			mPbDlg.setCancelable(false);
+		}
+
+		@Override
+		protected TweetFavoritesList doInBackground(Object... params) {
+			try {
+				return OscApi.tweetFavoritesList(App.Instance);
+			} catch (IOException e) {
+				return null;
+			} catch (OscTweetException e) {
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(TweetFavoritesList tweetFavoritesList) {
+			super.onPostExecute(tweetFavoritesList);
+//			if (mPbDlg != null && mPbDlg.isShowing()) {
+//				mPbDlg.dismiss();
+//			}
+			if (tweetFavoritesList != null &&
+					tweetFavoritesList.getStatus() == com.osc4j.ds.common.Status.STATUS_OK) {
+				App.Instance.setTweetFavoritesList(tweetFavoritesList);
+
+				mOpenFriendsListV.setVisibility(View.VISIBLE);
+				mSmoothProgressBar.setVisibility(View.VISIBLE);
+
+				mViewPager = (ViewPager) findViewById(R.id.vp);
+				mViewPager.setOffscreenPageLimit(3);
+				mPagerAdapter = new MainViewPagerAdapter(MainActivity.this, getSupportFragmentManager());
+				mViewPager.setAdapter(mPagerAdapter);
+				// Bind the tabs to the ViewPager
+				mTabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+				mTabs.setViewPager(mViewPager);
+				mTabs.setVisibility(View.VISIBLE);
+				mTabs.setIndicatorColorResource(R.color.common_white);
+				showInputEdit();
+				getSupportFragmentManager().beginTransaction().replace(R.id.my_info_fl,
+						MyInfoFragment.newInstance(MainActivity.this)).commit();
+			} else {
+				showDialogFragment(new DialogFragment() {
+					@Override
+					public Dialog onCreateDialog(Bundle savedInstanceState) {
+						AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+						builder.setMessage(R.string.msg_reload_favorite)
+								.setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int id) {
+										AsyncTaskCompat.executeParallel(new LoadFavoriteAsyncTask());
+									}
+								});
+						return builder.create();
+					}
+				} , null);
+			}
+		}
+	};
 }

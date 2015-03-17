@@ -59,7 +59,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	/**
 	 * The menu of "actionbar".
 	 */
-	private static final int MENU = R.menu.menu_comments_list;
+	private static final int MENU = R.menu.menu_comment_list;
 	/**
 	 * Adapter for {@link #mRv} to show all comments.
 	 */

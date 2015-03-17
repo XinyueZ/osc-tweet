@@ -302,7 +302,7 @@ public final class NoticesListPagesFragment extends BaseFragment {
 					super.onPostExecute(res);
 					try {
 						OperatingEvent event = new OperatingEvent(
-								res != null && res.getResult() != null && Integer.valueOf(res.getResult().getCode()) ==
+								res != null && res.getStatus() == com.osc4j.ds.common.Status.STATUS_OK && res.getResult() != null && Integer.valueOf(res.getResult().getCode()) ==
 										com.osc4j.ds.common.Status.STATUS_OK);
 						EventBus.getDefault().post(event);
 						if (event.isSuccess()) {

@@ -30,11 +30,15 @@
 //                  别人笑我忒疯癫，我笑自己命太贱。
 package com.osc.tweet.app;
 
+import java.util.List;
+
 import android.app.Application;
 
 import com.chopping.net.TaskHelper;
 import com.facebook.stetho.Stetho;
 import com.osc.tweet.utils.Prefs;
+import com.osc4j.ds.favorite.TweetFavoritesList;
+import com.osc4j.ds.tweet.TweetListItem;
 
 
 /**
@@ -47,6 +51,10 @@ public final class App extends Application {
 	 * Application's instance.
 	 */
 	public static App Instance;
+	/**
+	 * The list of all saved favorite tweets.
+	 */
+	private TweetFavoritesList mTweetFavoritesList;
 
 	{
 		Instance = this;
@@ -62,4 +70,50 @@ public final class App extends Application {
 				.enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this)).build());
 	}
 
+	/**
+	 * To know whether a tweet-item has been in favorite-list or not.
+	 *
+	 * @param item
+	 * 		{@link TweetListItem}.
+	 *
+	 * @return {@code true} if the item has been favorite.
+	 */
+	public boolean isFavorite(TweetListItem item) {
+		if (mTweetFavoritesList != null && mTweetFavoritesList.getTweets() == null) {
+			return false;
+		}
+		List<TweetListItem> tweets = mTweetFavoritesList.getTweets();
+		for (TweetListItem t : tweets) {
+			if (t.getId() == item.getId()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Add a {@link TweetListItem} to favorite-list.
+	 * @param item {@link TweetListItem}.
+	 */
+	public void addFavorite(TweetListItem item) {
+		mTweetFavoritesList.getTweets().add(item);
+	}
+
+	/**
+	 * Set   list of all saved favorite tweets.
+	 *
+	 * @param tweetFavoritesList
+	 * 		The list of all saved favorite tweets.
+	 */
+	public void setTweetFavoritesList(TweetFavoritesList tweetFavoritesList) {
+		mTweetFavoritesList = tweetFavoritesList;
+	}
+
+	/**
+	 *
+	 * @return The list of all saved favorite tweets.
+	 */
+	public TweetFavoritesList getTweetFavoritesList() {
+		return mTweetFavoritesList;
+	}
 }

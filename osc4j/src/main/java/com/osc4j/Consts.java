@@ -110,4 +110,16 @@ public final class Consts {
 	 * Clear comment notice.
 	 */
 	static final String CLEAR_COMMENTS_NOTICE_URL = OSC_HOST + "clearCommentsNotice";
+	/**
+	 * Get list of all favorite-tweets.
+	 */
+	static final String FAVORITE_TWEETS_URL = OSC_HOST + "tweetFavorites?uid=%d";
+	/**
+	 * Add tweet to favorite.
+	 */
+	static final String ADD_TWEET_FAVORITE_URL = OSC_HOST + "addTweetFavorite?uid=%d&id=%d";
+	/**
+	 * Delete tweet to favorite.
+	 */
+	static final String DEL_TWEET_FAVORITE_URL = OSC_HOST + "delTweetFavorite?uid=%d&id=%d";
 }

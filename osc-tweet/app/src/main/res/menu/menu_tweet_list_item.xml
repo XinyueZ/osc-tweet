@@ -1,0 +1,34 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+    <item
+        android:id="@+id/action_at_him"
+        android:title="@string/action_at_him"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_reply"
+        android:title="@string/action_reply_comment"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_quick_reply"
+        android:title="@string/action_quick_reply"
+        app:showAsAction="never">
+
+        <menu>
+            <!-- empty submenu, filled programmatically -->
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/action_fav"
+        android:title="@string/action_favorite"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_share"
+        android:title="@string/action_share"
+        app:showAsAction="never" />
+
+</menu>

@@ -56,7 +56,7 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 	/**
 	 * A menu on each line of list.
 	 */
-	private static final int MENU_LIST_ITEM = R.menu.menu_list_item;
+	private static final int MENU_LIST_ITEM = R.menu.menu_tweet_list_item;
 	/**
 	 * Data-source.
 	 */
@@ -156,7 +156,41 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 		replayMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem i) {
-				EventBus.getDefault().post(new CommentTweetEvent(item   ));
+				EventBus.getDefault().post(new CommentTweetEvent(item));
+				return true;
+			}
+		});
+
+		MenuItem favMi = menu.findItem(R.id.action_fav);
+		favMi.setVisible(!App.Instance.isFavorite(item));
+		favMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem mi) {
+				AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, StatusResult, StatusResult>() {
+					MenuItem mi;
+					@Override
+					protected StatusResult doInBackground(MenuItem... params) {
+						mi = params[0];
+						try {
+							return OscApi.addTweetFavorite(App.Instance, item);
+						} catch (IOException e) {
+							return null;
+						} catch (OscTweetException e) {
+							return null;
+						}
+					}
+
+					@Override
+					protected void onPostExecute(StatusResult res) {
+						super.onPostExecute(res);
+						OperatingEvent event = new OperatingEvent(res!= null && res.getStatus() == com.osc4j.ds.common.Status.STATUS_OK);
+						EventBus.getDefault().post(event);
+						if(event.isSuccess()) {
+							App.Instance.addFavorite(item);
+							mi.setVisible(false);
+						}
+					}
+				}, mi);
 				return true;
 			}
 		});
@@ -181,7 +215,7 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 						@Override
 						protected void onPostExecute(StatusResult s) {
 							super.onPostExecute(s);
-							EventBus.getDefault().post(new OperatingEvent(s != null && s.getResult() != null && Integer.valueOf(s.getResult().getCode()) ==
+							EventBus.getDefault().post(new OperatingEvent(s != null && s.getStatus() == com.osc4j.ds.common.Status.STATUS_OK && s.getResult() != null &&  Integer.valueOf(s.getResult().getCode()) ==
 									com.osc4j.ds.common.Status.STATUS_OK));
 						}
 					}, menuItem);
