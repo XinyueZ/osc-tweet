@@ -149,7 +149,8 @@ public final class Prefs extends BasicPrefs {
 	 * @return {@code true} if set on that a feedback with vibration  on/off when operating is succeed.
 	 */
 	public boolean settingVibrationFeedback() {
-		return getBoolean(SETTING_VIBRATION_FEEDBACK, getBoolean(DEFAULT_SETTING_VIBRATION_FEEDBACK, false));
+		boolean defaultValue = getBoolean(DEFAULT_SETTING_VIBRATION_FEEDBACK, false);
+		return getBoolean(SETTING_VIBRATION_FEEDBACK, defaultValue);
 	}
 
 	/**
@@ -168,7 +169,8 @@ public final class Prefs extends BasicPrefs {
 	 * @return Default {@code false} if not clear.
 	 */
 	public boolean settingNoticesOpenToClear() {
-		return getBoolean(SETTING_NOTICES_OPEN_TO_CLEAR, getBoolean(DEFAULT_SETTING_NOTICES_OPEN_TO_CLEAR, false));
+		boolean defaultValue = getBoolean(DEFAULT_SETTING_NOTICES_OPEN_TO_CLEAR, false);
+		return getBoolean(SETTING_NOTICES_OPEN_TO_CLEAR, defaultValue);
 	}
 
 	/**
@@ -187,23 +189,29 @@ public final class Prefs extends BasicPrefs {
 	 * @return slowFast {@code 0} slow, {@code >0} medium(fast).
 	 */
 	public int settingPhotoRotateSlowOrFast() {
-		return Integer.valueOf(getString(SETTING_PHOTO_ROTATE_SLOW_OR_FAST, String.valueOf(getInt(
-				DEFAULT_SETTING_PHOTO_ROTATE_SLOW_OR_FAST, 0))));
+		String defaultValue = String.valueOf(getInt(
+				DEFAULT_SETTING_PHOTO_ROTATE_SLOW_OR_FAST, 0));
+		return Integer.valueOf(getString(SETTING_PHOTO_ROTATE_SLOW_OR_FAST, defaultValue));
 	}
 
 	/**
 	 * Show "me" in notices list.
-	 * @param show {@code true} if show.
+	 *
+	 * @param show
+	 * 		{@code true} if show.
 	 */
 	public void settingShowMeInNoticesList(boolean show) {
 		setBoolean(SETTING_SHOW_ME_IN_NOTICES_LIST, show);
 	}
+
 	/**
 	 * Show "me" in notices list.
-	 * @return    {@code true} if show.
+	 *
+	 * @return {@code true} if show.
 	 */
 	public boolean settingShowMeInNoticesList() {
-		return getBoolean(SETTING_SHOW_ME_IN_NOTICES_LIST, getBoolean(DEFAULT_SETTING_SHOW_ME_IN_NOTICES_LIST, false));
+		boolean defaultValue = getBoolean(DEFAULT_SETTING_SHOW_ME_IN_NOTICES_LIST, false);
+		return getBoolean(SETTING_SHOW_ME_IN_NOTICES_LIST, defaultValue);
 	}
 
 }
