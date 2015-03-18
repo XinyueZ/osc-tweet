@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 public final class Friends implements Serializable {
 	@SerializedName("fans")
 	private List<Friend> mFansList;
-	@SerializedName("focus")
+	@SerializedName("follow")
 	private List<Friend> mFocusList;
 
 	public Friends(List<Friend> fansList, List<Friend> focusList) {
