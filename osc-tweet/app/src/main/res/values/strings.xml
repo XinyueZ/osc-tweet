@@ -87,7 +87,7 @@
     <string name="lbl_friends_count" formatted="false">%d fans and %d followed</string>
     <string name="lbl_hometown">From</string>
     <string name="lbl_no_home">no home</string>
-    <string name="lbl_main_page">Website</string>
+    <string name="lbl_main_page">Web version</string>
     <string name="lbl_all_known">All known</string>
     <string name="lbl_all_notices">All notices</string>
     <string name="lbl_my_profile">Profile</string>

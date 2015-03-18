@@ -78,7 +78,7 @@
     <string name="lbl_friends_count" formatted="false">粉丝%d位，关注%d位</string>
     <string name="lbl_hometown">来自</string>
     <string name="lbl_no_home">无家可归</string>
-    <string name="lbl_main_page">网站</string>
+    <string name="lbl_main_page">移动版</string>
     <string name="lbl_all_known">知道的人</string>
     <string name="lbl_all_notices">所有消息</string>
     <string name="lbl_my_profile">个人资料</string>

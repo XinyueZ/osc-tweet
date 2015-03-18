@@ -38,6 +38,7 @@ import com.chopping.activities.BaseActivity;
 import com.chopping.application.BasicPrefs;
 import com.chopping.bus.CloseDrawerEvent;
 import com.chopping.utils.DeviceUtils;
+import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.chopping.utils.Utils;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.android.gms.common.ConnectionResult;
@@ -521,6 +522,15 @@ public class MainActivity extends BaseActivity {
 
 					if (mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
 						EventBus.getDefault().post(new OpenedDrawerEvent(Gravity.LEFT));
+
+						ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mDrawerMenus[0]);
+						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_super_fast_duration)).start();
+
+						animator = ViewPropertyAnimator.animate(mDrawerMenus[1]);
+						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
+
+						animator = ViewPropertyAnimator.animate(mDrawerMenus[2]);
+						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_slow_duration)).start();
 					} else if (mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
 						EventBus.getDefault().post(new OpenedDrawerEvent(Gravity.RIGHT));
 					}
@@ -528,15 +538,27 @@ public class MainActivity extends BaseActivity {
 			};
 			mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-			findViewById(R.id.open_website_ll).setOnClickListener(new OnClickListener() {
+			ScreenSize sz = DeviceUtils.getScreenSize(App.Instance);
+			mDrawerMenus[0] = findViewById(R.id.open_website_ll);
+			ViewHelper.setX(mDrawerMenus[0], sz.Width);
+			mDrawerMenus[0].setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					WebViewActivity.showInstance(MainActivity.this, Prefs.getInstance().websiteUrl(), getString(R.string.lbl_main_page));
+					WebViewActivity.showInstance(MainActivity.this, Prefs.getInstance().websiteUrl(), getString(
+							R.string.lbl_main_page));
 					EventBus.getDefault().post(new CloseDrawerEvent());
 				}
 			});
+
+			mDrawerMenus[1] = findViewById(R.id.open_all_known_ll);
+			ViewHelper.setX(mDrawerMenus[1], sz.Width);
+
+			mDrawerMenus[2] = findViewById(R.id.open_all_notices_ll);
+			ViewHelper.setX(mDrawerMenus[2], sz.Width);
 		}
 	}
+
+	private View[] mDrawerMenus = new View[3];
 
 
 	@Override
@@ -604,7 +626,7 @@ public class MainActivity extends BaseActivity {
 		if (!AuthUtil.isLegitimate(getApplicationContext())) {
 			showDialogFragment(LoginDialog.newInstance(getApplicationContext()), null);
 		} else {
-			if(App.Instance.getTweetFavoritesList() == null) {
+			if (App.Instance.getTweetFavoritesList() == null) {
 				AsyncTaskCompat.executeParallel(new LoadFavoriteAsyncTask());
 			} else {
 				buildViewPager();
@@ -620,8 +642,8 @@ public class MainActivity extends BaseActivity {
 		protected void onPreExecute() {
 			super.onPreExecute();
 			mSmoothProgressBar.setVisibility(View.VISIBLE);
-//			mPbDlg = ProgressDialog.show(MainActivity.this, null, getString(R.string.msg_load_favorite));
-//			mPbDlg.setCancelable(false);
+			//			mPbDlg = ProgressDialog.show(MainActivity.this, null, getString(R.string.msg_load_favorite));
+			//			mPbDlg.setCancelable(false);
 		}
 
 		@Override
@@ -638,11 +660,10 @@ public class MainActivity extends BaseActivity {
 		@Override
 		protected void onPostExecute(TweetFavoritesList tweetFavoritesList) {
 			super.onPostExecute(tweetFavoritesList);
-//			if (mPbDlg != null && mPbDlg.isShowing()) {
-//				mPbDlg.dismiss();
-//			}
-			if (tweetFavoritesList != null &&
-					tweetFavoritesList.getStatus() == com.osc4j.ds.common.Status.STATUS_OK) {
+			//			if (mPbDlg != null && mPbDlg.isShowing()) {
+			//				mPbDlg.dismiss();
+			//			}
+			if (tweetFavoritesList != null && tweetFavoritesList.getStatus() == com.osc4j.ds.common.Status.STATUS_OK) {
 				App.Instance.setTweetFavoritesList(tweetFavoritesList.getTweets());
 
 				buildViewPager();
@@ -651,15 +672,15 @@ public class MainActivity extends BaseActivity {
 					@Override
 					public Dialog onCreateDialog(Bundle savedInstanceState) {
 						AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-						builder.setMessage(R.string.msg_reload_favorite)
-								.setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
+						builder.setMessage(R.string.msg_reload_favorite).setPositiveButton(R.string.btn_ok,
+								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog, int id) {
 										AsyncTaskCompat.executeParallel(new LoadFavoriteAsyncTask());
 									}
 								});
 						return builder.create();
 					}
-				} , null);
+				}, null);
 			}
 		}
 	}
@@ -678,11 +699,11 @@ public class MainActivity extends BaseActivity {
 		mTabs.setViewPager(mViewPager);
 		mTabs.setIndicatorColorResource(R.color.common_white);
 		mTabsFriV.setVisibility(View.VISIBLE);
-		findViewById(R.id.drawer_all_menus_ll).setVisibility(View.VISIBLE);
+
 		showInputEdit();
 		showFriendsListButton();
-		getSupportFragmentManager().beginTransaction().replace(R.id.my_info_fl,
-				MyInfoFragment.newInstance(MainActivity.this)).commit();
+		getSupportFragmentManager().beginTransaction().replace(R.id.my_info_fl, MyInfoFragment.newInstance(
+				MainActivity.this)).commit();
 	}
 
 	;
