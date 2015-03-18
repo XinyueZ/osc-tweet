@@ -55,6 +55,27 @@ public final class OscApi {
 	 */
 	private static final Gson sGson = new Gson();
 
+	/**
+	 * Get current user login session-id.
+	 * @param context {@link Context}.
+	 * @return  The current session-id.
+	 */
+	public static String getSession(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		return session;
+	}
+
+	/**
+	 * Get current access-token to all original openAPIs.
+	 * @param context   {@link Context}.
+	 * @return The current access-token.
+	 */
+	public static String getAccessToken(Context context) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+		return token;
+	}
 
 	/**
 	 * Login.

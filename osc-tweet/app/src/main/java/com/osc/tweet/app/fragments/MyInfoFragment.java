@@ -3,8 +3,6 @@ package com.osc.tweet.app.fragments;
 import java.io.IOException;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -28,6 +26,7 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.activities.SettingActivity;
+import com.osc.tweet.app.activities.WebViewActivity;
 import com.osc.tweet.events.ClearNoticeEvent;
 import com.osc.tweet.events.GetMyInformationEvent;
 import com.osc.tweet.events.OpenMyNoticesDrawerEvent;
@@ -206,8 +205,7 @@ public final class MyInfoFragment extends BaseFragment {
 		meV.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(myInfo.getUrl().getHome()));
-				startActivity(browserIntent);
+				WebViewActivity.showInstance(getActivity(),  myInfo.getUrl().getHome(), getString(R.string.lbl_my_profile));
 				EventBus.getDefault().post(new CloseDrawerEvent());
 			}
 		});
@@ -224,8 +222,8 @@ public final class MyInfoFragment extends BaseFragment {
 		mEditMeV.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(myInfo.getUrl().getEdit()));
-				startActivity(browserIntent);
+				WebViewActivity.showInstance(getActivity(), myInfo.getUrl().getEdit(), getString(
+						R.string.lbl_edit_my_profile));
 				EventBus.getDefault().post(new CloseDrawerEvent());
 			}
 		});

@@ -33,6 +33,7 @@ package com.osc.tweet.app;
 import java.util.List;
 
 import android.app.Application;
+import android.webkit.CookieSyncManager;
 
 import com.chopping.net.TaskHelper;
 import com.facebook.stetho.Stetho;
@@ -62,6 +63,7 @@ public final class App extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		CookieSyncManager.createInstance(this);
 		Prefs.createInstance(this);
 		TaskHelper.init(getApplicationContext());
 

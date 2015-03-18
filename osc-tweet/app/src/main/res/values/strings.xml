@@ -16,6 +16,8 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_add_favorite">Add to favorite</string>
     <string name="action_delete_favorite">Add to favorite</string>
+    <string name="action_backward">Backward</string>
+    <string name="action_forward">Forward</string>
 
     <string name="msg_move_to_top">Return top</string>
     <string name="msg_operating_successfully">Operating successfully.</string>
@@ -85,6 +87,11 @@
     <string name="lbl_friends_count" formatted="false">%d fans and %d followed</string>
     <string name="lbl_hometown">From</string>
     <string name="lbl_no_home">no home</string>
+    <string name="lbl_main_page">Website</string>
+    <string name="lbl_all_known">All known</string>
+    <string name="lbl_all_notices">All notices</string>
+    <string name="lbl_my_profile">Profile</string>
+    <string name="lbl_edit_my_profile">Edit Profile</string>
 
     <string name="quick_reply_list">quick_reply_en</string>
 

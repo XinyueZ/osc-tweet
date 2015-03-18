@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.osc.tweet.app.activities.WebViewActivity">
+    <item
+        android:id="@+id/action_backward"
+        android:title="@string/action_backward"
+        android:icon="@drawable/ic_backward"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_forward"
+        android:title="@string/action_forward"
+        android:icon="@drawable/ic_forward"
+        app:showAsAction="always" />
+
+
+</menu>

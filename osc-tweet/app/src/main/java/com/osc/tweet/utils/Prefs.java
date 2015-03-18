@@ -40,6 +40,14 @@ public final class Prefs extends BasicPrefs {
 	 */
 	private static final String DEFAULT_SETTING_SHOW_ME_IN_NOTICES_LIST = "default_setting_show_me_in_notices_list";
 	/**
+	 * The web-page version of this application.
+	 */
+	private static final String WEBSITE_URL = "website_url";
+	/**
+	 * The domain name of cookies when some websites open.
+	 */
+	private static final String WEBSITE_COOKIE_DOMAIN = "website_cookie_domain";
+	/**
 	 * A feedback with vibration  on/off when operating is succeed.
 	 */
 	public static final String SETTING_VIBRATION_FEEDBACK = "setting.vibration.feedback";
@@ -214,4 +222,19 @@ public final class Prefs extends BasicPrefs {
 		return getBoolean(SETTING_SHOW_ME_IN_NOTICES_LIST, defaultValue);
 	}
 
+	/**
+	 *
+	 * @return The web-page version of this application.
+	 */
+	public String websiteUrl() {
+		return getString(WEBSITE_URL, "http://www.oschina.net/tweets");
+	}
+
+	/**
+	 *
+	 * @return  The domain name of cookies when some websites open.
+	 */
+	public String websiteDomain() {
+		return getString(WEBSITE_COOKIE_DOMAIN, ".oschina.net");
+	}
 }

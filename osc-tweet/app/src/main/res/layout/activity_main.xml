@@ -22,7 +22,8 @@
 
 
             <FrameLayout
-                android:id="@+id/tabs_friends_fl" android:visibility="gone"
+                android:id="@+id/tabs_friends_fl"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -72,7 +73,8 @@
                         android:layout_gravity="right|bottom"
                         android:background="@drawable/circle_large_green"
                         android:src="@drawable/ic_new_message"
-                        style="@style/FloatButton" android:visibility="invisible"
+                        style="@style/FloatButton"
+                        android:visibility="invisible"
                         android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_marginRight="@dimen/activity_horizontal_margin" />
                 </FrameLayout>
@@ -109,6 +111,97 @@
                 android:id="@+id/my_info_fl"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
+            <LinearLayout
+                android:id="@+id/drawer_all_menus_ll"
+                android:background="@color/common_grey"
+                android:orientation="vertical" android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/open_website_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/selector_drawer_item_btn">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/lbl_all_known"
+                        android:background="@color/common_transparent"
+                        android:src="@drawable/ic_home" />
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="left|center_vertical"
+                        android:textColor="@color/text_common_black"
+                        android:text="@string/lbl_main_page"
+                        android:background="@drawable/selector_drawer_item_btn" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/open_all_known_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/common_padding"
+                    android:background="@drawable/selector_drawer_item_btn">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/lbl_all_known"
+                        android:background="@color/common_transparent"
+                        android:src="@drawable/ic_social_group" />
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="left|center_vertical"
+                        android:textColor="@color/text_common_black"
+                        android:text="@string/lbl_all_known"
+                        android:background="@drawable/selector_drawer_item_btn" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/open_all_notices_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/common_padding"
+                    android:background="@drawable/selector_drawer_item_btn">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/lbl_all_notices"
+                        android:background="@color/common_transparent"
+                        android:src="@drawable/ic_all_notices" />
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="left|center_vertical"
+                        android:textColor="@color/text_common_black"
+                        android:text="@string/lbl_all_notices"
+                        android:background="@drawable/selector_drawer_item_btn" />
+                </LinearLayout>
+
+            </LinearLayout>
 
             <FrameLayout
                 android:id="@+id/app_list_fl"

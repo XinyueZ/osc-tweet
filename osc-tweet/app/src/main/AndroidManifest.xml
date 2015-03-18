@@ -36,7 +36,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/SettingsTheme" />
 
-
+        <activity
+            android:name=".app.activities.WebViewActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <!--Event handler for changing system packages, for external links-->
         <receiver
             android:name="com.chopping.application.InstalledAppReceiver"

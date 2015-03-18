@@ -15,6 +15,8 @@
     <string name="action_refresh">刷新</string>
     <string name="action_add_favorite">收藏</string>
     <string name="action_delete_favorite">取消收藏</string>
+    <string name="action_backward">后退</string>
+    <string name="action_forward">向前</string>
 
     <string name="msg_move_to_top">回到顶部</string>
     <string name="msg_follow">您已经对 %s 添加关注。</string>
@@ -76,6 +78,11 @@
     <string name="lbl_friends_count" formatted="false">粉丝%d位，关注%d位</string>
     <string name="lbl_hometown">来自</string>
     <string name="lbl_no_home">无家可归</string>
+    <string name="lbl_main_page">网站</string>
+    <string name="lbl_all_known">知道的人</string>
+    <string name="lbl_all_notices">所有消息</string>
+    <string name="lbl_my_profile">个人资料</string>
+    <string name="lbl_edit_my_profile">编辑个人资料</string>
 
     <string name="quick_reply_list">quick_reply_zh</string>
 

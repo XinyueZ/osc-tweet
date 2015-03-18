@@ -6,12 +6,14 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.events.ShowEditorEvent;
+import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.ds.personal.Friend;
 
@@ -81,7 +83,13 @@ public final class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAd
 				EventBus.getDefault().post(new ShowEditorEvent("@" + item.getName() + ": "));
 			}
 		});
-
+		holder.mPortraitIv.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				EventBus.getDefault().post(new ShowUserInformationEvent(item.getUserId()));
+				return true;
+			}
+		});
 	}
 
 	@Override

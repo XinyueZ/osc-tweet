@@ -31,6 +31,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.chopping.activities.BaseActivity;
@@ -527,6 +528,13 @@ public class MainActivity extends BaseActivity {
 			};
 			mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+			findViewById(R.id.open_website_ll).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					WebViewActivity.showInstance(MainActivity.this, Prefs.getInstance().websiteUrl(), getString(R.string.lbl_main_page));
+					EventBus.getDefault().post(new CloseDrawerEvent());
+				}
+			});
 		}
 	}
 
@@ -670,6 +678,7 @@ public class MainActivity extends BaseActivity {
 		mTabs.setViewPager(mViewPager);
 		mTabs.setIndicatorColorResource(R.color.common_white);
 		mTabsFriV.setVisibility(View.VISIBLE);
+		findViewById(R.id.drawer_all_menus_ll).setVisibility(View.VISIBLE);
 		showInputEdit();
 		showFriendsListButton();
 		getSupportFragmentManager().beginTransaction().replace(R.id.my_info_fl,
