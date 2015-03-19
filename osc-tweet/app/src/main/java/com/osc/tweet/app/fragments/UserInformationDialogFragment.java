@@ -28,6 +28,7 @@ import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.UserInfoTweetListAdapter;
 import com.osc.tweet.events.LoadFriendsListEvent;
+import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.views.OnViewAnimatedClickedListener2;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
@@ -169,31 +170,24 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					@Override
 					protected void onPostExecute(StatusResult res) {
 						super.onPostExecute(res);
-
+						mChangeRelationPb.setVisibility(View.INVISIBLE);
+						mUserRelationBtn.setEnabled(true);
 						if (res != null && res.getResult() != null && Integer.valueOf(res.getResult().getCode()) ==
 								com.osc4j.ds.common.Status.STATUS_OK) {
 							User user = mUserInfo.getUser();
 							if (user.isRelated()) {
-								//								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
-								//										R.string.msg_focus_cancel), user.getName())));
 								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_follow_cancel),
 										user.getName()));
 							} else {
-								//								EventBus.getDefault().post(new SnackMessageEvent(String.format(getString(
-								//										R.string.msg_focus), user.getName())));
 								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_follow),
 										user.getName()));
-
 							}
+							EventBus.getDefault().post(new OperatingEvent(true));
 							//New relation.
 							user.setRelation(res.getResult().getRelation());
-							mChangeRelationPb.setVisibility(View.INVISIBLE);
-							mUserRelationBtn.setEnabled(true);
 							EventBus.getDefault().post(new LoadFriendsListEvent());
-							updateFocusButton();
-
-							com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
 						}
+						updateFocusButton();
 					}
 				});
 			}

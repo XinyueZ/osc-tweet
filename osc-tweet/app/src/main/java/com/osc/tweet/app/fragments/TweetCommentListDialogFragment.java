@@ -96,6 +96,10 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	 * Indicator for that no data is avaialble to load.
 	 */
 	private View mNoDataLoadedV;
+	/**
+	 * Indicator for empty feeds.
+	 */
+	private View mEmptyV;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -164,6 +168,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		EventBus.getDefault().register(this);
+		mEmptyV = view.findViewById(R.id.empty_ll);
 		mNoDataLoadedV = view.findViewById(R.id.no_data_loaded_iv);
 		mLoadingIndicatorV = view.findViewById(R.id.loading_pb);
 
@@ -283,9 +288,17 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 					super.onPostExecute(comments);
 					try {
 						if (comments != null) {
-							mAdp.setData(getTweetItem(), comments.getComments());
-							mNoDataLoadedV.setVisibility(View.GONE);
+							if(comments.getComments() != null && comments.getComments().size() > 0) {
+								mAdp.setData(getTweetItem(), comments.getComments());
+
+								mEmptyV.setVisibility(View.GONE);
+								mNoDataLoadedV.setVisibility(View.GONE);
+							} else {
+								mEmptyV.setVisibility(View.VISIBLE);
+								mNoDataLoadedV.setVisibility(View.GONE);
+							}
 						} else {
+							mEmptyV.setVisibility(View.GONE);
 							mNoDataLoadedV.setVisibility(View.VISIBLE);
 							mAdp.setData(getTweetItem(), null);
 						}
