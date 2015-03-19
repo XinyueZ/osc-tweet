@@ -8,20 +8,6 @@
 
 
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/content_srl">
-
-        <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:scrollbars="none"
-            android:background="@color/common_yellow"
-            android:id="@id/child_view"
-            android:layout_height="wrap_content" />
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-
 
     <ImageView
         android:id="@+id/empty_notices_iv"
@@ -40,6 +26,21 @@
         android:visibility="invisible"
         android:background="@color/common_transparent"
         android:src="@drawable/ic_not_loaded" />
+
+
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/content_srl">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:scrollbars="none"
+            android:id="@id/child_view"
+            android:layout_height="wrap_content" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </FrameLayout>
 

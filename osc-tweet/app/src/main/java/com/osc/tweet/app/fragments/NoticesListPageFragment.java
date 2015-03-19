@@ -134,16 +134,13 @@ public final class NoticesListPageFragment extends BaseFragment {
 
 		if (getType() == NoticeType.Null || getNotices() == null) {
 			errorV.setVisibility(View.VISIBLE);
-			mRv.setVisibility(View.INVISIBLE);
 			mEmptyV.setVisibility(View.INVISIBLE);
 		} else {
 			List<Notice> notices = getNotices().getNotices();
 			if (notices != null && notices.size() > 0) {
 				mRv.setAdapter(mAdp = new NoticesListAdapter(notices, getType()));
-				mRv.setVisibility(View.VISIBLE);
 				mEmptyV.setVisibility(View.INVISIBLE);
 			} else {
-				mRv.setVisibility(View.INVISIBLE);
 				mEmptyV.setVisibility(View.VISIBLE);
 			}
 		}
