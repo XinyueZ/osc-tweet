@@ -138,6 +138,26 @@
                         android:text="@string/lbl_main_page" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/open_all_notices_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/common_padding"
+                    android:background="@drawable/selector_drawer_item_btn">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/lbl_all_notices"
+                        android:background="@color/common_transparent"
+                        android:src="@drawable/ic_all_notices" />
+
+
+                    <TextView
+                        style="@style/Drawer_Menu_Item"
+                        android:text="@string/lbl_all_notices" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/open_all_known_ll"
@@ -181,27 +201,6 @@
                         android:text="@string/lbl_might_know" />
                 </LinearLayout>
 
-
-                <LinearLayout
-                    android:id="@+id/open_all_notices_ll"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="@dimen/common_padding"
-                    android:background="@drawable/selector_drawer_item_btn">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:contentDescription="@string/lbl_all_notices"
-                        android:background="@color/common_transparent"
-                        android:src="@drawable/ic_all_notices" />
-
-
-                    <TextView
-                        style="@style/Drawer_Menu_Item"
-                        android:text="@string/lbl_all_notices" />
-                </LinearLayout>
 
             </LinearLayout>
 

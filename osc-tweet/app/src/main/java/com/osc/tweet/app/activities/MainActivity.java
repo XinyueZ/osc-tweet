@@ -545,14 +545,16 @@ public class MainActivity extends BaseActivity {
 				}
 			});
 
-			mDrawerMenus[1] = findViewById(R.id.open_all_known_ll);
+
+			mDrawerMenus[1] = findViewById(R.id.open_all_notices_ll);
 			ViewHelper.setX(mDrawerMenus[1], sz.Width);
 
-			mDrawerMenus[2] = findViewById(R.id.open_might_know_ll);
+			mDrawerMenus[2] = findViewById(R.id.open_all_known_ll);
 			ViewHelper.setX(mDrawerMenus[2], sz.Width);
 
-			mDrawerMenus[3] = findViewById(R.id.open_all_notices_ll);
+			mDrawerMenus[3] = findViewById(R.id.open_might_know_ll);
 			ViewHelper.setX(mDrawerMenus[3], sz.Width);
+
 		}
 	}
 
