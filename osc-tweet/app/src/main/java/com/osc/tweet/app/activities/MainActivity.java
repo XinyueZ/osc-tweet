@@ -515,13 +515,16 @@ public class MainActivity extends BaseActivity {
 						EventBus.getDefault().post(new OpenedDrawerEvent(Gravity.LEFT));
 
 						ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mDrawerMenus[0]);
-						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_super_fast_duration))
-								.start();
+						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_super_fast_duration)).start();
 
 						animator = ViewPropertyAnimator.animate(mDrawerMenus[1]);
 						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
 
+
 						animator = ViewPropertyAnimator.animate(mDrawerMenus[2]);
+						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_duration)).start();
+
+						animator = ViewPropertyAnimator.animate(mDrawerMenus[3]);
 						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_slow_duration)).start();
 					} else if (mDrawerLayout.isDrawerOpen(Gravity.RIGHT)) {
 						EventBus.getDefault().post(new OpenedDrawerEvent(Gravity.RIGHT));
@@ -545,12 +548,15 @@ public class MainActivity extends BaseActivity {
 			mDrawerMenus[1] = findViewById(R.id.open_all_known_ll);
 			ViewHelper.setX(mDrawerMenus[1], sz.Width);
 
-			mDrawerMenus[2] = findViewById(R.id.open_all_notices_ll);
+			mDrawerMenus[2] = findViewById(R.id.open_might_know_ll);
 			ViewHelper.setX(mDrawerMenus[2], sz.Width);
+
+			mDrawerMenus[3] = findViewById(R.id.open_all_notices_ll);
+			ViewHelper.setX(mDrawerMenus[3], sz.Width);
 		}
 	}
 
-	private View[] mDrawerMenus = new View[3];
+	private View[] mDrawerMenus = new View[4];
 
 
 	@Override
