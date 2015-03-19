@@ -28,8 +28,6 @@
     <string name="msg_update_my_info" formatted="false">(%d) \@me, (%d) new comments</string>
     <string name="msg_load_config">Load application configuration…</string>
     <string name="msg_works_in_next_request">Works in next request.</string>
-    <string name="msg_load_favorite">Load favorite-list…</string>
-    <string name="msg_reload_favorite">Can not reload favorite-list, it must be reloaded…</string>
 
     <string name="btn_confirm">Confirm</string>
     <string name="btn_cancel">Cancel</string>

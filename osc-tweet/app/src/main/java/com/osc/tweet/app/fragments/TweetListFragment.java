@@ -28,6 +28,7 @@ import com.osc.tweet.events.DeletedFavEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc4j.OscApi;
+import com.osc4j.ds.favorite.TweetFavoritesList;
 import com.osc4j.ds.tweet.TweetList;
 import com.osc4j.ds.tweet.TweetListItem;
 import com.osc4j.exceptions.OscTweetException;
@@ -224,6 +225,7 @@ public final class TweetListFragment extends BaseFragment {
 	 */
 	private void getTweetList() {
 		if (!mInProgress) {
+
 			AsyncTaskCompat.executeParallel(new AsyncTask<Object, List<TweetListItem>, List<TweetListItem>>() {
 				@Override
 				protected void onPreExecute() {
@@ -235,6 +237,12 @@ public final class TweetListFragment extends BaseFragment {
 				protected List<TweetListItem> doInBackground(Object... params) {
 					try {
 						if (getArguments().getBoolean(EXTRAS_FAV, false)) {
+							if (App.Instance.getTweetFavoritesList() == null) {
+								TweetFavoritesList result = OscApi.tweetFavoritesList(App.Instance);
+								if(result.getStatus() == com.osc4j.ds.common.Status.STATUS_OK) {
+									App.Instance.setTweetFavoritesList(result.getTweets());
+								}
+							}
 							return App.Instance.getTweetFavoritesList();
 						} else {
 							return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS,
