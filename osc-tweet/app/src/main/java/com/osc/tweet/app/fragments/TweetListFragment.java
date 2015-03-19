@@ -24,6 +24,7 @@ import com.chopping.utils.Utils;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.TweetListAdapter;
+import com.osc.tweet.events.AddFavEvent;
 import com.osc.tweet.events.DeletedFavEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.utils.Prefs;
@@ -78,7 +79,10 @@ public final class TweetListFragment extends BaseFragment {
 	 * Network action in progress if {@code true}.
 	 */
 	private boolean mInProgress;
-
+	/**
+	 * Indicator for empty feeds.
+	 */
+	private View mEmptyV;
 	//------------------------------------------------
 	//Subscribes, event-handlers
 	//------------------------------------------------
@@ -97,15 +101,24 @@ public final class TweetListFragment extends BaseFragment {
 	}
 
 	/**
+	 * Handler for {@link com.osc.tweet.events.AddFavEvent}.
+	 *
+	 * @param e
+	 * 		Event {@link com.osc.tweet.events.AddFavEvent}.
+	 */
+	public void onEvent(AddFavEvent e) {
+		notifyWhenFavChanged();
+	}
+
+
+	/**
 	 * Handler for {@link com.osc.tweet.events.DeletedFavEvent}.
 	 *
 	 * @param e
 	 * 		Event {@link com.osc.tweet.events.DeletedFavEvent}.
 	 */
 	public void onEvent(DeletedFavEvent e) {
-		if (getArguments().getBoolean(EXTRAS_FAV, false)) {
-			getTweetList();
-		}
+		notifyWhenFavChanged();
 	}
 
 	//------------------------------------------------
@@ -163,6 +176,7 @@ public final class TweetListFragment extends BaseFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		setHasOptionsMenu(true);
+		mEmptyV = view.findViewById(R.id.empty_ll);
 		mNotLoadedIndicatorV = view.findViewById(R.id.not_loaded_ll);
 		mRv = (RecyclerView) view.findViewById(R.id.tweet_list_rv);
 		mRv.setLayoutManager(mLayoutManager = new LinearLayoutManager(getActivity()));
@@ -239,7 +253,7 @@ public final class TweetListFragment extends BaseFragment {
 						if (getArguments().getBoolean(EXTRAS_FAV, false)) {
 							if (App.Instance.getTweetFavoritesList() == null) {
 								TweetFavoritesList result = OscApi.tweetFavoritesList(App.Instance);
-								if(result.getStatus() == com.osc4j.ds.common.Status.STATUS_OK) {
+								if (result.getStatus() == com.osc4j.ds.common.Status.STATUS_OK) {
 									App.Instance.setTweetFavoritesList(result.getTweets());
 								}
 							}
@@ -260,12 +274,22 @@ public final class TweetListFragment extends BaseFragment {
 					super.onPostExecute(tweetList);
 					try {
 						if (tweetList != null) {
-							if (getArguments().getBoolean(EXTRAS_FAV, false)) {
-								App.Instance.setTweetFavoritesList(tweetList);
+							if( tweetList.size() > 0) {
+								if (getArguments().getBoolean(EXTRAS_FAV, false)) {
+									App.Instance.setTweetFavoritesList(tweetList);
+								}
+								mAdp.setData(tweetList);
+								mEmptyV.setVisibility(View.GONE);
+								mNotLoadedIndicatorV.setVisibility(View.GONE);
+							} else {
+								mEmptyV.setVisibility(View.VISIBLE);
+								mNotLoadedIndicatorV.setVisibility(View.GONE);
 							}
-							mAdp.setData(tweetList);
 							finishLoading();
 							mLayoutManager.scrollToPositionWithOffset(0, 0);
+						} else {
+							mEmptyV.setVisibility(View.GONE);
+							mNotLoadedIndicatorV.setVisibility(View.VISIBLE);
 						}
 					} catch (IllegalStateException e) {
 						//Activity has been destroyed
@@ -338,6 +362,18 @@ public final class TweetListFragment extends BaseFragment {
 		mNotLoadedIndicatorV.setVisibility(View.GONE);
 	}
 
+	/**
+	 * Fav-list has been changed.
+	 */
+	private void notifyWhenFavChanged() {
+		if (getArguments().getBoolean(EXTRAS_FAV, false)) {
+			getTweetList();
+		} else {
+			if (mAdp != null) {
+				mAdp.notifyDataSetChanged();
+			}
+		}
+	}
 
 	@Override
 	protected BasicPrefs getPrefs() {

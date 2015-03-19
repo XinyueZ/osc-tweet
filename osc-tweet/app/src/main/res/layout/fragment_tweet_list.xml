@@ -6,19 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/content_srl">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/tweet_list_rv"
-            android:layout_gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-
-    </android.support.v4.widget.SwipeRefreshLayout>
 
     <LinearLayout
         android:id="@+id/not_loaded_ll"
@@ -35,13 +22,45 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" android:gravity="center_vertical"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
             android:text="----->" />
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:layout_marginBottom="4dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
             android:background="@color/common_transparent"
             android:src="@drawable/ic_not_loaded" />
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/empty_ll"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:background="@color/common_yellow"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:background="@color/common_transparent"
+            android:src="@drawable/ic_empty"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/content_srl">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/tweet_list_rv"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>

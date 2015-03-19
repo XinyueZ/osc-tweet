@@ -96,7 +96,7 @@ public final class App extends Application {
 	 * @param item {@link TweetListItem}.
 	 */
 	public void addFavorite(TweetListItem item) {
-		mTweetFavorites.add(item);
+		mTweetFavorites.add(0, item);
 	}
 
 

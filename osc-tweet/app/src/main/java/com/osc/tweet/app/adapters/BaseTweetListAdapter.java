@@ -31,6 +31,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
+import com.osc.tweet.events.AddFavEvent;
 import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.DeletedFavEvent;
 import com.osc.tweet.events.OperatingEvent;
@@ -140,6 +141,7 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 
 		final Menu menu = holder.mToolbar.getMenu();
 
+
 		MenuItem atHimMi = menu.findItem(R.id.action_at_him);
 		atHimMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_at_him),
 				item.getAuthor()));
@@ -191,9 +193,10 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 							App.Instance.addFavorite(item);
 							addFavMi.setVisible(false);
 							delFavMi.setVisible(true);
+							EventBus.getDefault().post(new AddFavEvent());
 						}
 					}
-				} );
+				});
 				return true;
 			}
 		});
@@ -228,12 +231,14 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 							delFavMi.setVisible(false);
 						}
 					}
-				}   );
+				});
 				return true;
 			}
 		});
 
-
+		boolean notFav = !App.Instance.isFavorite(item);
+		addFavMi.setVisible(notFav);
+		delFavMi.setVisible(!notFav);
 
 		MenuItem qReplayMi = menu.findItem(R.id.action_quick_reply);
 		SubMenu subMenu = qReplayMi.getSubMenu();
