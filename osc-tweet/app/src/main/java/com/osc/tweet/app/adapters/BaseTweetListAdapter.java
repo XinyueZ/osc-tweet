@@ -138,7 +138,7 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 			holder.mTimeTv.setText("?");
 		}
 
-		Menu menu = holder.mToolbar.getMenu();
+		final Menu menu = holder.mToolbar.getMenu();
 
 		MenuItem atHimMi = menu.findItem(R.id.action_at_him);
 		atHimMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_at_him),
@@ -162,17 +162,16 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 			}
 		});
 
-		MenuItem addFavMi = menu.findItem(R.id.action_add_fav);
+		final MenuItem addFavMi = menu.findItem(R.id.action_add_fav);
+		final MenuItem delFavMi = menu.findItem(R.id.action_del_fav);
+
 		addFavMi.setVisible(!App.Instance.isFavorite(item));
 		addFavMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem mi) {
 				AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, StatusResult, StatusResult>() {
-					MenuItem mi;
-
 					@Override
 					protected StatusResult doInBackground(MenuItem... params) {
-						mi = params[0];
 						try {
 							return OscApi.addTweetFavorite(App.Instance, item);
 						} catch (IOException e) {
@@ -190,25 +189,23 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 						EventBus.getDefault().post(event);
 						if (event.isSuccess()) {
 							App.Instance.addFavorite(item);
-							mi.setVisible(false);
+							addFavMi.setVisible(false);
+							delFavMi.setVisible(true);
 						}
 					}
-				}, mi);
+				} );
 				return true;
 			}
 		});
 
-		MenuItem delFavMi = menu.findItem(R.id.action_del_fav);
+
 		delFavMi.setVisible(App.Instance.isFavorite(item));
 		delFavMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem mi) {
 				AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, StatusResult, StatusResult>() {
-					MenuItem mi;
-
 					@Override
 					protected StatusResult doInBackground(MenuItem... params) {
-						mi = params[0];
 						try {
 							return OscApi.delTweetFavorite(App.Instance, item);
 						} catch (IOException e) {
@@ -227,9 +224,11 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 						if (event.isSuccess()) {
 							App.Instance.deleteFavorite(item);
 							EventBus.getDefault().post(new DeletedFavEvent());
+							addFavMi.setVisible(true);
+							delFavMi.setVisible(false);
 						}
 					}
-				}, mi);
+				}   );
 				return true;
 			}
 		});

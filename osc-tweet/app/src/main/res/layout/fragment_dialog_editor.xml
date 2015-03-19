@@ -42,7 +42,6 @@
                     android:id="@+id/tweet_content_et"
                     android:editable="false"
                     android:focusable="false"
-                    android:enabled="false"
                     android:layout_marginTop="@dimen/common_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -63,7 +62,6 @@
                     android:editable="false"
                     android:layout_toLeftOf="@+id/portrait_comment_iv"
                     android:focusable="false"
-                    android:enabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 

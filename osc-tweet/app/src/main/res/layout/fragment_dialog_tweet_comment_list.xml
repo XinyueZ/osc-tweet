@@ -28,7 +28,6 @@
             android:id="@+id/tweet_content_et"
             android:editable="false"
             android:focusable="false"
-            android:enabled="false"
             android:layout_marginTop="@dimen/common_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -9,6 +9,12 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/action_might_know"
+        android:title="@string/lbl_might_know"
+        android:icon="@drawable/ic_action_social_group_add"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_share_app"
         android:title="@string/action_share"
         app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
