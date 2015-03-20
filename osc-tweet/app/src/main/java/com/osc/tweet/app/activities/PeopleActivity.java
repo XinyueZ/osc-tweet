@@ -2,11 +2,15 @@ package com.osc.tweet.app.activities;
 
 import java.io.IOException;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -14,9 +18,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.chopping.utils.Utils;
 import com.google.gson.JsonSyntaxException;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
@@ -66,7 +72,7 @@ public final class PeopleActivity extends OscActivity {
 	 */
 	private boolean mInProgress;
 
-
+	private LinearLayoutManager mLayoutManager;
 
 	/**
 	 * Show single instance of {@link}
@@ -88,7 +94,7 @@ public final class PeopleActivity extends OscActivity {
 		//Actionbar and navi-drawer.
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-		ActionBar actionBar = 	getSupportActionBar();
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setTitle(R.string.lbl_settings);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDefaultDisplayHomeAsUpEnabled(true);
@@ -99,7 +105,7 @@ public final class PeopleActivity extends OscActivity {
 		mSmoothProgressBar = (SmoothProgressBar) findViewById(R.id.loading_pb);
 
 		mRv = (RecyclerView) findViewById(R.id.people_list_rv);
-		mRv.setLayoutManager(new LinearLayoutManager(this));
+		mRv.setLayoutManager(mLayoutManager = new LinearLayoutManager(this));
 		mRv.setHasFixedSize(false);
 		mRv.setAdapter(mAdp = new PeopleListAdapter(null));
 
@@ -141,7 +147,7 @@ public final class PeopleActivity extends OscActivity {
 					super.onPostExecute(peopleList);
 					try {
 						if (peopleList != null && peopleList.getStatus() == com.osc4j.ds.common.Status.STATUS_OK) {
-							if (peopleList.getPeople().size() > 0) {
+							if (peopleList.getPeople() != null && peopleList.getPeople().size() > 0) {
 								mAdp.setData(peopleList.getPeople());
 								mEmptyV.setVisibility(View.GONE);
 								mNotLoadedIndicatorV.setVisibility(View.GONE);
@@ -153,6 +159,23 @@ public final class PeopleActivity extends OscActivity {
 						} else {
 							mEmptyV.setVisibility(View.GONE);
 							mNotLoadedIndicatorV.setVisibility(View.VISIBLE);
+							mSmoothProgressBar.setVisibility(View.INVISIBLE);
+
+							showDialogFragment(new DialogFragment() {
+								@Override
+								public Dialog onCreateDialog(Bundle savedInstanceState) {
+									// Use the Builder class for convenient dialog construction
+									AlertDialog.Builder builder = new AlertDialog.Builder(PeopleActivity.this);
+									builder.setMessage(R.string.btn_retry)
+											.setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
+													public void onClick(DialogInterface dialog, int id) {
+														getPeople();
+														dialog.dismiss();
+													}
+											});
+									return builder.create();
+								}
+							}, null);
 						}
 					} catch (IllegalStateException e) {
 						//Activity has been destroyed
@@ -160,6 +183,8 @@ public final class PeopleActivity extends OscActivity {
 					mInProgress = false;
 				}
 			});
+		} else {
+			mSwipeRefreshLayout.setRefreshing(false);
 		}
 	}
 
@@ -171,12 +196,23 @@ public final class PeopleActivity extends OscActivity {
 		mSmoothProgressBar.setVisibility(View.INVISIBLE);
 		mSwipeRefreshLayout.setRefreshing(false);
 	}
-
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_people, menu);
+		return true;
+	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			ActivityCompat.finishAfterTransition(this);
+			break;
+		case R.id.action_top:
+			if (mAdp != null && mAdp.getItemCount() > 0) {
+				mLayoutManager.scrollToPositionWithOffset(0, 0);
+				Utils.showShortToast(App.Instance, R.string.msg_move_to_top);
+			}
 			break;
 		}
 		return super.onOptionsItemSelected(item);

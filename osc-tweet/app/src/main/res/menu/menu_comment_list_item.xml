@@ -5,11 +5,13 @@
     <item
         android:id="@+id/action_at_him"
         android:title="@string/action_at_him"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_action_at_user"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_reply"
         android:title="@string/action_reply_comment"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_action_content_reply"
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_quick_reply"
