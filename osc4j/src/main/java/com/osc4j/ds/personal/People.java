@@ -22,9 +22,13 @@ public final class People implements Serializable {
 	private int mGender;           //1-man, 2,famle
 	@SerializedName("relation")
 	private int mRelation;          //1-has been focused, 2-focused eachother, 3-no
+	@SerializedName("fans")
+	private int mFansCount;
+	@SerializedName("follow")
+	private int mFollowersCount;
 
 	public People(int id, String name, String from, String platforms, String expertise, String portrait, int gender,
-			int relation) {
+			int relation, int fansCount, int followersCount) {
 		mId = id;
 		mName = name;
 		mFrom = from;
@@ -33,10 +37,12 @@ public final class People implements Serializable {
 		mPortrait = portrait;
 		mGender = gender;
 		mRelation = relation;
+		mFansCount = fansCount;
+		mFollowersCount = followersCount;
 	}
 
-
 	public int getId() {
+
 		return mId;
 	}
 
@@ -66,5 +72,22 @@ public final class People implements Serializable {
 
 	public int getRelation() {
 		return mRelation;
+	}
+
+	public int getFansCount() {
+		return mFansCount;
+	}
+
+	public int getFollowersCount() {
+		return mFollowersCount;
+	}
+
+
+	public void setRelation(int relation) {
+		mRelation = relation;
+	}
+
+	public boolean isRelated() {
+		return mRelation == 1 || mRelation == 2;
 	}
 }

@@ -78,13 +78,6 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:text="@string/lbl_user_nickname"
-                        style="@style/Style_User_Information_Label" />
-
-                    <TextView
-                        android:id="@+id/user_ident_tv"
-                        style="@style/Style_User_Information_Value" />
 
                     <TextView
                         android:text="@string/lbl_user_gender"

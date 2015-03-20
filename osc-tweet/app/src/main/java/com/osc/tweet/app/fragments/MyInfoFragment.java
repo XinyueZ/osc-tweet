@@ -38,8 +38,8 @@ import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
-import com.osc4j.ds.personal.Am;
 import com.osc4j.ds.personal.MyInformation;
+import com.osc4j.ds.personal.People;
 import com.osc4j.exceptions.OscTweetException;
 
 import de.greenrobot.event.EventBus;
@@ -295,11 +295,11 @@ public final class MyInfoFragment extends BaseFragment {
 				protected void onPostExecute(MyInformation myInfo) {
 					super.onPostExecute(myInfo);
 					try {
-						if (myInfo != null && myInfo.getAm() != null) {
+						if (myInfo != null && myInfo.getPeople() != null) {
 							MyInfoFragment.this.myInfo = myInfo;
-							Am am = MyInfoFragment.this.myInfo.getAm();
-							mUserPhotoIv.setImageUrl(am.getPortrait(), TaskHelper.getImageLoader());
-							mUserNameTv.setText(am.getName());
+							People people = MyInfoFragment.this.myInfo.getPeople();
+							mUserPhotoIv.setImageUrl(people.getPortrait(), TaskHelper.getImageLoader());
+							mUserNameTv.setText(people.getName());
 							mAtCount = myInfo.getNotices() == null ? 0 : myInfo.getNotices().size();
 							mCommentsCount = myInfo.getComments() == null ? 0 : myInfo.getComments().size();
 
@@ -315,9 +315,9 @@ public final class MyInfoFragment extends BaseFragment {
 								EventBus.getDefault().post(new OpenMyNoticesDrawerEvent());
 							}
 
-							mFansCount = am.getFansCount();
-							mFollowedCount = am.getFollowersCount();
-							mHomeTv.setText(am.getCity() + "," + am.getProvince());
+							mFansCount = people.getFansCount();
+							mFollowedCount = people.getFollowersCount();
+							mHomeTv.setText(people.getFrom());
 							//						doAnimation();
 							//						Prefs.getInstance().setShowMyInfoAnim(false);
 							mEditMeV.setVisibility(View.VISIBLE);

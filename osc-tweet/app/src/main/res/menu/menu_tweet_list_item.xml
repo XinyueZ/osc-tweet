@@ -6,12 +6,12 @@
         android:id="@+id/action_at_him"
         android:title="@string/action_at_him"
         android:icon="@drawable/ic_action_at_user"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_reply"
         android:title="@string/action_reply_comment"
         android:icon="@drawable/ic_action_content_reply"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_quick_reply"
@@ -27,13 +27,13 @@
         android:id="@+id/action_add_fav"
         android:title="@string/action_add_favorite"
         android:icon="@drawable/ic_action_favorite_outline"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_del_fav" android:visible="false"
         android:title="@string/action_delete_favorite"
         android:icon="@drawable/ic_action_favorite"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_share"

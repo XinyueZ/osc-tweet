@@ -35,7 +35,7 @@ import com.osc.tweet.views.RoundedNetworkImageView;
 import com.osc4j.OscApi;
 import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.personal.Gender;
-import com.osc4j.ds.personal.User;
+import com.osc4j.ds.personal.People;
 import com.osc4j.ds.personal.UserInformation;
 import com.osc4j.exceptions.OscTweetException;
 
@@ -61,7 +61,6 @@ public final class UserInformationDialogFragment extends DialogFragment {
 
 	private RoundedNetworkImageView mUserPhotoIv;
 	private TextView mUserNameTv;
-	private TextView mUserIdentTv;
 	private TextView mUserGenderTv;
 	private TextView mUserPlatformTv;
 	private TextView mUserSkillTv;
@@ -138,7 +137,6 @@ public final class UserInformationDialogFragment extends DialogFragment {
 		mIvY = ViewHelper.getY(mUserPhotoIv);
 		ViewHelper.setY(mUserPhotoIv, -100f);
 		mUserNameTv = (TextView) view.findViewById(R.id.user_name_tv);
-		mUserIdentTv = (TextView) view.findViewById(R.id.user_ident_tv);
 		mUserGenderTv = (TextView) view.findViewById(R.id.user_gender_tv);
 		mUserPlatformTv = (TextView) view.findViewById(R.id.user_platform_tv);
 		mUserRelationBtn = (Button) view.findViewById(R.id.relation_btn);
@@ -159,8 +157,8 @@ public final class UserInformationDialogFragment extends DialogFragment {
 					@Override
 					protected StatusResult doInBackground(Object... params) {
 						try {
-							User user = mUserInfo.getUser();
-							return OscApi.updateRelation(App.Instance, user, user.isRelated());
+							People people = mUserInfo.getPeople();
+							return OscApi.updateRelation(App.Instance, people, people.isRelated());
 						}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 							return null;
 						}
@@ -173,17 +171,17 @@ public final class UserInformationDialogFragment extends DialogFragment {
 						mUserRelationBtn.setEnabled(true);
 						if (res != null && res.getResult() != null && Integer.valueOf(res.getResult().getCode()) ==
 								com.osc4j.ds.common.Status.STATUS_OK) {
-							User user = mUserInfo.getUser();
-							if (user.isRelated()) {
+							People people = mUserInfo.getPeople();
+							if (people.isRelated()) {
 								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_follow_cancel),
-										user.getName()));
+										people.getName()));
 							} else {
 								Utils.showLongToast(App.Instance, String.format(getString(R.string.msg_follow),
-										user.getName()));
+										people.getName()));
 							}
 							EventBus.getDefault().post(new OperatingEvent(true));
 							//New relation.
-							user.setRelation(res.getResult().getRelation());
+							people.setRelation(res.getResult().getRelation());
 							EventBus.getDefault().post(new LoadFriendsListEvent());
 						}
 						updateFocusButton();
@@ -232,26 +230,25 @@ public final class UserInformationDialogFragment extends DialogFragment {
 				protected void onPostExecute(UserInformation userInformation) {
 					super.onPostExecute(userInformation);
 					try {
-						if (userInformation != null && userInformation.getUser() != null) {
+						if (userInformation != null && userInformation.getPeople() != null) {
 							mUserInfo = userInformation;
-							User user = userInformation.getUser();
+							People people = userInformation.getPeople();
 							mUserPhotoIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
-							mUserPhotoIv.setImageUrl(user.getPortrait(), TaskHelper.getImageLoader());
+							mUserPhotoIv.setImageUrl(people.getPortrait(), TaskHelper.getImageLoader());
 							ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mUserPhotoIv);
 							animator.y(mIvY).setDuration(getResources().getInteger(R.integer.anim_fast_duration))
 									.start();
 							animator = ViewPropertyAnimator.animate(mUserRelationBtn);
 							animator.translationX(mBtnX).setDuration(getResources().getInteger(
 									R.integer.anim_fast_duration)).start();
-							mUserNameTv.setText(user.getName());
-							mUserIdentTv.setText(user.getIdent());
-							mUserSkillTv.setText(user.getExpertise());
-							mUserPlatformTv.setText(user.getPlatforms());
+							mUserNameTv.setText(people.getName());
+							mUserSkillTv.setText(people.getExpertise());
+							mUserPlatformTv.setText(people.getPlatforms());
 							mUserGenderTv.setText(getString(
-									user.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
+									people.getGender() == Gender.Male ? R.string.lbl_user_gender_male :
 											R.string.lbl_user_gender_female));
 							updateFocusButton();
-							mUserLocationTv.setText(String.format("%s, %s", user.getCity(), user.getProvince()));
+							mUserLocationTv.setText(people.getFrom());
 							mLoadUserInfoPb.setVisibility(View.INVISIBLE);
 							mAllContainerV.setVisibility(View.VISIBLE);
 							mAdp.setData(userInformation.getTweets());
@@ -272,7 +269,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 	 */
 	private void updateFocusButton() {
 		mUserRelationBtn.setText(getString(
-				mUserInfo.getUser().isRelated() ? R.string.lbl_user_cancel_follow : R.string.lbl_user_follow));
+				mUserInfo.getPeople().isRelated() ? R.string.lbl_user_cancel_follow : R.string.lbl_user_follow));
 	}
 
 	@Override

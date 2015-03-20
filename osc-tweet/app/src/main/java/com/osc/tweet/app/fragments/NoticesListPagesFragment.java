@@ -222,7 +222,7 @@ public final class NoticesListPagesFragment extends BaseFragment {
 		mPbV.setVisibility(View.GONE);
 		mPbV.progressiveStop();
 
-		if (myInfo != null && myInfo.getAm() != null) {
+		if (myInfo != null && myInfo.getPeople() != null) {
 			mViewPager.setAdapter(new NoticesListViewPagerAdapter(App.Instance, getChildFragmentManager(), myInfo));
 			mTabs.setViewPager(mViewPager);
 

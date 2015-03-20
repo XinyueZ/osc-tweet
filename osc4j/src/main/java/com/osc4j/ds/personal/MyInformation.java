@@ -10,7 +10,7 @@ public final class MyInformation implements Serializable {
 	@SerializedName("status")
 	private int mStatus;
 	@SerializedName("am")
-	private Am mAm;
+	private People mPeople;
 	@SerializedName("url")
 	private Url mUrl;
 	@SerializedName("atMe")
@@ -18,9 +18,9 @@ public final class MyInformation implements Serializable {
 	@SerializedName("comments")
 	private List<Notice> mComments;
 
-	public MyInformation(int status, Am am, Url url, List<Notice> notices, List<Notice> comments) {
+	public MyInformation(int status, People people, Url url, List<Notice> notices, List<Notice> comments) {
 		mStatus = status;
-		mAm = am;
+		mPeople = people;
 		mUrl = url;
 		mNotices = notices;
 		mComments = comments;
@@ -31,8 +31,8 @@ public final class MyInformation implements Serializable {
 		return mStatus;
 	}
 
-	public Am getAm() {
-		return mAm;
+	public People getPeople() {
+		return mPeople;
 	}
 
 	public Url getUrl() {

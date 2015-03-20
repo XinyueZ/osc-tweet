@@ -11,24 +11,24 @@ public final class UserInformation implements Serializable{
 	@SerializedName("status")
 	private int mStatus;
 	@SerializedName("user")
-	private User mUser;
+	private People mPeople;
 	@SerializedName("tweets")
 	private List<TweetListItem> mTweets;
 
-	public UserInformation(int status, User user, List<TweetListItem> tweets) {
+	public UserInformation(int status, People people, List<TweetListItem> tweets) {
 		mStatus = status;
-		mUser = user;
+		mPeople = people;
 		mTweets = tweets;
 	}
+
 
 	public int getStatus() {
 		return mStatus;
 	}
 
-	public User getUser() {
-		return mUser;
+	public People getPeople() {
+		return mPeople;
 	}
-
 
 	public List<TweetListItem> getTweets() {
 		return mTweets;

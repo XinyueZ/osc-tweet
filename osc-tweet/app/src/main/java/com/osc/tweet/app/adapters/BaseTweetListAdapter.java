@@ -103,177 +103,176 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position) {
 		final TweetListItem item = mData.get(position);
-		if (!TextUtils.isEmpty(item.getImgSmall())) {
-			holder.mSmallImgIv.setVisibility(View.VISIBLE);
-			holder.mSmallImgIv.setDefaultImageResId(R.drawable.ic_not_loaded);
-			holder.mSmallImgIv.setImageUrl(item.getImgSmall(), TaskHelper.getImageLoader());
-		} else {
-			holder.mSmallImgIv.setVisibility(View.GONE);
-		}
-
-		holder.mSmallImgIv.setOnClickListener(new OnViewAnimatedClickedListener() {
-			@Override
-			public void onClick(   ) {
-				EventBus.getDefault().post(new ShowBigImageEvent(item));
+		if(item != null) {
+			if (!TextUtils.isEmpty(item.getImgSmall())) {
+				holder.mSmallImgIv.setVisibility(View.VISIBLE);
+				holder.mSmallImgIv.setDefaultImageResId(R.drawable.ic_not_loaded);
+				holder.mSmallImgIv.setImageUrl(item.getImgSmall(), TaskHelper.getImageLoader());
+			} else {
+				holder.mSmallImgIv.setVisibility(View.GONE);
 			}
-		});
-		holder.mAuthorTv.setText(item.getAuthor());
 
-		if (!TextUtils.isEmpty(item.getBody())) {
-			Spanned htmlSpan = Html.fromHtml(item.getBody(), new URLImageParser(holder.mBodyTv.getContext(),
-					holder.mBodyTv), null);
-			holder.mBodyTv.setText(htmlSpan);
-			holder.mBodyTv.setMovementMethod(LinkMovementMethod.getInstance());
-			holder.mBodyTv.setVisibility(View.VISIBLE);
-		} else {
-			holder.mBodyTv.setVisibility(View.GONE);
-		}
-
-		Calendar editTime = Calendar.getInstance();
-		try {
-			editTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item.getPubDate()));
-			editTime = Utils.transformTime(editTime, TimeZone.getTimeZone("GMT+08"), TimeZone.getDefault());
-			CharSequence elapsedSeconds = DateUtils.getRelativeTimeSpanString(editTime.getTimeInMillis(),
-					System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
-			holder.mTimeTv.setText(elapsedSeconds);
-		} catch (ParseException e) {
-			holder.mTimeTv.setText("?");
-		}
-
-		final Menu menu = holder.mToolbar.getMenu();
-
-
-		MenuItem atHimMi = menu.findItem(R.id.action_at_him);
-		atHimMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_at_him),
-				item.getAuthor()));
-		atHimMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				EventBus.getDefault().post(new ShowEditorEvent(item.getTitle().toString()));
-				return true;
-			}
-		});
-
-		MenuItem replayMi = menu.findItem(R.id.action_reply);
-		replayMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_reply_comment),
-				item.getAuthor()));
-		replayMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem i) {
-				EventBus.getDefault().post(new CommentTweetEvent(item));
-				return true;
-			}
-		});
-
-		final MenuItem addFavMi = menu.findItem(R.id.action_add_fav);
-		final MenuItem delFavMi = menu.findItem(R.id.action_del_fav);
-
-		addFavMi.setVisible(!App.Instance.isFavorite(item));
-		addFavMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem mi) {
-				AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, StatusResult, StatusResult>() {
-					@Override
-					protected StatusResult doInBackground(MenuItem... params) {
-						try {
-							return OscApi.addTweetFavorite(App.Instance, item);
-						}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
-							return null;
-						}
-					}
-
-					@Override
-					protected void onPostExecute(StatusResult res) {
-						super.onPostExecute(res);
-						OperatingEvent event = new OperatingEvent(
-								res != null && res.getStatus() == com.osc4j.ds.common.Status.STATUS_OK);
-						EventBus.getDefault().post(event);
-						if (event.isSuccess()) {
-							App.Instance.addFavorite(item);
-							addFavMi.setVisible(false);
-							delFavMi.setVisible(true);
-							EventBus.getDefault().post(new AddFavEvent());
-						}
-					}
-				});
-				return true;
-			}
-		});
-
-
-		delFavMi.setVisible(App.Instance.isFavorite(item));
-		delFavMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem mi) {
-				AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, StatusResult, StatusResult>() {
-					@Override
-					protected StatusResult doInBackground(MenuItem... params) {
-						try {
-							return OscApi.delTweetFavorite(App.Instance, item);
-						} catch (IOException  | OscTweetException | JsonSyntaxException e) {
-							return null;
-						}
-					}
-
-					@Override
-					protected void onPostExecute(StatusResult res) {
-						super.onPostExecute(res);
-						OperatingEvent event = new OperatingEvent(
-								res != null && res.getStatus() == com.osc4j.ds.common.Status.STATUS_OK);
-						EventBus.getDefault().post(event);
-						if (event.isSuccess()) {
-							App.Instance.deleteFavorite(item);
-							EventBus.getDefault().post(new DeletedFavEvent());
-							addFavMi.setVisible(true);
-							delFavMi.setVisible(false);
-						}
-					}
-				});
-				return true;
-			}
-		});
-
-		boolean notFav = !App.Instance.isFavorite(item);
-		addFavMi.setVisible(notFav);
-		delFavMi.setVisible(!notFav);
-
-		MenuItem qReplayMi = menu.findItem(R.id.action_quick_reply);
-		SubMenu subMenu = qReplayMi.getSubMenu();
-		for (int i = 0, size = subMenu.size(); i < size; i++) {
-			subMenu.getItem(i).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			holder.mSmallImgIv.setOnClickListener(new OnViewAnimatedClickedListener() {
 				@Override
-				public boolean onMenuItemClick(MenuItem menuItem) {
-					AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, Object, StatusResult>() {
+				public void onClick() {
+					EventBus.getDefault().post(new ShowBigImageEvent(item));
+				}
+			});
+			holder.mAuthorTv.setText(item.getAuthor());
+
+			if (!TextUtils.isEmpty(item.getBody())) {
+				Spanned htmlSpan = Html.fromHtml(item.getBody(), new URLImageParser(holder.mBodyTv.getContext(), holder.mBodyTv), null);
+				holder.mBodyTv.setText(htmlSpan);
+				holder.mBodyTv.setMovementMethod(LinkMovementMethod.getInstance());
+				holder.mBodyTv.setVisibility(View.VISIBLE);
+			} else {
+				holder.mBodyTv.setVisibility(View.GONE);
+			}
+
+			Calendar editTime = Calendar.getInstance();
+			try {
+				editTime.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item.getPubDate()));
+				editTime = Utils.transformTime(editTime, TimeZone.getTimeZone("GMT+08"), TimeZone.getDefault());
+				CharSequence elapsedSeconds = DateUtils.getRelativeTimeSpanString(editTime.getTimeInMillis(), System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
+				holder.mTimeTv.setText(elapsedSeconds);
+			} catch (ParseException e) {
+				holder.mTimeTv.setText("?");
+			}
+
+			final Menu menu = holder.mToolbar.getMenu();
+
+
+			MenuItem atHimMi = menu.findItem(R.id.action_at_him);
+			atHimMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_at_him), item.getAuthor()));
+			atHimMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					EventBus.getDefault().post(new ShowEditorEvent(item.getTitle().toString()));
+					return true;
+				}
+			});
+
+			MenuItem replayMi = menu.findItem(R.id.action_reply);
+			replayMi.setTitle(String.format(holder.itemView.getContext().getString(R.string.action_reply_comment), item.getAuthor()));
+			replayMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem i) {
+					EventBus.getDefault().post(new CommentTweetEvent(item));
+					return true;
+				}
+			});
+
+			final MenuItem addFavMi = menu.findItem(R.id.action_add_fav);
+			final MenuItem delFavMi = menu.findItem(R.id.action_del_fav);
+
+			addFavMi.setVisible(!App.Instance.isFavorite(item));
+			addFavMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem mi) {
+					AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, StatusResult, StatusResult>() {
 						@Override
 						protected StatusResult doInBackground(MenuItem... params) {
 							try {
-								return OscApi.tweetCommentPub(App.Instance, item, com.chopping.utils.Utils.encode(
-										params[0].getTitle().toString()));
-							}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
+								return OscApi.addTweetFavorite(App.Instance, item);
+							} catch (IOException | OscTweetException | JsonSyntaxException e) {
 								return null;
 							}
 						}
 
 						@Override
-						protected void onPostExecute(StatusResult s) {
-							super.onPostExecute(s);
-							EventBus.getDefault().post(new OperatingEvent(s != null && s.getStatus() == com.osc4j.ds.common.Status.STATUS_OK && s.getResult() != null &&  Integer.valueOf(s.getResult().getCode()) ==
-									com.osc4j.ds.common.Status.STATUS_OK));
+						protected void onPostExecute(StatusResult res) {
+							super.onPostExecute(res);
+							OperatingEvent event = new OperatingEvent(
+									res != null && res.getStatus() == com.osc4j.ds.common.Status.STATUS_OK);
+							EventBus.getDefault().post(event);
+							if (event.isSuccess()) {
+								App.Instance.addFavorite(item);
+								addFavMi.setVisible(false);
+								delFavMi.setVisible(true);
+								EventBus.getDefault().post(new AddFavEvent());
+							}
 						}
-					}, menuItem);
+					});
 					return true;
 				}
 			});
-		}
 
-		holder.mCommentsTv.setText(item.getCommentCount() + "");
-		holder.mCommentsBtn.setVisibility(View.VISIBLE);
-		holder.mCommentsBtn.setOnClickListener(new OnViewAnimatedClickedListener() {
-			@Override
-			public void onClick(   ) {
-				EventBus.getDefault().post(new ShowTweetCommentsListEvent(item));
+
+			delFavMi.setVisible(App.Instance.isFavorite(item));
+			delFavMi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				@Override
+				public boolean onMenuItemClick(MenuItem mi) {
+					AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, StatusResult, StatusResult>() {
+						@Override
+						protected StatusResult doInBackground(MenuItem... params) {
+							try {
+								return OscApi.delTweetFavorite(App.Instance, item);
+							} catch (IOException | OscTweetException | JsonSyntaxException e) {
+								return null;
+							}
+						}
+
+						@Override
+						protected void onPostExecute(StatusResult res) {
+							super.onPostExecute(res);
+							OperatingEvent event = new OperatingEvent(
+									res != null && res.getStatus() == com.osc4j.ds.common.Status.STATUS_OK);
+							EventBus.getDefault().post(event);
+							if (event.isSuccess()) {
+								App.Instance.deleteFavorite(item);
+								EventBus.getDefault().post(new DeletedFavEvent());
+								addFavMi.setVisible(true);
+								delFavMi.setVisible(false);
+							}
+						}
+					});
+					return true;
+				}
+			});
+
+			boolean notFav = !App.Instance.isFavorite(item);
+			addFavMi.setVisible(notFav);
+			delFavMi.setVisible(!notFav);
+
+			MenuItem qReplayMi = menu.findItem(R.id.action_quick_reply);
+			SubMenu subMenu = qReplayMi.getSubMenu();
+			for (int i = 0, size = subMenu.size(); i < size; i++) {
+				subMenu.getItem(i).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					@Override
+					public boolean onMenuItemClick(MenuItem menuItem) {
+						AsyncTaskCompat.executeParallel(new AsyncTask<MenuItem, Object, StatusResult>() {
+							@Override
+							protected StatusResult doInBackground(MenuItem... params) {
+								try {
+									return OscApi.tweetCommentPub(App.Instance, item, com.chopping.utils.Utils.encode(
+											params[0].getTitle().toString()));
+								} catch (IOException | OscTweetException | JsonSyntaxException e) {
+									return null;
+								}
+							}
+
+							@Override
+							protected void onPostExecute(StatusResult s) {
+								super.onPostExecute(s);
+								EventBus.getDefault().post(new OperatingEvent(
+										s != null && s.getStatus() == com.osc4j.ds.common.Status.STATUS_OK &&
+												s.getResult() != null && Integer.valueOf(s.getResult().getCode()) == com.osc4j.ds.common.Status.STATUS_OK));
+							}
+						}, menuItem);
+						return true;
+					}
+				});
 			}
-		});
+
+			holder.mCommentsTv.setText(item.getCommentCount() + "");
+			holder.mCommentsBtn.setVisibility(View.VISIBLE);
+			holder.mCommentsBtn.setOnClickListener(new OnViewAnimatedClickedListener() {
+				@Override
+				public void onClick() {
+					EventBus.getDefault().post(new ShowTweetCommentsListEvent(item));
+				}
+			});
+		}
 	}
 
 	/**

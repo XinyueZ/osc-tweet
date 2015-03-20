@@ -26,15 +26,17 @@ public final class TweetListAdapter extends BaseTweetListAdapter {
 	@Override
 	public void onBindViewHolder(BaseTweetListAdapter.ViewHolder holder, int position) {
 		final TweetListItem item = getData().get(position);
-		ViewHolder thisHolder = (ViewHolder) holder;
-		thisHolder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
-		thisHolder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
-		thisHolder.mPortraitIv.setOnClickListener(new OnViewAnimatedClickedListener() {
-			@Override
-			public void onClick() {
-				EventBus.getDefault().post(new ShowUserInformationEvent(item.getAuthorId()));
-			}
-		});
+		if( item != null) {
+			ViewHolder thisHolder = (ViewHolder) holder;
+			thisHolder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
+			thisHolder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
+			thisHolder.mPortraitIv.setOnClickListener(new OnViewAnimatedClickedListener() {
+				@Override
+				public void onClick() {
+					EventBus.getDefault().post(new ShowUserInformationEvent(item.getAuthorId()));
+				}
+			});
+		}
 		super.onBindViewHolder(holder, position);
 	}
 

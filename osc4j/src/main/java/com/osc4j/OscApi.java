@@ -417,7 +417,7 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static StatusResult updateRelation(Context context, com.osc4j.ds.personal.User friend, boolean cancel) throws
+	public static StatusResult updateRelation(Context context, com.osc4j.ds.personal.People friend, boolean cancel) throws
 			IOException, OscTweetException, JsonSyntaxException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -426,7 +426,7 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		String url = String.format(Consts.UPDATE_RELATION_URL, friend.getUid(), cancel ? 0 : 1);
+		String url = String.format(Consts.UPDATE_RELATION_URL, friend.getId(), cancel ? 0 : 1);
 		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
 				.build();
 		OkHttpClient client = new OkHttpClient();
@@ -465,7 +465,8 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		String url = String.format(Consts.MY_INFORMATION_URL, showMe ? 1 : 0);
+		int uid = prefs.getInt(Consts.KEY_UID, 0);
+		String url = String.format(Consts.MY_INFORMATION_URL, uid, showMe ? 1 : 0);
 		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
 				.build();
 		OkHttpClient client = new OkHttpClient();
