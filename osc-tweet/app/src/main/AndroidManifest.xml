@@ -38,8 +38,12 @@
 
         <activity
             android:name=".app.activities.WebViewActivity"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".app.activities.PeopleActivity"
+            android:screenOrientation="portrait"/>
+
         <!--Event handler for changing system packages, for external links-->
         <receiver
             android:name="com.chopping.application.InstalledAppReceiver"

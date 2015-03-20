@@ -1,7 +1,5 @@
 package com.osc.tweet.app.activities;
 
-import java.io.IOException;
-
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -11,20 +9,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,16 +24,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.astuetz.PagerSlidingTabStrip;
-import com.chopping.activities.BaseActivity;
-import com.chopping.application.BasicPrefs;
 import com.chopping.bus.CloseDrawerEvent;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
-import com.chopping.utils.Utils;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.gson.JsonSyntaxException;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
@@ -54,34 +42,28 @@ import com.osc.tweet.app.fragments.EditorDialogFragment;
 import com.osc.tweet.app.fragments.FriendsListFragment;
 import com.osc.tweet.app.fragments.MyInfoFragment;
 import com.osc.tweet.app.fragments.TweetCommentListDialogFragment;
-import com.osc.tweet.app.fragments.UserInformationDialogFragment;
 import com.osc.tweet.events.CloseFriendsListEvent;
 import com.osc.tweet.events.CommentTweetEvent;
 import com.osc.tweet.events.EULAConfirmedEvent;
 import com.osc.tweet.events.EULARejectEvent;
 import com.osc.tweet.events.OpenMyNoticesDrawerEvent;
 import com.osc.tweet.events.OpenedDrawerEvent;
-import com.osc.tweet.events.OperatingEvent;
 import com.osc.tweet.events.ShowBigImageEvent;
 import com.osc.tweet.events.ShowEditorEvent;
 import com.osc.tweet.events.ShowTweetCommentsListEvent;
-import com.osc.tweet.events.ShowUserInformationEvent;
 import com.osc.tweet.events.ShowingLoadingEvent;
 import com.osc.tweet.events.SnackMessageEvent;
 import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.Consts;
 import com.osc4j.LoginDialog;
-import com.osc4j.OscApi;
-import com.osc4j.ds.personal.NoRelationPeople;
-import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.utils.AuthUtil;
 
 import de.greenrobot.event.EventBus;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends OscActivity {
 	/**
 	 * Main layout for this component.
 	 */
@@ -94,10 +76,6 @@ public class MainActivity extends BaseActivity {
 	 * Use navigation-drawer for this fork.
 	 */
 	private ActionBarDrawerToggle mDrawerToggle;
-	/**
-	 * Support actionbar.
-	 */
-	private Toolbar mToolbar;
 	/**
 	 * Progress indicator.
 	 */
@@ -236,17 +214,6 @@ public class MainActivity extends BaseActivity {
 		showFriendsListButton();
 	}
 
-	/**
-	 * Handler for {@link com.osc.tweet.events.ShowUserInformationEvent}.
-	 *
-	 * @param e
-	 * 		Event {@link com.osc.tweet.events.ShowUserInformationEvent}.
-	 */
-	public void onEvent(ShowUserInformationEvent e) {
-		showDialogFragment(UserInformationDialogFragment.newInstance(getApplicationContext(), e.getUserId(), true),
-				"userInfo");
-	}
-
 
 	/**
 	 * Handler for {@link com.osc.tweet.events.SnackMessageEvent}.
@@ -301,17 +268,7 @@ public class MainActivity extends BaseActivity {
 				"comment-list");
 	}
 
-	/**
-	 * Handler for {@link OperatingEvent}.
-	 *
-	 * @param e
-	 * 		Event {@link OperatingEvent}.
-	 */
-	public void onEvent(OperatingEvent e) {
-		Utils.showLongToast(getApplicationContext(), e.isSuccess() ? getString(R.string.msg_operating_successfully) :
-				getString(R.string.msg_operating_failed));
-		com.osc.tweet.utils.Utils.vibrationFeedback(App.Instance);
-	}
+
 	//------------------------------------------------
 
 	@Override
@@ -321,8 +278,8 @@ public class MainActivity extends BaseActivity {
 		mSnackBar = new SnackBar(this);
 
 		//Actionbar and navi-drawer.
-		mToolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(mToolbar);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 		initDrawer();
 
 		//Button to open editing message.
@@ -428,43 +385,6 @@ public class MainActivity extends BaseActivity {
 		}
 	}
 
-	/**
-	 * Show  {@link android.support.v4.app.DialogFragment}.
-	 *
-	 * @param dlgFrg
-	 * 		An instance of {@link android.support.v4.app.DialogFragment}.
-	 * @param tagName
-	 * 		Tag name for dialog, default is "dlg". To grantee that only one instance of {@link
-	 * 		android.support.v4.app.DialogFragment} can been seen.
-	 */
-	protected void showDialogFragment(DialogFragment dlgFrg, String tagName) {
-		try {
-			if (dlgFrg != null) {
-				DialogFragment dialogFragment = dlgFrg;
-				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-				// Ensure that there's only one dialog to the user.
-				Fragment prev = getSupportFragmentManager().findFragmentByTag("dlg");
-				if (prev != null) {
-					ft.remove(prev);
-				}
-				try {
-					if (TextUtils.isEmpty(tagName)) {
-						dialogFragment.show(ft, "dlg");
-					} else {
-						dialogFragment.show(ft, tagName);
-					}
-				} catch (Exception _e) {
-				}
-			}
-		} catch (Exception _e) {
-		}
-	}
-
-
-	@Override
-	protected BasicPrefs getPrefs() {
-		return Prefs.getInstance();
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -481,6 +401,9 @@ public class MainActivity extends BaseActivity {
 		switch (item.getItemId()) {
 		case R.id.action_about:
 			showDialogFragment(AboutDialogFragment.newInstance(this), null);
+			break;
+		case R.id.action_might_know:
+			PeopleActivity.showInstance(this);
 			break;
 		case R.id.action_settings:
 			SettingActivity.showInstance(this);
@@ -563,21 +486,12 @@ public class MainActivity extends BaseActivity {
 
 			mDrawerMenus[3] = findViewById(R.id.open_might_know_ll);
 			ViewHelper.setX(mDrawerMenus[3], sz.Width);
-			mDrawerMenus[3].setOnClickListener(new   OnClickListener() {
+			mDrawerMenus[3].setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
+					PeopleActivity.showInstance(MainActivity.this);
 					EventBus.getDefault().post(new CloseDrawerEvent());
-					AsyncTaskCompat.executeParallel(new AsyncTask<Void, NoRelationPeople, NoRelationPeople>() {
-						@Override
-						protected NoRelationPeople doInBackground(Void... params) {
-							try {
-								return OscApi.getNoRelationPeople(App.Instance);
-							}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
-								return null;
-							}
-						}
-					});
 				}
 			});
 

@@ -91,6 +91,7 @@
     <string name="lbl_all_notices">All notices</string>
     <string name="lbl_my_profile">Profile</string>
     <string name="lbl_edit_my_profile">Edit Profile</string>
+    <string name="lbl_might_known_people">People you might know</string>
 
     <string name="quick_reply_list">quick_reply_en</string>
 

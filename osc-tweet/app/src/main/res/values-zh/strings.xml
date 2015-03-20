@@ -82,6 +82,7 @@
     <string name="lbl_all_notices">所有消息</string>
     <string name="lbl_my_profile">个人资料</string>
     <string name="lbl_edit_my_profile">编辑个人资料</string>
+    <string name="lbl_might_known_people">你可能认识的人</string>
 
     <string name="quick_reply_list">quick_reply_zh</string>
 

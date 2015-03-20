@@ -6,13 +6,13 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public final class NoRelationPeople implements Serializable{
+public final class PeopleList implements Serializable{
 	@SerializedName("status")
 	private int mStatus;
 	@SerializedName("people")
-	private List<UserInformation> mPeople;
+	private List<People> mPeople;
 
-	public NoRelationPeople(int status, List<UserInformation> people) {
+	public PeopleList(int status, List<People> people) {
 		mStatus = status;
 		mPeople = people;
 	}
@@ -22,7 +22,7 @@ public final class NoRelationPeople implements Serializable{
 		return mStatus;
 	}
 
-	public List<UserInformation> getPeople() {
+	public List<People> getPeople() {
 		return mPeople;
 	}
 }

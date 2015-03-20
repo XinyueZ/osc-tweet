@@ -26,7 +26,7 @@ import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.favorite.TweetFavoritesList;
 import com.osc4j.ds.personal.FriendsList;
 import com.osc4j.ds.personal.MyInformation;
-import com.osc4j.ds.personal.NoRelationPeople;
+import com.osc4j.ds.personal.PeopleList;
 import com.osc4j.ds.personal.Notice;
 import com.osc4j.ds.personal.UserInformation;
 import com.osc4j.ds.tweet.TweetDetail;
@@ -741,13 +741,13 @@ public final class OscApi {
 	 * @param context
 	 * 		{@link Context}.
 	 *
-	 * @return {@link NoRelationPeople}
+	 * @return {@link PeopleList}
 	 *
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static NoRelationPeople getNoRelationPeople(Context context) throws IOException, OscTweetException, JsonSyntaxException {
-		NoRelationPeople ret;
+	public static PeopleList noRelationPeople(Context context) throws IOException, OscTweetException, JsonSyntaxException {
+		PeopleList ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
 		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
@@ -768,7 +768,7 @@ public final class OscApi {
 			response.body().close();
 			throw new OscTweetException();
 		} else {
-			ret = sGson.fromJson(response.body().string(), NoRelationPeople.class);
+			ret = sGson.fromJson(response.body().string(), PeopleList.class);
 		}
 
 		return ret;
