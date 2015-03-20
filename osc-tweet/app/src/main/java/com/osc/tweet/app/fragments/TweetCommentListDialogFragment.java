@@ -29,6 +29,7 @@ import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.chopping.utils.Utils;
+import com.google.gson.JsonSyntaxException;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.CommentListAdapter;
@@ -276,9 +277,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 				protected Comments doInBackground(Object... params) {
 					try {
 						return OscApi.tweetCommentList(App.Instance, getTweetItem(), mPage);
-					} catch (IOException e) {
-						return null;
-					} catch (OscTweetException e) {
+					}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 						return null;
 					}
 				}
@@ -329,9 +328,7 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 				protected Comments doInBackground(Object... params) {
 					try {
 						return OscApi.tweetCommentList(App.Instance, getTweetItem(), mPage);
-					} catch (IOException e) {
-						return null;
-					} catch (OscTweetException e) {
+					}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 						return null;
 					}
 				}

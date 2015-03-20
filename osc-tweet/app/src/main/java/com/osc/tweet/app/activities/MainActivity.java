@@ -1,5 +1,7 @@
 package com.osc.tweet.app.activities;
 
+import java.io.IOException;
+
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -9,11 +11,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -37,6 +41,7 @@ import com.chopping.utils.Utils;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.gson.JsonSyntaxException;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
@@ -67,6 +72,9 @@ import com.osc.tweet.utils.Prefs;
 import com.osc.tweet.views.OnViewAnimatedClickedListener;
 import com.osc4j.Consts;
 import com.osc4j.LoginDialog;
+import com.osc4j.OscApi;
+import com.osc4j.ds.personal.NoRelationPeople;
+import com.osc4j.exceptions.OscTweetException;
 import com.osc4j.utils.AuthUtil;
 
 import de.greenrobot.event.EventBus;
@@ -515,7 +523,8 @@ public class MainActivity extends BaseActivity {
 						EventBus.getDefault().post(new OpenedDrawerEvent(Gravity.LEFT));
 
 						ViewPropertyAnimator animator = ViewPropertyAnimator.animate(mDrawerMenus[0]);
-						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_super_fast_duration)).start();
+						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_super_fast_duration))
+								.start();
 
 						animator = ViewPropertyAnimator.animate(mDrawerMenus[1]);
 						animator.x(0).setDuration(getResources().getInteger(R.integer.anim_fast_duration)).start();
@@ -554,6 +563,23 @@ public class MainActivity extends BaseActivity {
 
 			mDrawerMenus[3] = findViewById(R.id.open_might_know_ll);
 			ViewHelper.setX(mDrawerMenus[3], sz.Width);
+			mDrawerMenus[3].setOnClickListener(new   OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					EventBus.getDefault().post(new CloseDrawerEvent());
+					AsyncTaskCompat.executeParallel(new AsyncTask<Void, NoRelationPeople, NoRelationPeople>() {
+						@Override
+						protected NoRelationPeople doInBackground(Void... params) {
+							try {
+								return OscApi.getNoRelationPeople(App.Instance);
+							}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
+								return null;
+							}
+						}
+					});
+				}
+			});
 
 		}
 	}

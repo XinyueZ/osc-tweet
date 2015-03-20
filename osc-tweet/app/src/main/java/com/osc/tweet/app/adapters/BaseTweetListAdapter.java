@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
+import com.google.gson.JsonSyntaxException;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.AddFavEvent;
@@ -176,9 +177,7 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 					protected StatusResult doInBackground(MenuItem... params) {
 						try {
 							return OscApi.addTweetFavorite(App.Instance, item);
-						} catch (IOException e) {
-							return null;
-						} catch (OscTweetException e) {
+						}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 							return null;
 						}
 					}
@@ -211,9 +210,7 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 					protected StatusResult doInBackground(MenuItem... params) {
 						try {
 							return OscApi.delTweetFavorite(App.Instance, item);
-						} catch (IOException e) {
-							return null;
-						} catch (OscTweetException e) {
+						} catch (IOException  | OscTweetException | JsonSyntaxException e) {
 							return null;
 						}
 					}
@@ -252,7 +249,7 @@ public abstract class BaseTweetListAdapter extends RecyclerView.Adapter<BaseTwee
 							try {
 								return OscApi.tweetCommentPub(App.Instance, item, com.chopping.utils.Utils.encode(
 										params[0].getTitle().toString()));
-							} catch (IOException | OscTweetException e) {
+							}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 								return null;
 							}
 						}

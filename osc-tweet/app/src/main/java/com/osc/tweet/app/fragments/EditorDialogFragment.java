@@ -25,6 +25,7 @@ import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.chopping.utils.Utils;
+import com.google.gson.JsonSyntaxException;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.LoadEvent;
@@ -372,7 +373,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 									}
 								}
 							}
-						} catch (IOException | OscTweetException e) {
+						}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 							return null;
 						}
 					}

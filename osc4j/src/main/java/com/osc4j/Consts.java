@@ -122,4 +122,8 @@ public final class Consts {
 	 * Delete tweet to favorite.
 	 */
 	static final String DEL_TWEET_FAVORITE_URL = OSC_HOST + "delTweetFavorite?uid=%d&id=%d";
+	/**
+	 * Unknown people.
+	 */
+	static final String NO_RELATION_PEOPLE = OSC_HOST + "noRelationPeople?uid=%d";
 }

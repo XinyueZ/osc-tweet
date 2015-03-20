@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import com.astuetz.PagerSlidingTabStrip;
 import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
+import com.google.gson.JsonSyntaxException;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.NoticesListViewPagerAdapter;
@@ -290,9 +291,7 @@ public final class NoticesListPagesFragment extends BaseFragment {
 					mNoticeType = params[0];
 					try {
 						return OscApi.clearNotice(App.Instance, mNoticeType);
-					} catch (IOException e) {
-						return null;
-					} catch (OscTweetException e) {
+					}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 						return null;
 					}
 				}

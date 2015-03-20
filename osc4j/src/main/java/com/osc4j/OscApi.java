@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.osc4j.ds.Login;
 import com.osc4j.ds.comment.Comment;
 import com.osc4j.ds.comment.Comments;
@@ -25,6 +26,7 @@ import com.osc4j.ds.common.StatusResult;
 import com.osc4j.ds.favorite.TweetFavoritesList;
 import com.osc4j.ds.personal.FriendsList;
 import com.osc4j.ds.personal.MyInformation;
+import com.osc4j.ds.personal.NoRelationPeople;
 import com.osc4j.ds.personal.Notice;
 import com.osc4j.ds.personal.UserInformation;
 import com.osc4j.ds.tweet.TweetDetail;
@@ -57,8 +59,11 @@ public final class OscApi {
 
 	/**
 	 * Get current user login session-id.
-	 * @param context {@link Context}.
-	 * @return  The current session-id.
+	 *
+	 * @param context
+	 * 		{@link Context}.
+	 *
+	 * @return The current session-id.
 	 */
 	public static String getSession(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -68,7 +73,10 @@ public final class OscApi {
 
 	/**
 	 * Get current access-token to all original openAPIs.
-	 * @param context   {@link Context}.
+	 *
+	 * @param context
+	 * 		{@link Context}.
+	 *
 	 * @return The current access-token.
 	 */
 	public static String getAccessToken(Context context) {
@@ -197,9 +205,10 @@ public final class OscApi {
 	 *
 	 * @throws IOException
 	 * @throws OscTweetException
+	 * @throws  JsonSyntaxException
 	 */
 	public static TweetList tweetList(Context context, int page, boolean myTweets, boolean hotspot) throws IOException,
-			OscTweetException {
+			OscTweetException, JsonSyntaxException {
 		TweetList ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -232,7 +241,7 @@ public final class OscApi {
 	}
 
 
-	public static StatusResult tweetPub(Context context, String msg) throws IOException, OscTweetException {
+	public static StatusResult tweetPub(Context context, String msg) throws IOException, OscTweetException, JsonSyntaxException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -257,17 +266,17 @@ public final class OscApi {
 	}
 
 	public static StatusResult tweetReply(Context context, TweetListItem tweet, String content, Comment comment) throws
-			IOException, OscTweetException {
+			IOException, OscTweetException , JsonSyntaxException{
 		return tweetReply(context, tweet.getId(), content, comment.getCommentAuthorId(), comment.getId());
 	}
 
 	public static StatusResult tweetReply(Context context, String content, Notice notice) throws IOException,
-			OscTweetException {
+			OscTweetException , JsonSyntaxException{
 		return tweetReply(context, notice.getObjectId(), content, notice.getAuthorId(), notice.getId());
 	}
 
 	public static StatusResult tweetReply(Context context, long tweetId, String content, long commentAuthorId,
-			long repliedId) throws IOException, OscTweetException {
+			long repliedId) throws IOException, OscTweetException , JsonSyntaxException{
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -294,7 +303,7 @@ public final class OscApi {
 	}
 
 	public static StatusResult tweetCommentPub(Context context, TweetListItem tweetListItem, String content) throws
-			IOException, OscTweetException {
+			IOException, OscTweetException, JsonSyntaxException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -331,7 +340,7 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static FriendsList friendsList(Context context) throws IOException, OscTweetException {
+	public static FriendsList friendsList(Context context) throws IOException, OscTweetException, JsonSyntaxException {
 		FriendsList ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -369,7 +378,7 @@ public final class OscApi {
 	 * @throws OscTweetException
 	 */
 	public static UserInformation userInformation(Context context, long friend, boolean needMessage) throws IOException,
-			OscTweetException {
+			OscTweetException , JsonSyntaxException{
 		UserInformation ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -409,7 +418,7 @@ public final class OscApi {
 	 * @throws OscTweetException
 	 */
 	public static StatusResult updateRelation(Context context, com.osc4j.ds.personal.User friend, boolean cancel) throws
-			IOException, OscTweetException {
+			IOException, OscTweetException, JsonSyntaxException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -448,7 +457,7 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static MyInformation myInformation(Context context, boolean showMe) throws IOException, OscTweetException {
+	public static MyInformation myInformation(Context context, boolean showMe) throws IOException, OscTweetException, JsonSyntaxException {
 		MyInformation ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -490,7 +499,7 @@ public final class OscApi {
 	 * @throws OscTweetException
 	 */
 	public static Comments tweetCommentList(Context context, TweetListItem item, int page) throws IOException,
-			OscTweetException {
+			OscTweetException, JsonSyntaxException {
 		Comments ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -530,7 +539,7 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static TweetDetail tweetDetail(Context context, long tweetId) throws IOException, OscTweetException {
+	public static TweetDetail tweetDetail(Context context, long tweetId) throws IOException, OscTweetException , JsonSyntaxException{
 		TweetDetail ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -570,7 +579,7 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static StatusResult clearNotice(Context context, NoticeType type) throws IOException, OscTweetException {
+	public static StatusResult clearNotice(Context context, NoticeType type) throws IOException, OscTweetException, JsonSyntaxException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -614,7 +623,7 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static TweetFavoritesList tweetFavoritesList(Context context) throws IOException, OscTweetException {
+	public static TweetFavoritesList tweetFavoritesList(Context context) throws IOException, OscTweetException, JsonSyntaxException {
 		TweetFavoritesList ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -656,7 +665,7 @@ public final class OscApi {
 	 * @throws OscTweetException
 	 */
 	public static StatusResult addTweetFavorite(Context context, TweetListItem item) throws IOException,
-			OscTweetException {
+			OscTweetException , JsonSyntaxException{
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -698,7 +707,7 @@ public final class OscApi {
 	 * @throws OscTweetException
 	 */
 	public static StatusResult delTweetFavorite(Context context, TweetListItem item) throws IOException,
-			OscTweetException {
+			OscTweetException, JsonSyntaxException {
 		StatusResult ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -721,6 +730,45 @@ public final class OscApi {
 			throw new OscTweetException();
 		} else {
 			ret = sGson.fromJson(response.body().string(), StatusResult.class);
+		}
+
+		return ret;
+	}
+
+	/**
+	 * Get some unknown and no relation people.
+	 *
+	 * @param context
+	 * 		{@link Context}.
+	 *
+	 * @return {@link NoRelationPeople}
+	 *
+	 * @throws IOException
+	 * @throws OscTweetException
+	 */
+	public static NoRelationPeople getNoRelationPeople(Context context) throws IOException, OscTweetException, JsonSyntaxException {
+		NoRelationPeople ret;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String session = prefs.getString(Consts.KEY_SESSION, null);
+		String token = prefs.getString(Consts.KEY_ACCESS_TOKEN, null);
+
+		//Get session and set to cookie returning to server.
+		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
+		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
+		int uid = prefs.getInt(Consts.KEY_UID, 0);
+
+		String url = String.format(Consts.NO_RELATION_PEOPLE, uid);
+		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
+				.build();
+		OkHttpClient client = new OkHttpClient();
+		client.networkInterceptors().add(new StethoInterceptor());
+		Response response = client.newCall(request).execute();
+		int responseCode = response.code();
+		if (responseCode >= Status.STATUS_ERR) {
+			response.body().close();
+			throw new OscTweetException();
+		} else {
+			ret = sGson.fromJson(response.body().string(), NoRelationPeople.class);
 		}
 
 		return ret;

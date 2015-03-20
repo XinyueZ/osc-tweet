@@ -22,6 +22,7 @@ import com.chopping.net.TaskHelper;
 import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.DeviceUtils.ScreenSize;
 import com.chopping.utils.Utils;
+import com.google.gson.JsonSyntaxException;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
@@ -160,9 +161,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 						try {
 							User user = mUserInfo.getUser();
 							return OscApi.updateRelation(App.Instance, user, user.isRelated());
-						} catch (IOException e) {
-							return null;
-						} catch (OscTweetException e) {
+						}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 							return null;
 						}
 					}
@@ -224,9 +223,7 @@ public final class UserInformationDialogFragment extends DialogFragment {
 						long fri = getArguments().getLong(EXTRAS_FRIEND);
 						boolean nmsg = getArguments().getBoolean(EXTRAS_NEED_MESSAGES);
 						return OscApi.userInformation(App.Instance, fri, nmsg);
-					} catch (IOException e) {
-						return null;
-					} catch (OscTweetException e) {
+					} catch (IOException  | OscTweetException | JsonSyntaxException e) {
 						return null;
 					}
 				}

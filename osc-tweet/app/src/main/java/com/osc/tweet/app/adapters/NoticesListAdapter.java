@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
+import com.google.gson.JsonSyntaxException;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.ClearAtMeNoticesEvent;
@@ -136,9 +137,7 @@ public final class NoticesListAdapter extends RecyclerView.Adapter<NoticesListAd
 					protected TweetDetail doInBackground(Object... params) {
 						try {
 							return OscApi.tweetDetail(App.Instance, item.getObjectId());
-						} catch (IOException e) {
-							return null;
-						} catch (OscTweetException e) {
+						} catch (IOException  | OscTweetException | JsonSyntaxException e) {
 							return null;
 						}
 					}
@@ -171,9 +170,7 @@ public final class NoticesListAdapter extends RecyclerView.Adapter<NoticesListAd
 					protected TweetDetail doInBackground(Object... params) {
 						try {
 							return OscApi.tweetDetail(App.Instance, item.getObjectId());
-						} catch (IOException e) {
-							return null;
-						} catch (OscTweetException e) {
+						}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 							return null;
 						}
 					}

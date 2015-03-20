@@ -18,6 +18,7 @@ import com.chopping.bus.CloseDrawerEvent;
 import com.chopping.fragments.BaseFragment;
 import com.chopping.net.TaskHelper;
 import com.chopping.utils.Utils;
+import com.google.gson.JsonSyntaxException;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ObjectAnimator;
@@ -285,9 +286,7 @@ public final class MyInfoFragment extends BaseFragment {
 				protected MyInformation doInBackground(Object... params) {
 					try {
 						return OscApi.myInformation(App.Instance, Prefs.getInstance().settingShowMeInNoticesList());
-					} catch (IOException e) {
-						return null;
-					} catch (OscTweetException e) {
+					}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 						return null;
 					}
 				}

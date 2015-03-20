@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.chopping.net.TaskHelper;
+import com.google.gson.JsonSyntaxException;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.events.CommentTweetEvent;
@@ -193,7 +194,7 @@ public final class CommentListAdapter extends RecyclerView.Adapter<CommentListAd
 
 								return OscApi.tweetReply(App.Instance, mTweetListItem.getId(), content,
 										item.getCommentAuthorId(), item.getId());
-							} catch (IOException | OscTweetException e) {
+							}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 								return null;
 							}
 						}

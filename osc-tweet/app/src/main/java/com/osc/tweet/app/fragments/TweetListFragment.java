@@ -21,6 +21,7 @@ import com.chopping.application.BasicPrefs;
 import com.chopping.bus.ReloadEvent;
 import com.chopping.fragments.BaseFragment;
 import com.chopping.utils.Utils;
+import com.google.gson.JsonSyntaxException;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.TweetListAdapter;
@@ -262,9 +263,7 @@ public final class TweetListFragment extends BaseFragment {
 							return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS,
 									false), getArguments().getBoolean(EXTRAS_HOTSPOT, false)).getTweets();
 						}
-					} catch (IOException e) {
-						return null;
-					} catch (OscTweetException e) {
+					}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 						return null;
 					}
 				}
@@ -317,9 +316,7 @@ public final class TweetListFragment extends BaseFragment {
 					try {
 						return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
 								getArguments().getBoolean(EXTRAS_HOTSPOT, false));
-					} catch (IOException e) {
-						return null;
-					} catch (OscTweetException e) {
+					} catch (IOException  | OscTweetException | JsonSyntaxException e) {
 						return null;
 					}
 				}

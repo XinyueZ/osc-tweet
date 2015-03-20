@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.chopping.application.BasicPrefs;
 import com.chopping.fragments.BaseFragment;
+import com.google.gson.JsonSyntaxException;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.FriendsListAdapter;
@@ -131,9 +132,7 @@ public final class FriendsListFragment extends BaseFragment {
 				protected FriendsList doInBackground(Object... params) {
 					try {
 						return OscApi.friendsList(App.Instance);
-					} catch (IOException e) {
-						return null;
-					} catch (OscTweetException e) {
+					}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
 						return null;
 					}
 				}
