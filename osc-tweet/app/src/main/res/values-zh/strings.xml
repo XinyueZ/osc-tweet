@@ -17,6 +17,7 @@
     <string name="action_delete_favorite">取消收藏</string>
     <string name="action_backward">后退</string>
     <string name="action_forward">向前</string>
+    <string name="action_personal_information">人物资料</string>
 
     <string name="msg_move_to_top">回到顶部</string>
     <string name="msg_follow">您已经对 %s 添加关注。</string>

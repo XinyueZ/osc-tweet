@@ -269,6 +269,7 @@ public class MainActivity extends OscActivity {
 	}
 
 
+
 	//------------------------------------------------
 
 	@Override
@@ -317,6 +318,7 @@ public class MainActivity extends OscActivity {
 		mPbDlg = ProgressDialog.show(this, null, getString(R.string.msg_load_config));
 		mPbDlg.setCancelable(false);
 	}
+
 
 	@Override
 	public void onBackPressed() {
@@ -384,6 +386,7 @@ public class MainActivity extends OscActivity {
 			}).create().show();
 		}
 	}
+
 
 
 	@Override

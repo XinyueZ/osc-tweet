@@ -81,7 +81,7 @@ public final class Consts {
 	/**
 	 * Friends-list.
 	 */
-	static final String FRIENDS_URL = OSC_HOST + "friendsList";
+	static final String FRIENDS_URL = OSC_HOST + "friendsList?uid=%d";
 	/**
 	 * User-information.
 	 */

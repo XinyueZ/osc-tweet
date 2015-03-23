@@ -348,7 +348,8 @@ public final class OscApi {
 		//Get session and set to cookie returning to server.
 		String sessionInCookie = Consts.KEY_SESSION + "=" + session;
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
-		String url = Consts.FRIENDS_URL;
+		int uid = prefs.getInt(Consts.KEY_UID, 0);
+		String url = String.format(Consts.FRIENDS_URL, uid);
 		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
 				.build();
 		OkHttpClient client = new OkHttpClient();

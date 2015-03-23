@@ -18,6 +18,7 @@
     <string name="action_delete_favorite">Add to favorite</string>
     <string name="action_backward">Backward</string>
     <string name="action_forward">Forward</string>
+    <string name="action_personal_information">Personal Information</string>
 
     <string name="msg_move_to_top">Return top</string>
     <string name="msg_operating_successfully">Operating successfully.</string>

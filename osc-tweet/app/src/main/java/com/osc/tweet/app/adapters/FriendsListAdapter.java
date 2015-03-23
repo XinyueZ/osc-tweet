@@ -4,9 +4,13 @@ import java.util.List;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
-import android.view.View.OnLongClickListener;
+import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -73,21 +77,34 @@ public final class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAd
 	}
 
 	@Override
-	public void onBindViewHolder(ViewHolder holder, int position) {
-		final Friend item = mData.get(position);
+	public void onBindViewHolder(final ViewHolder holder, int position) {
+		final Friend friend = mData.get(position);
 		holder.mPortraitIv.setDefaultImageResId(R.drawable.ic_portrait_preview);
-		holder.mPortraitIv.setImageUrl(item.getPortrait(), TaskHelper.getImageLoader());
+		holder.mPortraitIv.setImageUrl(friend.getPortrait(), TaskHelper.getImageLoader());
 		holder.mPortraitIv.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
 			public void onClick() {
-				EventBus.getDefault().post(new ShowEditorEvent("@" + item.getName() + ": "));
+				EventBus.getDefault().post(new ShowEditorEvent("@" + friend.getName() + ": "));
 			}
 		});
-		holder.mPortraitIv.setOnLongClickListener(new OnLongClickListener() {
+		holder.mPortraitIv.setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
 			@Override
-			public boolean onLongClick(View v) {
-				EventBus.getDefault().post(new ShowUserInformationEvent(item.getUserId()));
-				return true;
+			public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+				menu.add(String.format(v.getContext().getString(R.string.action_at_him), friend.getName())).setOnMenuItemClickListener(
+						new OnMenuItemClickListener() {
+							@Override
+							public boolean onMenuItemClick(MenuItem item) {
+								EventBus.getDefault().post(new ShowEditorEvent("@" + friend.getName() + ": "));
+								return true;
+							}
+						});
+				menu.add(R.string.action_personal_information).setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						EventBus.getDefault().post(new ShowUserInformationEvent(friend.getUserId()));
+						return true;
+					}
+				});
 			}
 		});
 	}
@@ -97,7 +114,8 @@ public final class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAd
 		return mData == null ? 0 : mData.size();
 	}
 
-	static class ViewHolder extends RecyclerView.ViewHolder {
+
+	static class ViewHolder extends RecyclerView.ViewHolder  {
 		private NetworkImageView mPortraitIv;
 
 		private ViewHolder(View convertView) {

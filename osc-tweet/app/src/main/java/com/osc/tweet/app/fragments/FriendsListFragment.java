@@ -98,6 +98,7 @@ public final class FriendsListFragment extends BaseFragment {
 		mRv = (RecyclerView) view.findViewById(R.id.friends_list_rv);
 		mRv.setLayoutManager(new LinearLayoutManager(getActivity()));
 		mRv.setHasFixedSize(false);
+		registerForContextMenu(mRv);
 		mRv.setAdapter(mAdp = new FriendsListAdapter(null));
 		view.findViewById(R.id.close_friends_list_btn).setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
@@ -141,7 +142,7 @@ public final class FriendsListFragment extends BaseFragment {
 				protected void onPostExecute(FriendsList friendsList) {
 					super.onPostExecute(friendsList);
 					try {
-						if (friendsList != null) {
+						if (friendsList != null && friendsList.getFriends() != null) {
 							Friends friends = friendsList.getFriends();
 							List<Friend> all = new ArrayList<>();
 							List<Friend> fansList = friends.getFansList();
@@ -165,6 +166,9 @@ public final class FriendsListFragment extends BaseFragment {
 			});
 		}
 	}
+
+
+
 
 	@Override
 	protected BasicPrefs getPrefs() {

@@ -169,6 +169,7 @@ public final class PeopleActivity extends OscActivity {
 									builder.setMessage(R.string.btn_retry)
 											.setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
 													public void onClick(DialogInterface dialog, int id) {
+														mSmoothProgressBar.setVisibility(View.VISIBLE);
 														getPeople();
 														dialog.dismiss();
 													}
