@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -90,6 +91,12 @@ public class PeopleListAdapter extends RecyclerView.Adapter<PeopleListAdapter.Vi
 		} else {
 			holder.mFromTv.setText(item.getFrom());
 		}
+		holder.itemView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				EventBus.getDefault().post(new ShowUserInformationEvent(item.getId()));
+			}
+		});
 	}
 
 	/**

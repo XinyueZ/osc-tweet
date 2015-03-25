@@ -748,7 +748,7 @@ public final class OscApi {
 	 * @throws IOException
 	 * @throws OscTweetException
 	 */
-	public static PeopleList noRelationPeople(Context context) throws IOException, OscTweetException, JsonSyntaxException {
+	public static PeopleList noRelationPeople(Context context, int myPage, int friendPage) throws IOException, OscTweetException, JsonSyntaxException {
 		PeopleList ret;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		String session = prefs.getString(Consts.KEY_SESSION, null);
@@ -759,7 +759,7 @@ public final class OscApi {
 		String tokenInCookie = Consts.KEY_ACCESS_TOKEN + "=" + token;
 		int uid = prefs.getInt(Consts.KEY_UID, 0);
 
-		String url = String.format(Consts.NO_RELATION_PEOPLE, uid);
+		String url = String.format(Consts.NO_RELATION_PEOPLE, uid, myPage, friendPage);
 		Request request = new Request.Builder().url(url).get().header("Cookie", sessionInCookie + ";" + tokenInCookie)
 				.build();
 		OkHttpClient client = new OkHttpClient();

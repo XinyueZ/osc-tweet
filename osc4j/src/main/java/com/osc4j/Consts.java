@@ -125,5 +125,5 @@ public final class Consts {
 	/**
 	 * Unknown people.
 	 */
-	static final String NO_RELATION_PEOPLE = OSC_HOST + "noRelationPeople?uid=%d";
+	static final String NO_RELATION_PEOPLE = OSC_HOST + "noRelationPeople?uid=%d&mp=%d&fp=%d";
 }

@@ -29,6 +29,7 @@
     <string name="msg_update_my_info" formatted="false">(%d) \@me, (%d) new comments</string>
     <string name="msg_load_config">Load application configuration…</string>
     <string name="msg_works_in_next_request">Works in next request.</string>
+    <string name="msg_load_more">More to load…</string>
 
     <string name="btn_confirm">Confirm</string>
     <string name="btn_cancel">Cancel</string>

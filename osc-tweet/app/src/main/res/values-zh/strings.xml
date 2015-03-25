@@ -28,6 +28,7 @@
     <string name="msg_update_my_info" formatted="false">(%d) \@我, (%d) 新评论</string>
     <string name="msg_load_config">读取应用配置…</string>
     <string name="msg_works_in_next_request">设置好后，再下次请求中有效。</string>
+    <string name="msg_load_more">寻找更多…</string>
 
     <string name="btn_close">关闭</string>
     <string name="btn_confirm">确认</string>
