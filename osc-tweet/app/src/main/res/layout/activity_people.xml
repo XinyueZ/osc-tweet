@@ -85,6 +85,9 @@
 
 
         <FrameLayout
+            android:id="@+id/buttons_fl"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_width="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_height="wrap_content">
@@ -93,17 +96,13 @@
                 android:id="@+id/loading_more_pb"
                 android:background="@drawable/circle_large_green"
                 android:src="@drawable/ic_refresh"
-                style="@style/FloatButton"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+                style="@style/FloatButton" />
 
             <ImageButton
                 android:id="@+id/load_more_btn"
                 android:background="@drawable/circle_large_green"
                 android:src="@drawable/ic_find_people"
-                style="@style/FloatButton" android:visibility="invisible"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin" />
+                style="@style/FloatButton"  />
         </FrameLayout>
 
     </FrameLayout>

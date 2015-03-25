@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -63,10 +64,6 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 	 * Menu for the editor.
 	 */
 	private static final int MENU = R.menu.menu_editor;
-	/**
-	 * An "action-bar" for the editor.
-	 */
-	private Toolbar mToolbar;
 	/**
 	 * Editor for message.
 	 */
@@ -194,10 +191,19 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 		ScreenSize sz = DeviceUtils.getScreenSize(getActivity().getApplication());
 		view.findViewById(R.id.root_v).setLayoutParams(new FrameLayout.LayoutParams(sz.Width, sz.Height));
 
-		mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
-		mToolbar.inflateMenu(MENU);
-		mToolbar.setTitle(getString(R.string.lbl_editor_title));
-		mSendMi = mToolbar.getMenu().findItem(R.id.action_send);
+
+		Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+		toolbar.inflateMenu(MENU);
+		toolbar.setTitle(getString(R.string.lbl_editor_title));
+		toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+		toolbar.setNavigationOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dismiss();
+			}
+		});
+
+		mSendMi = toolbar.getMenu().findItem(R.id.action_send);
 		mSendMi.setOnMenuItemClickListener(this);
 		mEditText = (EditText) view.findViewById(R.id.message_content_et);
 		String defaultText = getDefaultText();
@@ -272,7 +278,7 @@ public final class EditorDialogFragment extends DialogFragment implements OnMenu
 				});
 			}
 
-			mToolbar.setTitle(R.string.action_reply_comment);
+			toolbar.setTitle(R.string.action_reply_comment);
 		}
 	}
 

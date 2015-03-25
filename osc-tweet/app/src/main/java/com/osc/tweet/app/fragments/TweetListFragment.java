@@ -3,9 +3,13 @@ package com.osc.tweet.app.fragments;
 import java.io.IOException;
 import java.util.List;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.os.AsyncTaskCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -73,10 +77,6 @@ public final class TweetListFragment extends BaseFragment {
 	private View mNotLoadedIndicatorV;
 
 	/**
-	 * On the bottom of all records.
-	 */
-	private boolean mBottom;
-	/**
 	 * Network action in progress if {@code true}.
 	 */
 	private boolean mInProgress;
@@ -97,7 +97,6 @@ public final class TweetListFragment extends BaseFragment {
 	public void onEvent(ReloadEvent e) {
 		mPage = DEFAULT_PAGE;
 		showLoadingIndicator();
-		mBottom = false;
 		getTweetList();
 	}
 
@@ -195,10 +194,8 @@ public final class TweetListFragment extends BaseFragment {
 					if (mLoading) {
 						if ((mVisibleItemCount + mPastVisibleItems) >= mTotalItemCount) {
 							mLoading = false;
-							if (!mBottom) {
-								showLoadingIndicator();
-								getMoreTweetList();
-							}
+							showLoadingIndicator();
+							getMoreTweetList();
 						}
 					}
 				}
@@ -212,7 +209,6 @@ public final class TweetListFragment extends BaseFragment {
 			@Override
 			public void onRefresh() {
 				mPage = DEFAULT_PAGE;
-				mBottom = false;
 				getTweetList();
 			}
 		});
@@ -263,7 +259,7 @@ public final class TweetListFragment extends BaseFragment {
 							return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS,
 									false), getArguments().getBoolean(EXTRAS_HOTSPOT, false)).getTweets();
 						}
-					}  catch (IOException  | OscTweetException | JsonSyntaxException e) {
+					} catch (IOException | OscTweetException | JsonSyntaxException e) {
 						return null;
 					}
 				}
@@ -273,7 +269,7 @@ public final class TweetListFragment extends BaseFragment {
 					super.onPostExecute(tweetList);
 					try {
 						if (tweetList != null) {
-							if( tweetList.size() > 0) {
+							if (tweetList.size() > 0) {
 								if (getArguments().getBoolean(EXTRAS_FAV, false)) {
 									App.Instance.setTweetFavoritesList(tweetList);
 								}
@@ -316,7 +312,7 @@ public final class TweetListFragment extends BaseFragment {
 					try {
 						return OscApi.tweetList(App.Instance, mPage, getArguments().getBoolean(EXTRAS_MY_TWEETS, false),
 								getArguments().getBoolean(EXTRAS_HOTSPOT, false));
-					} catch (IOException  | OscTweetException | JsonSyntaxException e) {
+					} catch (IOException | OscTweetException | JsonSyntaxException e) {
 						return null;
 					}
 				}
@@ -328,14 +324,23 @@ public final class TweetListFragment extends BaseFragment {
 						if (tweetList != null && tweetList.getTweets() != null) {
 							mAdp.getData().addAll(tweetList.getTweets());
 						} else {
-							if (tweetList != null) {
-								mPage--;
-								if (mPage < 0) {
-									mPage = 0;
+							new DialogFragment() {
+								@Override
+								public Dialog onCreateDialog(Bundle savedInstanceState) {
+									// Use the Builder class for convenient dialog construction
+									AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+									builder.setMessage(R.string.btn_retry).setPositiveButton(R.string.btn_ok,
+											new DialogInterface.OnClickListener() {
+												public void onClick(DialogInterface dialog, int id) {
+													mPage--;
+													showLoadingIndicator();
+													getMoreTweetList();
+													dialog.dismiss();
+												}
+											});
+									return builder.create();
 								}
-							} else {
-								mBottom = true;
-							}
+							}.show(getChildFragmentManager(), null);
 						}
 						finishLoading();
 					} catch (IllegalStateException e) {

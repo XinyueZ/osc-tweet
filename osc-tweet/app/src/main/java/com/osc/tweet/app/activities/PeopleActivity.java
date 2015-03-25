@@ -9,6 +9,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -25,10 +26,13 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.chopping.bus.ReloadEvent;
+import com.chopping.utils.DeviceUtils;
 import com.chopping.utils.Utils;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.gson.JsonSyntaxException;
 import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.view.ViewHelper;
+import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.osc.tweet.R;
 import com.osc.tweet.app.App;
 import com.osc.tweet.app.adapters.PeopleListAdapter;
@@ -175,9 +179,11 @@ public final class PeopleActivity extends OscActivity {
 		mFindMoreLoadV = findViewById(R.id.load_more_btn);
 		mFindMoreLoadV.setOnClickListener(new OnViewAnimatedClickedListener() {
 			@Override
-			public void onClick(   ) {
-				mSnackBar.show(getString(R.string.msg_load_more));
-				mFindMoreLoadV.setVisibility(View.INVISIBLE);
+			public void onClick() {
+				if (mAdp != null && mAdp.getItemCount() > 0) {
+					mSnackBar.show(getString(R.string.msg_load_more));
+					mFindMoreLoadV.setVisibility(View.INVISIBLE);
+				}
 				getFriendsList();
 			}
 		});
@@ -187,7 +193,7 @@ public final class PeopleActivity extends OscActivity {
 		objectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
 		objectAnimator.start();
 
-
+		showSearch();
 		//Should get all my friends first, in order to filter out duplicated people.
 		getFriendsList();
 
@@ -233,18 +239,18 @@ public final class PeopleActivity extends OscActivity {
 																for (People p : peopleLoaded) {
 																	found = false;
 																	for (Friend f : mAllFriends) {
-																		if(f.getUserId() == p.getId()) {
+																		if (f.getUserId() == p.getId()) {
 																			found = true;
 																			break;
 																		}
 																	}
-																	if(!found) {
+																	if (!found) {
 																		people.add(p);
 																	}
 																}
 
-																if(people.size() == 0) {
-																	if(mAdp.getItemCount() == 0) {
+																if (people.size() == 0) {
+																	if (mAdp.getItemCount() == 0) {
 																		//We haven't data previously, then show empty information.
 																		mEmptyV.setVisibility(View.VISIBLE);
 																		mNotLoadedIndicatorV.setVisibility(View.GONE);
@@ -266,7 +272,7 @@ public final class PeopleActivity extends OscActivity {
 														} else {
 															EventBus.getDefault().post(new OperatingEvent(false));
 															mEmptyV.setVisibility(View.GONE);
-															if(mAdp.getItemCount() == 0) {
+															if (mAdp.getItemCount() == 0) {
 																mNotLoadedIndicatorV.setVisibility(View.VISIBLE);
 															}
 															mSmoothProgressBar.setVisibility(View.INVISIBLE);
@@ -305,6 +311,7 @@ public final class PeopleActivity extends OscActivity {
 
 			);
 		} else {
+			mFindMoreLoadV.setVisibility(View.VISIBLE);
 			mSwipeRefreshLayout.setRefreshing(false);
 		}
 	}
@@ -397,6 +404,22 @@ public final class PeopleActivity extends OscActivity {
 			});
 		} else {
 			mFindMoreLoadV.setVisibility(View.VISIBLE);
+			mSwipeRefreshLayout.setRefreshing(false);
 		}
+	}
+
+	/**
+	 * Animation to show search button.
+	 */
+	private void showSearch() {
+		Resources res = getResources();
+		View v = findViewById(R.id.buttons_fl);
+		int screenWidth = DeviceUtils.getScreenSize(getApplication()).Width;
+		ViewHelper.setX(v, -res.getDimensionPixelSize(R.dimen.float_button_anim_qua));
+		ViewHelper.setRotation(v, -360f * 4);
+		ViewPropertyAnimator animator = ViewPropertyAnimator.animate(v);
+		animator.x(screenWidth - res.getDimensionPixelSize(R.dimen.float_button_anim_qua)).rotation(0).setDuration(
+				getResources().getInteger(R.integer.anim_duration)).start();
+
 	}
 }

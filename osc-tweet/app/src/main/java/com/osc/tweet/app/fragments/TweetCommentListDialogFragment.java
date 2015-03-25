@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
@@ -246,6 +247,13 @@ public final class TweetCommentListDialogFragment extends DialogFragment {
 					Utils.showShortToast(App.Instance, R.string.msg_move_to_top);
 				}
 				return true;
+			}
+		});
+		toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+		toolbar.setNavigationOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dismiss();
 			}
 		});
 
